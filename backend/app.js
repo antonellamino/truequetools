@@ -1,9 +1,9 @@
 const express = require('express');
-const session = require('express-session');
 const bodyParser = require('body-parser');
 const knex = require('knex');
-const fs = require('fs');//sacar
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+
 const { Usuario, Sucursal, Producto, Categoria, Empleado } = require('./models');
 
 
@@ -20,55 +20,32 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(session({
-    secret: 'secret-key',
-    resave: false,
-    saveUninitialized: true
-}));
-
-
-//mover funcion
-const verificarAutenticacion = (req, res, next) => {
-    if (req.session.usuario) {
-        next();
-    } else {
-        res.status(401).json({ error: 'Acceso denegado. Debes iniciar sesión para acceder a esta ruta.' });
-    }
-};
-
-const verificarAutorizacionAdmin = (req, res, next) => {
-    if (req.session.usuario && req.session.usuario.rol_id === 1) {
-        next();
-    } else {
-        res.status(403).json({ error: 'Acceso denegado. Se requiere permisos de administrador.' });
-    }
-};
-
-
-
 
 
 
 
 // endpoint para registrar un usuario cliente
 //luego del registro se tiene que redirigir al login
-app.post('/registrar-cliente', async (req, res) => {
+app.post('/registro-cliente', async (req, res) => {
     try {
         // extraer los datos del cuerpo de la solicitud
         const { nombre, apellido, correo, fecha_nacimiento, sucursal_preferencia, contrasena } = req.body;
 
-        // Verificar si ya existe un usuario con el mismo correo electrónico
-        // let usuarioExistente;
-        // try {
-        //     usuarioExistente = await Usuario.where({ correo }).fetch();
-        // } catch (error) {
-        //     console.error('Error al buscar usuario existente:', error);
-        //     return res.status(500).json({ error: 'Error interno del servidor al buscar usuario existente' });
-        // }
+        //verificar si ya existe un usuario con el mismo correo
+        let usuarioExistente;
 
-        // if (usuarioExistente !== null) {
-        //     return res.status(400).json({ error: 'Ya existe un usuario con este correo electrónico' });
-        // }
+        try {
+            console.log(correo);
+            usuarioExistente = await Usuario.where({ correo }).fetch(require=false);
+            console.log(usuarioExistente);
+        } catch (error) {
+            console.error('Error al buscar usuario existente:', error);
+            usuarioExistente = null;
+            //return res.status(500).json({ error: 'Error interno del servidor al buscar usuario existente' });
+        }
+        if (usuarioExistente !== null) {
+            return res.status(400).json({ error: 'Ya existe un usuario con este correo electrónico' });
+        }
 
         // crear un nuevo usuario utilizando el model Usuario
         const nuevoUsuario = await Usuario.forge({
@@ -94,7 +71,7 @@ app.post('/registrar-cliente', async (req, res) => {
 
 
 // endpoint para registrar un usuario empleado, solo admin
-app.post('/registrar-empleado', verificarAutorizacionAdmin, async (req, res) => {
+app.post('/registrar-empleado', async (req, res) => {
     try {
         const { dni, contrasena } = req.body;
 
@@ -129,26 +106,27 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
     const login = { correo, contrasena } = req.body;
 
     try {
-        const usuario = await Usuario.where({ correo }).fetch();
+        console.log(correo, contrasena); //ok
+        const usuario = await Usuario.where({ correo }).fetch(require=false);
         console.log(usuario);
 
         if (!usuario) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        // Si el usuario existe, verificar la contraseña
+        // si existe verificar contrasena
         const contrasenaValida = await usuario.validarContrasena(contrasena);
         if (!contrasenaValida) {
-            return res.status(401).json({ error: 'Credenciales inválidas' });
+            return res.status(401).json({ error: 'Credenciales invalidas' });
         }
+        console.log(contrasenaValida);
 
-
-
-        // almacenar información del usuario en la sesion
-        req.session.usuario = { id: usuario.get('id'), correo: usuario.get('correo'), rol_id: usuario.get('rol_id') };
-        console.log(req.session.usuario.correo);
-
-        res.status(200).json({ mensaje: 'inicio de sesion exitoso', usuario: { rol_id: usuario.get('rol_id') } }); //devuelvo el usuario y que el frontend maneje la redireccion
+        const token = jwt.sign({
+            id: usuario.get('id'),
+            correo: usuario.get('correo'),
+            rol_id: usuario.get('rol_id')
+        }, 'secreto', { expiresIn: '1h' });
+        res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token });
 
     } catch (error) {
         console.error(error);
@@ -178,9 +156,6 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        // guardar informacion del usuario en la sesion
-        req.session.usuario = { id: usuario.get('id'), correo: usuario.get('dni'), rol_id: usuario.get('rol_id') };
-        console.log(req.session.usuario.correo);
 
         res.status(200).json({ mensaje: 'inicio de sesion exitoso', usuario: { rol_id: usuario.get('rol_id') } }); //devuelvo el usuario y que el frontend maneje la redireccion
 
@@ -195,11 +170,10 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
 //endpoint para publicar producto
 const multer = require('multer');
 const upload = multer();
-app.post('/publicar-producto', verificarAutenticacion, upload.any(), async (req, res) => {
+app.post('/publicar-producto', upload.any(), async (req, res) => {
     try {
         const { nombre, descripcion, sucursal_elegida, categoria_id } = req.body;
         const imagen = req.files ? req.files[0] : null;
-        const usuario_id = req.session.usuario.id;
 
         let imagenBase64 = null;
         if (imagen) {
@@ -227,22 +201,16 @@ app.post('/publicar-producto', verificarAutenticacion, upload.any(), async (req,
 
 
 // Endpoint para cerrar sesión
-app.post('/logout', (req, res) => {
-    
-    req.session.destroy((err) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send('Internal Server Error');
-        }
-    });
-    res.status(200).json({ mensaje : 'Sesion cerrada' });
-    console.log(req.session);
-});
+// app.post('/logout', (req, res) => {
+
+//     res.status(200).json({ mensaje : 'Sesion cerrada' });
+//     console.log(req.session);
+// });
 
 
 
 //solo admin
-app.post('/agregar-sucursal', verificarAutorizacionAdmin, async (req, res) => {
+app.post('/agregar-sucursal', async (req, res) => {
     try {
         
         const { nombre, direccion, telefono } = req.body;
@@ -262,8 +230,8 @@ app.post('/agregar-sucursal', verificarAutorizacionAdmin, async (req, res) => {
 });
 
 
-//solo admin
-app.get('/usuarios', verificarAutorizacionAdmin, async (req, res) => {
+
+app.get('/usuarios', async (req, res) => {
     try {
         const usuarios = await Usuario.fetchAll();
         res.json({ usuarios });
@@ -310,6 +278,45 @@ app.get('/productos', async(req, res) => {
         res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
     }
 })
+
+
+
+
+
+
+
+
+//prueba
+// Importar Bookshelf y el modelo de usuario
+// Endpoint para obtener información de usuarios por ids, devuelve el correo, con el id
+app.post('/usuarios', async (req, res) => {
+    const { userIds } = req.body;
+
+    if (!userIds || !Array.isArray(userIds)) {
+        return res.status(400).json({ error: 'Se esperaba una matriz de IDs de usuario' });
+    }
+
+    try {
+        const usuariosEncontrados = await Usuario.where('id', 'in', userIds).fetchAll();
+        
+        if (!usuariosEncontrados || usuariosEncontrados.length === 0) {
+            return res.status(404).json({ error: 'No se encontraron usuarios para los IDs proporcionados' });
+        }
+
+        const usuariosInfo = usuariosEncontrados.map(usuario => ({
+            id: usuario.get('id'),
+            correo: usuario.get('correo')
+        }));
+        console.log(usuariosInfo);
+
+        res.json({ usuarios: usuariosInfo }); // Devolver el objeto con la información de los usuarios
+    } catch (error) {
+        console.error('Error al buscar usuarios:', error);
+        res.status(500).json({ error: 'Error al buscar usuarios' });
+    }
+});
+
+//ver porque se hacen dos llamadas
 
 
 

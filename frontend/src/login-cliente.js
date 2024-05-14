@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,42 +31,47 @@ const LoginCliente = () => {
             setPasswordError('Por favor ingresa una contraseña');
             return false;
         }
-        if (password.length < 8) {
-            setPasswordError('La contraseña debe tener 8 caracteres o mas');
+        if (password.length < 6 || password.length > 20) {
+            setPasswordError('La contraseña debe tener 6 caracteres como minimo y 20 como maximo');
             return false;
         }
         setPasswordError('');
         return true;
     };
+
     const navigate = useNavigate();
 
     const onButtonClick = async () => {
         const isEmailValid = validateEmail();
         const isPasswordValid = validatePassword();
+        console.log(isEmailValid, isPasswordValid);
 
         if (isEmailValid && isPasswordValid) {
             try {
                 const response = await axios.post(`${backendUrl}/iniciar-sesion-cliente`, { correo: email, contrasena: password });
-                
+                console.log(response.status);
                 if (response.status === 200) {
-                    const rol_id  = response.data.usuario.rol_id;
-                    console.log(rol_id);
+                    const token = response.data.token;
+                    localStorage.setItem('token', token);
                     navigate('/clienteDashboard');
-                } else {
-                    console.error('Error al iniciar sesión:', response.data.error);
-                    setMensajeError(response.data.error);
                 }
             } catch (error) {
-                console.error('Error al iniciar sesión:', error.message);
+                console.error('entra x el catch:', error.message);
+                if (error.response.status === 401) {
+                    console.error('Error:', error.response.data);
+                    setMensajeError(error.response.data.error);
+                } else {
+                    console.error('Error:', error.response.data);
+                    setMensajeError(error.response.data.error);
+                }
             }
-        }
-    };
-
+        };
+    }
     return (
         <Fragment>
             <Navbar />
             <div className="mainContainer">
-                <div className="titleContainer">    
+                <div className="titleContainer">
                     <div>Inicia sesion</div>
                 </div>
                 <br />
@@ -92,14 +97,12 @@ const LoginCliente = () => {
 
                 </div>
                 <br />
-                {mensajeError && <div className="errorLabel">{mensajeError}</div>}
-
+                {mensajeError && <div className="errorLabel text-danger" >{mensajeError}</div>}
                 <div className="inputContainer">
                     <input className="inputButton" type="button" onClick={onButtonClick} value="ingresar" />
                 </div>
             </div>
-    </Fragment>
+        </Fragment>
     );
 };
-
 export default LoginCliente;

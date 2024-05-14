@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,13 @@ const ClienteDashboard = () => {
         navigate('/logout');
     }
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert("Tenes que tener una sesion iniciada");
+            navigate('/iniciarSesion');
+        }
+    }, [navigate]);
 
     return(
         <Fragment>
