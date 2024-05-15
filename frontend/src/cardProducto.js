@@ -3,7 +3,7 @@ import React from 'react';
 const cardProducto = ({ imagenSrc, nombreUsuario, titulo, descripcion }) => {
     return (
         <div className="card card-style" style={{ width: '18rem' }}>
-            <img src={imagenSrc} className="card-img-top" alt="Imagen del producto" />
+            {imagenSrc && <img src={imagenSrc} className="card-img-top" alt="Imagen del producto" />}
             <div className="card-body">
                 <h5 className="card-title">{titulo}</h5>
                 <p className="card-text">{descripcion}</p>

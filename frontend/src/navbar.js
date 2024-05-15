@@ -1,8 +1,18 @@
-import React, { Fragment } from 'react';
-import { NavLink } from 'react-router-dom';
-import Header from './header'; 
+import React, { Fragment, useContext } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import Header from './header';
+import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
+
 
 const Navbar = () => {
+    const { isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
+    const navigate = useNavigate();
+
+    const handleCerrarSesion = () => {
+        logout(); // Cierra sesión utilizando el contexto de autenticación
+        navigate('/logout'); // Redirige a la página de logout
+    }
+
     return (
         <Fragment>
             <Header />
@@ -17,12 +27,20 @@ const Navbar = () => {
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/registro" activeClassName="active">Registrate</NavLink>
                             </li>
+                            {isAuthenticated && (
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/publicarProducto" activeClassName="active">Publicar Producto</NavLink>
                             </li>
-                            <li className="nav-item">
+                            )}
+                            {isAuthenticated ? (
+                                <li className="nav-item">
+                                <button className="nav-link btn" onClick={handleCerrarSesion}>Cerrar Sesión</button>
+                                 </li>
+                            ) : ( 
+                                <li className="nav-item">
                                 <NavLink className="nav-link" to="/iniciarSesion" activeClassName="active">Iniciar sesion</NavLink>
-                            </li>
+                                </li>
+                            )}
                         </ul>
                         <form className="d-flex">
                             <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" />

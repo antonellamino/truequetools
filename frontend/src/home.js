@@ -58,7 +58,7 @@ const Home = () => {
                         {productos.map(producto => (
                             <div key={producto.id} className="col-md-4 mb-3">
                                 <CardProducto
-                                    imagenSrc={`data:image/jpeg;base64,${producto.imagen}`}
+                                    imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : null}
                                     nombreUsuario={obtenerCorreoUsuario(producto.usuario_id)}
                                     titulo={producto.nombre}
                                     descripcion={producto.descripcion}

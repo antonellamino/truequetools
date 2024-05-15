@@ -1,4 +1,18 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
+import Navbar from './navbar';
+
+const ClienteDashboard = () => {
+    return(
+        <Fragment>
+            <Navbar />
+        </Fragment>
+    )
+}
+
+export default ClienteDashboard;
+//EL DASHBORAD DEL CLIENTE ES EL MISMO QUE EL NAVBAR
+
+/* import React, { Fragment, useEffect } from 'react';
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,3 +40,4 @@ const ClienteDashboard = () => {
 }
 
 export default ClienteDashboard;
+*/

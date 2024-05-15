@@ -10,12 +10,14 @@ import AgregarEmpleado from './agregarEmpleado';
 import CardProducto from './cardProducto';
 import LoginEmpleado from './login-empleado';
 import AdminDashboard from './adminDashboard';
+import { AuthProvider } from './AuthContext';
 
 function App() {
 
   return (
     <div className="App">
       <BrowserRouter>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/iniciarSesion" element={<LoginCliente />} />
@@ -28,6 +30,7 @@ function App() {
           <Route path="/iniciarSesionEmpleado" element={<LoginEmpleado />} />
           <Route path="/adminDashboard" element={<AdminDashboard />} />
         </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </div>
   )

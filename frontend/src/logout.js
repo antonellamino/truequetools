@@ -2,11 +2,13 @@ import React, { Fragment, useEffect } from 'react';
 import Navbar from './navbar';
 
 const Logout = () => {
-
+    //esto lo hace el context, el remove de token
+    /*
     useEffect(() => {
         localStorage.removeItem('token');
     }, []);
-
+    */ 
+   
     return (
         <Fragment>
             <Navbar />

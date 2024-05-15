@@ -8,7 +8,7 @@ const PublicarProductoForm = () => {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [categoriaData, setCategoriaData] = useState({ categorias: [], categoriaSeleccionada: '' });
-    //const [fotos, setFotos] = useState([]);
+    const [fotos, setFotos] = useState([]);
     const [sucursales, setSucursales] = useState([]);
     const [sucursalPreferencia, setSucursalPreferencia] = useState('');
 
@@ -45,7 +45,7 @@ const PublicarProductoForm = () => {
         }
 
 
-    axios.post(`${backendUrl}/publicarProducto`, datosFormulario)
+    axios.post(`${backendUrl}/publicar-producto`, datosFormulario)
         .then(response => {
             console.log('Producto publicado exitosamente', response.data);
         })
@@ -78,10 +78,10 @@ return (
                         ))}
                     </select>
                 </div>
-                {/* <div className="mb-3">
+                {<div className="mb-3">
                         <label htmlFor="fotos" className="form-label">Fotos</label>
                         <input type="file" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple />
-                    </div> */}
+                    </div> }
                 <div className="mb-3">
                     <label htmlFor="sucursalPreferencia" className="form-label">Sucursal de preferencia</label>
                     <select className="form-select" id="sucursalPreferencia" value={sucursalPreferencia} onChange={(e) => setSucursalPreferencia(e.target.value)} required>
