@@ -4,12 +4,11 @@ const bodyParser = require('body-parser');
 const knex = require('knex');
 const fs = require('fs');//sacar
 const cors = require('cors');
-<<<<<<< Updated upstream
-=======
+
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 
->>>>>>> Stashed changes
+
 const { Usuario, Sucursal, Producto, Categoria, Empleado } = require('./models');
 const upload = multer();
 
