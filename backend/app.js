@@ -4,8 +4,14 @@ const bodyParser = require('body-parser');
 const knex = require('knex');
 const fs = require('fs');//sacar
 const cors = require('cors');
-const { Usuario, Sucursal, Producto, Categoria, Empleado } = require('./models');
+<<<<<<< Updated upstream
+=======
+const jwt = require('jsonwebtoken');
+const multer = require('multer');
 
+>>>>>>> Stashed changes
+const { Usuario, Sucursal, Producto, Categoria, Empleado } = require('./models');
+const upload = multer();
 
 // Configuración de Bookshelf
 //Model.knex(knex);
@@ -20,6 +26,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
+<<<<<<< Updated upstream
 app.use(session({
     secret: 'secret-key',
     resave: false,
@@ -47,6 +54,9 @@ const verificarAutorizacionAdmin = (req, res, next) => {
 
 
 
+=======
+app.use(upload.any());
+>>>>>>> Stashed changes
 
 
 
@@ -191,8 +201,8 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
 });
 
 
-
 //endpoint para publicar producto
+<<<<<<< Updated upstream
 const multer = require('multer');
 const upload = multer();
 app.post('/publicar-producto', verificarAutenticacion, upload.any(), async (req, res) => {
@@ -200,6 +210,24 @@ app.post('/publicar-producto', verificarAutenticacion, upload.any(), async (req,
         const { nombre, descripcion, sucursal_elegida, categoria_id } = req.body;
         const imagen = req.files ? req.files[0] : null;
         const usuario_id = req.session.usuario.id;
+=======
+
+app.post('/publicarProducto', async (req, res) => {
+    try {
+        const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
+        //console.log(req.files[0]);
+        const imagen = req.files ? req.files[0] : null;
+        console.log(req.files);
+        console.log(imagen);
+        /*
+        nombre : nombre,
+            descripcion : descripcion,
+            sucursalPreferencia: sucursalPreferencia,
+            foto: fotos,
+            categoria: categoriaData,
+            usuario_id: userId
+        */
+>>>>>>> Stashed changes
 
         let imagenBase64 = null;
         if (imagen) {
@@ -215,7 +243,6 @@ app.post('/publicar-producto', verificarAutenticacion, upload.any(), async (req,
             imagen: imagenBase64 // Guardar foto en la base de datos como base64
         })
         await nuevoProducto.save();
-
         res.status(201).json({ mensaje: 'Producto creado exitosamente'});
     } catch (error) {
         // respuesta si hay error
@@ -225,6 +252,7 @@ app.post('/publicar-producto', verificarAutenticacion, upload.any(), async (req,
 });
 
 
+<<<<<<< Updated upstream
 
 // Endpoint para cerrar sesión
 app.post('/logout', (req, res) => {
@@ -241,6 +269,8 @@ app.post('/logout', (req, res) => {
 
 
 
+=======
+>>>>>>> Stashed changes
 //solo admin
 app.post('/agregar-sucursal', verificarAutorizacionAdmin, async (req, res) => {
     try {

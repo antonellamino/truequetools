@@ -1,0 +1,35 @@
+.card-style {
+    width: 300px; /* Tamaño fijo de la tarjeta */
+    height: 400px; /* Tamaño fijo de la tarjeta */
+    border: 1px solid #ddd; /* Borde delgado gris */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: box-shadow 0.3s ease; /* Transición suave de la sombra */
+    display: flex; /* Utiliza flexbox para alinear elementos */
+    flex-direction: column; /* Apila los elementos verticalmente */
+}
+
+.card-img-top {
+    width: 100%; /* Asegura que la imagen ocupe todo el ancho de la tarjeta */
+    height: auto; /* Permite que la altura de la imagen se ajuste automáticamente */
+    max-height: 50%; /* Altura máxima para la imagen */
+}
+
+.card-body {
+    flex-grow: 1; /* Permite que el cuerpo de la tarjeta ocupe todo el espacio disponible */
+    padding: 20px; /* Relleno interno */
+}
+
+.card-title {
+    font-size: 1.2rem; /* Tamaño del título */
+    font-weight: bold; /* Texto en negrita */
+}
+
+.card-text {
+    font-size: 1rem; /* Tamaño del texto */
+    color: #555; /* Color del texto gris oscuro */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Cambia el color de fondo en el hover */
+}

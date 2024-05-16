@@ -8,7 +8,7 @@
   font-size: 130px;
 }
 .mainContainer {
-  flex-direction: column;
+  /*flex-direction: column; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -80,6 +80,3 @@ h2{
   text-align: center;
 }
 
-.card-style{
-  padding: 50px;
-}
