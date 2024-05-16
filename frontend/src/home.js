@@ -4,7 +4,8 @@ import Navbar from './navbar';
 import CardProducto from './cardProducto';
 import PanelFiltrado from './panelFiltrado';
 import Footer from './footer';
-import _ from 'lodash';
+import _ from 'lodash'; //sacar lodash
+import "./cardProducto.css"
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -20,7 +21,7 @@ const Home = () => {
                 setUsuarios(response.data.usuarios);
             })
             .catch(error => {
-                console.error('Error al obtener la información de los usuarios:', error);
+                console.error('Error al obtener la informaciÃ³n de los usuarios:', error);
             });
     }; 
 
@@ -58,7 +59,7 @@ const Home = () => {
                         {productos.map(producto => (
                             <div key={producto.id} className="col-md-4 mb-3">
                                 <CardProducto
-                                    imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : null}
+                                    imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : './logo_2.svg'}
                                     nombreUsuario={obtenerCorreoUsuario(producto.usuario_id)}
                                     titulo={producto.nombre}
                                     descripcion={producto.descripcion}

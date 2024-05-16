@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from './navbar';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -11,6 +12,7 @@ const PublicarProductoForm = () => {
     const [fotos, setFotos] = useState([]);
     const [sucursales, setSucursales] = useState([]);
     const [sucursalPreferencia, setSucursalPreferencia] = useState('');
+    const { userId } = useAuth();
 
     useEffect(() => {
         axios.get(`${backendUrl}/sucursales`)
@@ -37,16 +39,17 @@ const PublicarProductoForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // enviar los datos del producto al backend
+       
         const datosFormulario = {
             nombre : nombre,
             descripcion : descripcion,
             sucursalPreferencia: sucursalPreferencia,
             foto: fotos,
-            categoria: categoriaData
+            categoria: categoriaData,
+            usuario_id: userId
         }
 
-
-    axios.post(`${backendUrl}/publicar-producto`, datosFormulario)
+    axios.post(`${backendUrl}/publicarProducto`, datosFormulario)
         .then(response => {
             console.log('Producto publicado exitosamente', response.data);
         })
@@ -61,7 +64,7 @@ return (
         <Navbar />
             <h2 className="mb-4" style={{ backgroundColor: '#2c3359', color: '#ffffff'}}>Publicar Producto</h2>
         <div className="container mt-5">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} enctype="multipart/form-data">
                 <div className="mb-3">
                     <label htmlFor="nombre" className="form-label">Nombre</label>
                     <input type="text" className="form-control" id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
@@ -79,10 +82,10 @@ return (
                         ))}
                     </select>
                 </div>
-                {<div className="mb-3">
+                <div className="mb-3">  
                         <label htmlFor="fotos" className="form-label">Fotos</label>
-                        <input type="file" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple />
-                    </div> }
+                        <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple />
+                </div> 
                 <div className="mb-3">
                     <label htmlFor="sucursalPreferencia" className="form-label">Sucursal de preferencia</label>
                     <select className="form-select" id="sucursalPreferencia" value={sucursalPreferencia} onChange={(e) => setSucursalPreferencia(e.target.value)} required>

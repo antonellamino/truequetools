@@ -1,8 +1,15 @@
 .card-style {
+    width:  25rem; /* Ancho fijo para todas las tarjetas */
+    height: 700px; /* Altura mínima, ajusta según necesites */
     border: 1px solid #ddd; /* Borde delgado gris */
     border-radius: 8px; /* Bordes redondeados /*/
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave /*/
     transition: box-shadow 0.3s ease; /* Transición suave de la sombra /*/
+}
+
+.card-img-top{
+    width: 10rem; /* Ancho fijo para todas las tarjetas */
+    height: 250px;
 }
 
 .card-style:hover {
@@ -11,6 +18,8 @@
 
 .card-body {
     padding: 20px; /* Relleno interno */
+    height: calc(100% - 250px); /* Altura de la carta menos la altura de la imagen */
+    overflow: hidden; /* Oculta el desbordamiento */
 }
 
 .card-title {
@@ -19,8 +28,14 @@
 }
 
 .card-text {
-    font-size: 1rem; /* Tamaño del texto /*/
-    color: #555; /* Color del texto gris oscuro /*/
+    font-size: 1rem; /* Tamaño del texto */
+    color: #555; /* Color del texto gris oscuro */
+    height: 8rem; /* Altura máxima del texto */
+    overflow: hidden; /* Oculta el texto que sobresale */
+    text-overflow: ellipsis; /* Agrega puntos suspensivos al final del texto que se corta */
+    display: -webkit-box; /* Mostrar como caja flexible */
+    -webkit-box-orient: vertical; /* Orientación vertical de la caja flexible */
+    -webkit-line-clamp: 5; /* Limita el número de líneas de texto a mostrar */
 }
 
 .btn-primary:hover {

@@ -176,15 +176,18 @@ const multer = require('multer');
 const upload = multer();
 app.post('/publicar-producto', upload.any(), async (req, res) => {
     try {
-        const { nombre, descripcion, sucursal_elegida, categoria_id } = req.body;
+        const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
+        //console.log(req.files[0]);
         const imagen = req.files ? req.files[0] : null;
-
+        console.log(req.body.foto);
+        console.log(imagen);
         /*
         nombre : nombre,
             descripcion : descripcion,
             sucursalPreferencia: sucursalPreferencia,
             foto: fotos,
-            categoria: categoriaData
+            categoria: categoriaData,
+            usuario_id: userId
         */
 
         let imagenBase64 = null;
@@ -209,8 +212,6 @@ app.post('/publicar-producto', upload.any(), async (req, res) => {
         res.status(500).json({ error: 'no se pudo registrar el producto' });
     }
 });
-
-
 
 // Endpoint para cerrar sesión
 // app.post('/logout', (req, res) => {
