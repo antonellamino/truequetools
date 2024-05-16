@@ -22,7 +22,7 @@ const ClienteDashboard = () => {
                 console.error('Error al obtener productos del usuario:', error);
             });
         }
-    }, [isAuthenticated, usuarioId]);
+    }, [isAuthenticated, userId]);
 
     return(
         <Fragment>

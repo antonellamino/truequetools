@@ -126,8 +126,12 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
             correo: usuario.get('correo'),
             rol_id: usuario.get('rol_id')
         }, 'secreto', { expiresIn: '1h' });
-        res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token });
 
+        const userId = usuario.get('id');
+        //tambien tengo que enviarle el id para que vea los productos que publico
+        res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token, userId });
+
+        
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -136,7 +140,7 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
 
 
 
-//iniciar sesion empleado
+// iniciar sesion empleado
 //borrar logs
 //empty response cuando dni incorrecto
 app.post('/iniciar-sesion-empleado', async (req, res) => {
@@ -174,6 +178,14 @@ app.post('/publicar-producto', upload.any(), async (req, res) => {
     try {
         const { nombre, descripcion, sucursal_elegida, categoria_id } = req.body;
         const imagen = req.files ? req.files[0] : null;
+
+        /*
+        nombre : nombre,
+            descripcion : descripcion,
+            sucursalPreferencia: sucursalPreferencia,
+            foto: fotos,
+            categoria: categoriaData
+        */
 
         let imagenBase64 = null;
         if (imagen) {

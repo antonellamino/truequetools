@@ -55,8 +55,12 @@ const LoginCliente = () => {
                 console.log(response.status);
                 if (response.status === 200) {
                     const token = response.data.token;
+                    const userId = response.data.userId;
                     //localStorage.setItem('token', token);
-                    login(token)
+
+                    //el login tambien tiene que recibir el id
+
+                    login(token,userId)
                     //que me lleve al inicio no al productos publicados
                     navigate('/home');
                 }
