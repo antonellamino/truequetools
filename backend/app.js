@@ -185,7 +185,7 @@ app.post('/publicar-producto', upload.any(), async (req, res) => {
             descripcion,
             sucursal_elegida,
             categoria_id,
-            usuario_id,
+            usuario_id : 17,
             imagen: imagenBase64 // Guardar foto en la base de datos como base64
         })
         await nuevoProducto.save();

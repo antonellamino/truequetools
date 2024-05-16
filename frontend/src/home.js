@@ -4,7 +4,7 @@ import Navbar from './navbar';
 import CardProducto from './cardProducto';
 import PanelFiltrado from './panelFiltrado';
 import Footer from './footer';
-import _ from 'lodash';
+import _ from 'lodash'; //sacar lodash
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
