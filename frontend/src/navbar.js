@@ -13,6 +13,10 @@ const Navbar = () => {
         navigate('/logout'); // Redirige a la página de logout
     }
 
+    const handleClienteDashboardClick = () => {
+    navigate('/ClienteDashboard');
+    };
+
     return (
         <Fragment>
             <Header />
@@ -24,28 +28,38 @@ const Navbar = () => {
                     </button>
                     <div className="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
                         <ul className="navbar-nav">
+                            {! isAuthenticated && (
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/registro" activeClassName="active">Registrate</NavLink>
                             </li>
+                            )}
                             {isAuthenticated && (
                             <li className="nav-item">
                                 <NavLink className="nav-link" to="/publicarProducto" activeClassName="active">Publicar Producto</NavLink>
                             </li>
                             )}
+                            {isAuthenticated && (
+                                <li>
+                                <button className="nav-link btn" onClick={handleClienteDashboardClick}>Ver mis productos</button>
+                                </li>
+                            )}
                             {isAuthenticated ? (
                                 <li className="nav-item">
                                 <button className="nav-link btn" onClick={handleCerrarSesion}>Cerrar Sesión</button>
-                                 </li>
+                                </li>
                             ) : ( 
                                 <li className="nav-item">
                                 <NavLink className="nav-link" to="/iniciarSesion" activeClassName="active">Iniciar sesion</NavLink>
                                 </li>
                             )}
                         </ul>
-                        <form className="d-flex">
+                        
+                        {/* <form className="d-flex">
                             <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" />
                             <button className="btn btn-outline-light" type="submit">Buscar</button>
                         </form>
+                        */}
+
                     </div>
                 </div>
             </nav>

@@ -41,6 +41,7 @@ const PublicarProductoForm = () => {
             nombre : nombre,
             descripcion : descripcion,
             sucursalPreferencia: sucursalPreferencia,
+            foto: fotos,
             categoria: categoriaData
         }
 

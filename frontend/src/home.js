@@ -49,7 +49,7 @@ const Home = () => {
     return (
         <Fragment>
             <Navbar />
-            <PanelFiltrado />
+            {/* <PanelFiltrado /> */} 
             <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff'}}>
                 Productos disponibles
             </h2>
@@ -67,7 +67,7 @@ const Home = () => {
                         ))}
                     </div>  
             </div>
-            <Footer />
+            <Footer /> 
         </Fragment>
     );
 };

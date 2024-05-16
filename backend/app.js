@@ -280,9 +280,25 @@ app.get('/productos', async(req, res) => {
 })
 
 
+//ver productos de un usuario especifico
+app.get('/productos-usuario', async (req, res) => {
+    try {
+        const { usuarioId } = req.query;
+        
+        //verifica si usuarioID esta presente, si no la solicitud deberia fallar porque es un parametro requerido
+        if (!usuarioId) {
+            return res.status(400).json({ error: 'usuarioId es requerido' });
+        }
 
+        const productos = await Producto.where({ usuario_id: usuarioId }).fetchAll();
 
+        res.json({ productos });
 
+    } catch (error) {
+        console.error('error al obtener los productos:', error);
+        res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
+    }
+});
 
 
 

@@ -29,6 +29,7 @@ function App() {
           <Route path="/cardProducto" element={<CardProducto />} />
           <Route path="/iniciarSesionEmpleado" element={<LoginEmpleado />} />
           <Route path="/adminDashboard" element={<AdminDashboard />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
         </AuthProvider>
       </BrowserRouter>

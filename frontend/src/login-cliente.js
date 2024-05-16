@@ -57,7 +57,8 @@ const LoginCliente = () => {
                     const token = response.data.token;
                     //localStorage.setItem('token', token);
                     login(token)
-                    navigate('/clienteDashboard');
+                    //que me lleve al inicio no al productos publicados
+                    navigate('/home');
                 }
             } catch (error) {
                 console.error('entra x el catch:', error.message);

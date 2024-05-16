@@ -1,43 +1,48 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from './navbar';
+import axios from 'axios';
+import CardProducto from './cardProducto';
+import { useAuth  } from './AuthContext';
+
+const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const ClienteDashboard = () => {
-    return(
-        <Fragment>
-            <Navbar />
-        </Fragment>
-    )
-}
-
-export default ClienteDashboard;
-//EL DASHBORAD DEL CLIENTE ES EL MISMO QUE EL NAVBAR
-
-/* import React, { Fragment, useEffect } from 'react';
-import Navbar from './navbar';
-import { useNavigate } from 'react-router-dom';
-
-const ClienteDashboard = () => {
-    const navigate = useNavigate();
-
-    const handleCerrarSesion = () => {
-        navigate('/logout');
-    }
+    const { isAuthenticated, userId } = useAuth ();
+    const [productos, setProductos] = useState([]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert("Tenes que tener una sesion iniciada");
-            navigate('/iniciarSesion');
+        if (isAuthenticated && userId) {
+            axios.get(`${backendUrl}/productos-usuario`, {
+                params: { usuarioId: userId }
+            })
+            .then(response => {
+                setProductos(response.data.productos);
+            })
+            .catch(error => {
+                console.error('Error al obtener productos del usuario:', error);
+            });
         }
-    }, [navigate]);
+    }, [isAuthenticated, usuarioId]);
 
     return(
         <Fragment>
             <Navbar />
-            <button type="button" className="btn btn-info" onClick={handleCerrarSesion}>Cerrar sesion</button>
+            <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff'}}>
+                Mis productos
+            </h2>
+            <div className="productos-grid">
+                {productos.map(producto => (
+                    <CardProducto
+                        key={producto.id}
+                        imagenSrc={producto.imagen ? `data:image/png;base64,${producto.imagen}` : null}
+                        nombreUsuario={producto.usuario_id}
+                        titulo={producto.nombre}
+                        descripcion={producto.descripcion}
+                    />
+                ))}
+            </div>
         </Fragment>
     )
 }
 
 export default ClienteDashboard;
-*/

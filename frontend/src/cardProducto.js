@@ -1,8 +1,9 @@
 import React from 'react';
+import "./cardProducto.css";
 
 const cardProducto = ({ imagenSrc, nombreUsuario, titulo, descripcion }) => {
     return (
-        <div className="card card-style" style={{ width: '18rem' }}>
+        <div className="card card-style" /*style={{ width: '18rem' }}*/ >
             {imagenSrc && <img src={imagenSrc} className="card-img-top" alt="Imagen del producto" />}
             <div className="card-body">
                 <h5 className="card-title">{titulo}</h5>
