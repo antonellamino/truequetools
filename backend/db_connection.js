@@ -3,12 +3,11 @@ const knex = require('knex')({
     connection: {
         host: 'localhost',
         user: 'root',
-        password: 'pass123',
+        password: '43552003',
         database: 'truequetools',
         charset: 'utf8'
     }
 })
-
 
 knex.raw('SELECT 1+1 as result')
     .then((response) => {

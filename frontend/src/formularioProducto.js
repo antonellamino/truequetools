@@ -42,8 +42,8 @@ const PublicarProductoForm = () => {
             nombre : nombre,
             descripcion : descripcion,
             sucursalPreferencia: sucursalPreferencia,
-            categoria: categoriaData,
-            imagen: fotos.length > 0 ? fotos : [imgPorDefecto]
+            foto: fotos,
+            categoria: categoriaData
         }
 
 
@@ -80,10 +80,10 @@ return (
                         ))}
                     </select>
                 </div>
-                <div className="mb-3">
+                {<div className="mb-3">
                         <label htmlFor="fotos" className="form-label">Fotos</label>
                         <input type="file" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple />
-                    </div>
+                    </div> }
                 <div className="mb-3">
                     <label htmlFor="sucursalPreferencia" className="form-label">Sucursal de preferencia</label>
                     <select className="form-select" id="sucursalPreferencia" value={sucursalPreferencia} onChange={(e) => setSucursalPreferencia(e.target.value)} required>

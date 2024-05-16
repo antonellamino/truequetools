@@ -1,0 +1,28 @@
+.card-style {
+    border: 1px solid #ddd; /* Borde delgado gris */
+    border-radius: 8px; /* Bordes redondeados /*/
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave /*/
+    transition: box-shadow 0.3s ease; /* Transición suave de la sombra /*/
+}
+
+.card-style:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Aumenta la sombra en el hover /*/
+}
+
+.card-body {
+    padding: 20px; /* Relleno interno */
+}
+
+.card-title {
+    font-size: 1.2rem; /* Tamaño del título /*/
+    font-weight: bold; /* Texto en negrita /*/
+}
+
+.card-text {
+    font-size: 1rem; /* Tamaño del texto /*/
+    color: #555; /* Color del texto gris oscuro /*/
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Cambia el color de fondo en el hover */
+}

@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useContext} from 'react';
 import axios from 'axios';
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
-
+import { AuthContext } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -25,6 +25,7 @@ const LoginCliente = () => {
         setEmailError('');
         return true;
     };
+    
 
     const validatePassword = () => {
         if (!password) {
@@ -40,6 +41,8 @@ const LoginCliente = () => {
     };
 
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext); // Obtiene la función de login del contexto de autenticación
+
 
     const onButtonClick = async () => {
         const isEmailValid = validateEmail();
@@ -52,8 +55,10 @@ const LoginCliente = () => {
                 console.log(response.status);
                 if (response.status === 200) {
                     const token = response.data.token;
-                    localStorage.setItem('token', token);
-                    navigate('/clienteDashboard');
+                    //localStorage.setItem('token', token);
+                    login(token)
+                    //que me lleve al inicio no al productos publicados
+                    navigate('/home');
                 }
             } catch (error) {
                 console.error('entra x el catch:', error.message);

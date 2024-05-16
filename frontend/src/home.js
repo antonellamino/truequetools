@@ -49,7 +49,7 @@ const Home = () => {
     return (
         <Fragment>
             <Navbar />
-            <PanelFiltrado />
+            {/* <PanelFiltrado /> */} 
             <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff'}}>
                 Productos disponibles
             </h2>
@@ -58,7 +58,7 @@ const Home = () => {
                         {productos.map(producto => (
                             <div key={producto.id} className="col-md-4 mb-3">
                                 <CardProducto
-                                    imagenSrc={`data:image/jpeg;base64,${producto.imagen}`}
+                                    imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : null}
                                     nombreUsuario={obtenerCorreoUsuario(producto.usuario_id)}
                                     titulo={producto.nombre}
                                     descripcion={producto.descripcion}
@@ -67,7 +67,7 @@ const Home = () => {
                         ))}
                     </div>  
             </div>
-            <Footer />
+            <Footer /> 
         </Fragment>
     );
 };
