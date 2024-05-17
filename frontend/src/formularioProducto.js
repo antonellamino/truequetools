@@ -44,18 +44,11 @@ const PublicarProductoForm = () => {
             nombre : nombre,
             descripcion : descripcion,
             sucursalPreferencia: sucursalPreferencia,
-<<<<<<< Updated upstream
-            categoria: categoriaData
-        }
-
-
-=======
             foto: fotos,
             categoria: categoriaData,
             usuario_id: userId
         }
 
->>>>>>> Stashed changes
     axios.post(`${backendUrl}/publicarProducto`, datosFormulario)
         .then(response => {
             console.log('Producto publicado exitosamente', response.data);
@@ -89,17 +82,14 @@ return (
                         ))}
                     </select>
                 </div>
-<<<<<<< Updated upstream
                 {/* <div className="mb-3">
                         <label htmlFor="fotos" className="form-label">Fotos</label>
                         <input type="file" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple />
                     </div> */}
-=======
                 <div className="mb-3">  
                         <label htmlFor="fotos" className="form-label">Fotos</label>
                         <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple />
                 </div> 
->>>>>>> Stashed changes
                 <div className="mb-3">
                     <label htmlFor="sucursalPreferencia" className="form-label">Sucursal de preferencia</label>
                     <select className="form-select" id="sucursalPreferencia" value={sucursalPreferencia} onChange={(e) => setSucursalPreferencia(e.target.value)} required>
