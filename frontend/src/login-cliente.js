@@ -3,6 +3,7 @@ import axios from 'axios';
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+import Footer from './footer';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -112,6 +113,8 @@ const LoginCliente = () => {
                     <input className="inputButton" type="button" onClick={onButtonClick} value="ingresar" />
                 </div>
             </div>
+            <div style={{ marginBottom: '100px' }}></div> {/*espacio antes del footer*/}
+            <Footer />
         </Fragment>
     );
 };

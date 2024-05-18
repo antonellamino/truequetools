@@ -151,7 +151,7 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
 //endpoint para publicar producto
 const multer = require('multer');
 const upload = multer();
-app.post('/publicar-producto', upload.any(), async (req, res) => {
+app.post('/publicarProducto', upload.any(), async (req, res) => {
     try {
         const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
         //console.log(req.files[0]);
