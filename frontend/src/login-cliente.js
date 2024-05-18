@@ -49,7 +49,8 @@ const LoginCliente = () => {
         const isPasswordValid = validatePassword();
         console.log(isEmailValid, isPasswordValid);
 
-        if (isEmailValid && isPasswordValid) {
+        if (isEmailValid || isPasswordValid) {
+
             try {
                 const response = await axios.post(`${backendUrl}/iniciar-sesion-cliente`, { correo: email, contrasena: password });
                 console.log(response.status);
@@ -74,7 +75,7 @@ const LoginCliente = () => {
                     setMensajeError(error.response.data.error);
                 }
             }
-        };
+        }
     }
     return (
         <Fragment>

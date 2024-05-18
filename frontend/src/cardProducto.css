@@ -4,12 +4,12 @@
     border: 1px solid #ddd; /* Borde delgado gris */
     border-radius: 8px; /* Bordes redondeados /*/
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave /*/
-    transition: box-shadow 0.3s ease; /* Transición suave de la sombra /*/
+    transition: box-shadow 0.3s ease;  /* Transición suave de la sombra /*/
 }
 
 .card-img-top{
     width: 10rem; /* Ancho fijo para todas las tarjetas */
-    height: 250px;
+    height: 250px; 
 }
 
 .card-style:hover {

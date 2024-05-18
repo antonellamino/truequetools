@@ -33,10 +33,10 @@ app.post('/registro-cliente', async (req, res) => {
 
         //verificar si ya existe un usuario con el mismo correo
         let usuarioExistente;
-
+ 
         try {
             console.log(correo);
-            usuarioExistente = await Usuario.where({ correo }).fetch(require=false);
+            usuarioExistente = await Usuario.where({ correo }).fetch({ require:false });
             console.log(usuarioExistente);
         } catch (error) {
             console.error('Error al buscar usuario existente:', error);
@@ -103,24 +103,32 @@ app.post('/registrar-empleado', async (req, res) => {
 //no anda cuando el email es invalido pero la contrasena correcta
 app.post('/iniciar-sesion-cliente', async (req, res) => {
 
-    const login = { correo, contrasena } = req.body;
+    const { correo, contrasena } = req.body;
 
     try {
-        console.log(correo, contrasena); //ok
-        const usuario = await Usuario.where({ correo }).fetch(require=false);
-        console.log(usuario);
+        let usuario;
+        try {
+            usuario = await Usuario.where({ correo }).fetch({ require: false });
+        } catch (fetchError) {
+            console.error("Error al buscar el usuario:", fetchError);
+        }
 
         if (!usuario) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        // si existe verificar contrasena
-        const contrasenaValida = await usuario.validarContrasena(contrasena);
-        if (!contrasenaValida) {
-            return res.status(401).json({ error: 'Credenciales invalidas' });
+        let contrasenaValida;
+        try {
+            contrasenaValida = await usuario.validarContrasena(contrasena);
+        } catch (passwordError) {
+            return res.status(500).send('Error Interno del Servidor');
         }
-        console.log(contrasenaValida);
 
+        if (!contrasenaValida) {
+            return res.status(401).json({ error: 'Contraseña invalida' });
+        }
+
+        // Generar token JWT
         const token = jwt.sign({
             id: usuario.get('id'),
             correo: usuario.get('correo'),
@@ -128,44 +136,13 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
         }, 'secreto', { expiresIn: '1h' });
 
         const userId = usuario.get('id');
-        //tambien tengo que enviarle el id para que vea los productos que publico
-        res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token, userId });
+        console.log("Token generado:", token);
 
-        
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-
-
-// iniciar sesion empleado
-//borrar logs
-//empty response cuando dni incorrecto
-app.post('/iniciar-sesion-empleado', async (req, res) => {
-
-    const login = { dni, contrasena } = req.body;
-
-    try {
-        const usuario = await Empleado.where({ dni }).fetch();
-        console.log(usuario);
-
-        if (!usuario) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
-
-        const contrasenaValida = await usuario.validarContrasena(contrasena);
-        if (!contrasenaValida) {
-            return res.status(401).json({ error: 'Credenciales inválidas' });
-        }
-
-
-        res.status(200).json({ mensaje: 'inicio de sesion exitoso', usuario: { rol_id: usuario.get('rol_id') } }); //devuelvo el usuario y que el frontend maneje la redireccion
+        // Responder con éxito
+        return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token, userId });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+        return res.status(500).send('Error Interno del Servidor');
     }
 });
 
