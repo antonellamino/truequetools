@@ -150,27 +150,29 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
 
 //endpoint para publicar producto
 const multer = require('multer');
-const upload = multer();
-app.post('/publicarProducto', upload.any(), async (req, res) => {
+const upload = multer({ storage: multer.memoryStorage() });
+app.post('/publicarProducto', upload.array('foto',2), async (req, res) => {
     try {
         const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
         //console.log(req.files[0]);
-        const imagen = req.files ? req.files[0] : null;
-        console.log(req.body.foto);
-        console.log(imagen);
+        const imagen = req.files
         /*
-        nombre : nombre,
-            descripcion : descripcion,
-            sucursalPreferencia: sucursalPreferencia,
-            foto: fotos,
-            categoria: categoriaData,
-            usuario_id: userId
+        const imagen = req.files [0];
+        const imagen2 = req.files[1];
         */
 
-        let imagenBase64 = null;
-        if (imagen) {
+        //console.log(req.body.foto);
+        //console.log(imagen);
+        
+        
+        let imagenesBase64 = imagen.map( img => img.buffer.toString('base64'));
+
+        /* if (imagen) {
             imagenBase64 = imagen.buffer.toString('base64');
+            
+            console.log(imagenBase64);
         }
+        */
 
         const nuevoProducto = await Producto.forge({
             nombre,
@@ -178,8 +180,9 @@ app.post('/publicarProducto', upload.any(), async (req, res) => {
             sucursal_elegida,
             categoria_id,
             usuario_id,
-            imagen: imagenBase64 // Guardar foto en la base de datos como base64
+            imagen: imagenesBase64 // Guardar fotos en la base de datos como base64
         })
+
         await nuevoProducto.save();
 
         res.status(201).json({ mensaje: 'Producto creado exitosamente'});

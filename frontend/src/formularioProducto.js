@@ -40,7 +40,8 @@ const PublicarProductoForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // enviar los datos del producto al backend
-       
+        
+        /*
         const datosFormulario = {
             nombre : nombre,
             descripcion : descripcion,
@@ -49,16 +50,45 @@ const PublicarProductoForm = () => {
             categoria: categoriaData,
             usuario_id: userId
         }
+        */
 
-    axios.post(`${backendUrl}/publicarProducto`, datosFormulario)
+        let formData = new FormData();
+        formData.append('nombre', nombre);
+        formData.append('descripcion', descripcion);
+        formData.append('sucursal_preferencia', sucursalPreferencia);
+        formData.append('categoria', categoriaData.categoriaSeleccionada);
+        formData.append('usuario_id', userId);
+        
+        // Agregar archivos de fotos
+        //si es solo una quedara en fotos[0]
+        for (let i = 0; i < fotos.length; i++) {
+            formData.append('foto', fotos[i]);
+        }
+
+        //en lugar de enviar la constante, le envio el formulario
+        axios.post(`${backendUrl}/publicarProducto`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
         .then(response => {
             console.log('Producto publicado exitosamente', response.data);
+            //ACA LIMPIARIA LOS CAMPOS SI QUIERO PARA QUE NO QUEDEN DESPUES
+
+            /*
             <div style={{ textAlign: 'center', width: '100%', marginTop: '20px' }}>
              <h3>Producto publicado</h3>
             </div>
+            */
         })
         .catch(error => {
             console.error('Error al registrar los datos:', error);
+            
+            /*
+            <div style={{ textAlign: 'center', width: '100%', marginTop: '20px' }}>
+             <h3>Producto NO publicado</h3>
+            </div>
+            */
             // seteo de mje de error
         });
     }
