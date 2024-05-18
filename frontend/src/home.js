@@ -20,6 +20,14 @@ const Home = () => {
     }, []);
 
 
+<<<<<<< Updated upstream
+=======
+    const obtenerCorreoUsuario = (usuarioId) => {
+        const usuarioEncontrado = Object.values(usuarios).find(usuario => usuario.id === usuarioId);
+        return usuarioEncontrado ? usuarioEncontrado.correo : '';
+    };
+    
+>>>>>>> Stashed changes
     return (
         <Fragment>
             <Navbar />

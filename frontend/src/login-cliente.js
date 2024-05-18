@@ -57,7 +57,20 @@ const LoginCliente = () => {
                     setMensajeError(response.data.error);
                 }
             } catch (error) {
+<<<<<<< Updated upstream
                 console.error('Error al iniciar sesión:', error.message);
+=======
+                console.error('entra x el catch:', error.message);
+                if (error.response.status === 404) {
+                    console.error('Error:', error.response.data);
+                    setMensajeError(error.response.data.error);
+                } else {
+                        if (error.response.status === 401){
+                        console.error('Error:', error.response.data);
+                        setMensajeError(error.response.data.error);
+                    }
+                }
+>>>>>>> Stashed changes
             }
         }
     };

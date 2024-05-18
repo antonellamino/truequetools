@@ -124,23 +124,28 @@ app.post('/registrar-empleado', verificarAutorizacionAdmin, async (req, res) => 
     }
 });
 
-
-
-// endpoint para iniciar sesion cliente
-// borrar los logs
-//no anda cuando el email es invalido pero la contrasena correcta
 app.post('/iniciar-sesion-cliente', async (req, res) => {
 
-    const login = { correo, contrasena } = req.body;
+    const { correo, contrasena } = req.body;
 
     try {
+<<<<<<< Updated upstream
         const usuario = await Usuario.where({ correo }).fetch();
         console.log(usuario);
+=======
+        let usuario;
+        try {
+            usuario = await Usuario.where({ correo }).fetch({ require: false });
+        } catch (fetchError) {
+            console.error("Error al buscar el usuario:", fetchError);
+        }
+>>>>>>> Stashed changes
 
         if (!usuario) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
+<<<<<<< Updated upstream
         // Si el usuario existe, verificar la contraseña
         const contrasenaValida = await usuario.validarContrasena(contrasena);
         if (!contrasenaValida) {
@@ -155,15 +160,44 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
 
         res.status(200).json({ mensaje: 'inicio de sesion exitoso', usuario: { rol_id: usuario.get('rol_id') } }); //devuelvo el usuario y que el frontend maneje la redireccion
 
+=======
+        let contrasenaValida;
+        try {
+            contrasenaValida = await usuario.validarContrasena(contrasena);
+        } catch (passwordError) {
+            return res.status(500).send('Error Interno del Servidor');
+        }
+
+        if (!contrasenaValida) {
+            return res.status(401).json({ error: 'Contraseña invalida' });
+        }
+
+        // Generar token JWT
+        const token = jwt.sign({
+            id: usuario.get('id'),
+            correo: usuario.get('correo'),
+            rol_id: usuario.get('rol_id')
+        }, 'secreto', { expiresIn: '1h' });
+
+        const userId = usuario.get('id');
+        console.log("Token generado:", token);
+
+        // Responder con éxito
+        return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token, userId });
+
+>>>>>>> Stashed changes
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+        return res.status(500).send('Error Interno del Servidor');
     }
 });
 
 
+<<<<<<< Updated upstream
 
 //iniciar sesion empleado
+=======
+// iniciar sesion empleado
+>>>>>>> Stashed changes
 //borrar logs
 //empty response cuando dni incorrecto
 app.post('/iniciar-sesion-empleado', async (req, res) => {
@@ -187,27 +221,42 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
         req.session.usuario = { id: usuario.get('id'), correo: usuario.get('dni'), rol_id: usuario.get('rol_id') };
         console.log(req.session.usuario.correo);
 
-        res.status(200).json({ mensaje: 'inicio de sesion exitoso', usuario: { rol_id: usuario.get('rol_id') } }); //devuelvo el usuario y que el frontend maneje la redireccion
+        return res.status(200).json({ mensaje: 'inicio de sesion exitoso', usuario: { rol_id: usuario.get('rol_id') } }); //devuelvo el usuario y que el frontend maneje la redireccion
 
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        return res.status(500).send('Internal Server Error');
     }
 });
 
 
 //endpoint para publicar producto
+<<<<<<< Updated upstream
 
 app.post('/publicar-producto', verificarAutenticacion, upload.any(), async (req, res) => {
     try {
         const { nombre, descripcion, sucursal_elegida, categoria_id } = req.body;
         const imagen = req.files ? req.files[0] : null;
         const usuario_id = req.session.usuario.id;
+=======
+const multer = require('multer');
+const upload = multer();
+app.post('/publicarProducto', upload.array('foto', 1), async (req, res) => {
+    try {
+        //console.log(req.files[0]);
+        const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
+        const imagen = req.files ? req.files[0] : null;
+        console.log(req.body.foto);
+        console.log(imagen);
+>>>>>>> Stashed changes
 
+        
         let imagenBase64 = null;
         if (imagen) {
             imagenBase64 = imagen.buffer.toString('base64');
         }
+        
+
 
         const nuevoProducto = await Producto.forge({
             nombre,
@@ -218,11 +267,16 @@ app.post('/publicar-producto', verificarAutenticacion, upload.any(), async (req,
             imagen: imagenBase64 // Guardar foto en la base de datos como base64
         })
         await nuevoProducto.save();
+<<<<<<< Updated upstream
         res.status(201).json({ mensaje: 'Producto creado exitosamente'});
+=======
+        
+        return res.status(201).json({ mensaje: 'Producto creado exitosamente'});
+>>>>>>> Stashed changes
     } catch (error) {
         // respuesta si hay error
         console.error('error al registrar el producto:', error);
-        res.status(500).json({ error: 'no se pudo registrar el producto' });
+        return res.status(500).json({ error: 'no se pudo registrar el producto' });
     }
 });
 
