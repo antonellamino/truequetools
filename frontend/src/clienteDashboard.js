@@ -1,41 +1,57 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from './navbar';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import CardProducto from './cardProducto';
+import { useAuth  } from './AuthContext';
+import Footer from './footer';
+
+const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const ClienteDashboard = () => {
-    const navigate = useNavigate();
+    const { isAuthenticated, userId } = useAuth ();
+    const [productos, setProductos] = useState([]);
 
-    const handleCerrarSesion = () => {
-        navigate('/logout');
-    }
+    useEffect(() => {
+        if (isAuthenticated && userId) {
+            axios.get(`${backendUrl}/productos-usuario`, {
+                params: { usuarioId: userId }
+            })
+            .then(response => {
+                setProductos(response.data.productos);
+            })
+            .catch(error => {
+                console.error('Error al obtener productos del usuario:', error);
+            });
+        }
+    }, [isAuthenticated, userId]);
 
-
-    return (
+    return(
         <Fragment>
             <Navbar />
-<<<<<<< Updated upstream
-            <button type="button" className="btn btn-info" onClick={handleCerrarSesion}>Cerrar sesion</button>
-=======
-            <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff' }}>
+            <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff'}}>
                 Mis productos
             </h2>
-            <div className="home-principal">
-                {productos.map(producto => (
-                    <div key={producto.id} className="col-md-4 mb-3 d-flex justify-content-center">
+            <div className="productos-grid">
+                {productos.length > 0 ? (
+                    productos.map(producto => (
                         <CardProducto
-                            imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : './logo_2.svg'}
+                            key={producto.id}
+                            imagenSrc={producto.imagen ? `data:image/png;base64,${producto.imagen}` : null}
                             nombreUsuario={producto.usuario_id}
                             titulo={producto.nombre}
                             descripcion={producto.descripcion}
                         />
+                    ))
+                ) : (
+                    <div style={{ textAlign: 'center', width: '100%', marginTop: '20px' }}>
+                        <h3>No hay productos publicados.</h3>
                     </div>
-                ))}
+                )}
             </div>
-            <div style={{ marginBottom: '500px' }}></div> {/* espacio antes del footer */}
             
->>>>>>> Stashed changes
+            <div style={{ marginBottom: '500px' }}> </div>
+            <Footer/>
         </Fragment>
     )
 }
-
 export default ClienteDashboard;

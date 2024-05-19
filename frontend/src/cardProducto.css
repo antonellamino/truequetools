@@ -1,86 +1,43 @@
 .card-style {
-<<<<<<< Updated upstream
-    width: 300px; /* Tamaño fijo de la tarjeta */
-    height: 400px; /* Tamaño fijo de la tarjeta */
+    width:  25rem; /* Ancho fijo para todas las tarjetas */
+    height: 700px; /* Altura mínima, ajusta según necesites */
     border: 1px solid #ddd; /* Borde delgado gris */
-    border-radius: 8px; /* Bordes redondeados */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    transition: box-shadow 0.3s ease; /* Transición suave de la sombra */
-    display: flex; /* Utiliza flexbox para alinear elementos */
-    flex-direction: column; /* Apila los elementos verticalmente */
+    border-radius: 8px; /* Bordes redondeados /*/
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave /*/
+    transition: box-shadow 0.3s ease;  /* Transición suave de la sombra /*/
 }
 
-.card-img-top {
-    width: 100%; /* Asegura que la imagen ocupe todo el ancho de la tarjeta */
-    height: auto; /* Permite que la altura de la imagen se ajuste automáticamente */
-    max-height: 50%; /* Altura máxima para la imagen */
-}
-
-.card-body {
-    flex-grow: 1; /* Permite que el cuerpo de la tarjeta ocupe todo el espacio disponible */
-    padding: 20px; /* Relleno interno */
-}
-
-.card-title {
-    font-size: 1.2rem; /* Tamaño del título */
-    font-weight: bold; /* Texto en negrita */
-}
-
-.card-text {
-    font-size: 1rem; /* Tamaño del texto */
-    color: #555; /* Color del texto gris oscuro */
-=======
-    width: 25rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-    display: flex; /* Usar flexbox */
-}
-
-.card-img-top {
-    width: 10rem;
-    height: 250px;
-
-}
-
-.card-img-top{
-    width: 10rem; /* Ancho fijo para todas las tarjetas */
-    height: 250px;
-}
 .card-img-top{
     width: 10rem; /* Ancho fijo para todas las tarjetas */
     height: 250px; 
 }
 
 .card-style:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Aumenta la sombra en el hover /*/
 }
 
 .card-body {
-    padding: 20px;
-    display: flex; /* Usar flexbox */
-    flex-direction: column; /* Dirección de los elementos flexibles */
-    justify-content: space-between; /* Distribuir el espacio verticalmente */
+    padding: 20px; /* Relleno interno */
+    height: calc(100% - 250px); /* Altura de la carta menos la altura de la imagen */
+    overflow: hidden; /* Oculta el desbordamiento */
 }
 
 .card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem; /* Reducir el margen inferior */
+    font-size: 1.2rem; /* Tamaño del título /*/
+    font-weight: bold; /* Texto en negrita /*/
 }
 
 .card-text {
-    font-size: 1rem;
-    color: #555;
-    max-height: 8rem; /* Altura máxima para la descripción */
-    overflow: hidden; /* Oculta el contenido desbordado */
-    text-overflow: ellipsis; /* Agrega puntos suspensivos al final del texto desbordado */
-    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
-
->>>>>>> Stashed changes
+    font-size: 1rem; /* Tamaño del texto */
+    color: #555; /* Color del texto gris oscuro */
+    height: 8rem; /* Altura máxima del texto */
+    overflow: hidden; /* Oculta el texto que sobresale */
+    text-overflow: ellipsis; /* Agrega puntos suspensivos al final del texto que se corta */
+    display: -webkit-box; /* Mostrar como caja flexible */
+    -webkit-box-orient: vertical; /* Orientación vertical de la caja flexible */
+    -webkit-line-clamp: 5; /* Limita el número de líneas de texto a mostrar */
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Cambia el color de fondo en el hover */
 }

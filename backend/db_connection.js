@@ -3,11 +3,20 @@ const knex = require('knex')({
     connection: {
         host: 'localhost',
         user: 'root',
-        password: 'basedatos1234',
+        password: '43552003',
         database: 'truequetools',
         charset: 'utf8'
     }
 })
+
+knex.raw('SELECT 1+1 as result')
+    .then((response) => {
+        console.log('Conexión exitosa:', response[0][0].result === 2 ? 'Sí' : 'No');
+    })
+    .catch((error) => {
+        console.error('Error al conectar:', error);
+    });
+
 const bookshelf = require('bookshelf')(knex)
 
 
