@@ -3,6 +3,8 @@ import Navbar from './navbar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Footer from './footer';
+import './formulario.css';  // Make sure to import the CSS file here
+
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -49,7 +51,7 @@ const Formulario = () => {
             return false;
         }
         if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(correo)) {
-            setCorreoError('Por favor, ingresa un correo válido');
+            setCorreoError('Por favor ingrese un correo válido');
             return false;
         }
         setCorreoError('');
@@ -83,13 +85,15 @@ const Formulario = () => {
     
     const validateContrasena = () => {
         if (!contrasena.trim()) {
-            setContraseniaError('Por favor ingresa una contraseña');
+            setContraseniaError('Por favor ingrese una contraseña');
             return false;
         }
+        /*
         if (contrasena.length < 6 || contrasena.length > 6) {
             setContraseniaError('La contraseña debe tener 6 caracteres');
             return false;
         }
+        */
         setContraseniaError('');
         return true;
     }

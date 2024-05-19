@@ -56,7 +56,7 @@ const ClienteDashboard = () => {
                     <div key={producto.id} className="col-md-4 mb-3 d-flex justify-content-center">
                         <CardProducto
                             imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : './logo_2.svg'}
-                            nombreUsuario={obtenerCorreoUsuario(producto.usuario_id)}
+                            nombreUsuario={'ti'}
                             titulo={producto.nombre}
                             descripcion={producto.descripcion}
                         />

@@ -57,6 +57,7 @@
   justify-content: center;
 }
 
+/*
 .inputContainer > .errorLabel {
   color: red;
   font-size: 12px;
@@ -66,7 +67,7 @@
   color: green;
   font-size: 12px;
 }
-
+*/
 
 .inputBox {
   height: 48px;

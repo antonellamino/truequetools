@@ -33,10 +33,12 @@ const LoginCliente = () => {
             setPasswordError('Por favor ingresa una contraseña');
             return false;
         }
+        /*
         if (password.length < 6 || password.length > 20) {
             setPasswordError('La contraseña debe tener 6 caracteres como minimo y 20 como maximo');
             return false;
         }
+        */
         setPasswordError('');
         return true;
     };

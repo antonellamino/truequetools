@@ -3,6 +3,7 @@ import Navbar from './navbar';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 import Footer from './footer';
+import './formulario.css';  // Make sure to import the CSS file here
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -14,15 +15,15 @@ const PublicarProductoForm = () => {
     const [fotos, setFotos] = useState([]);
     const [sucursales, setSucursales] = useState([]);
     const [sucursalPreferencia, setSucursalPreferencia] = useState('');
-    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '',  sucursal: '' });
+    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '', sucursal: '' });
     const [enviado, setEnviado] = useState('');
-    
+
     const resetearForm = () => {
         setNombre('');
         setDescripcion('');
         setFotos([]);
         setSucursalPreferencia('');
-        setErrores({ nombre: '', descripcion: '', categoria: '' });
+        setErrores({ nombre: '', descripcion: '', categoria: '', sucursal: '' });
     };
 
     useEffect(() => {
@@ -51,24 +52,23 @@ const PublicarProductoForm = () => {
         if (!nombre.trim()) errores.nombre = 'Por favor ingresa el nombre del producto';
         if (!descripcion.trim()) errores.descripcion = 'Por favor ingresa la descripción del producto';
         if (!categoriaData.categoriaSeleccionada) errores.categoria = 'Por favor selecciona una categoría';
-        if (!sucursalPreferencia) errores.sucursal = 'Debe seleccionar una sucursal'; // Agregar esta línea
-
+        if (!sucursalPreferencia) errores.sucursal = 'Debe seleccionar una sucursal';
 
         setErrores(errores);
         return Object.keys(errores).length === 0;
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         if (!validateForm()) return;
-        
+
         let formData = new FormData();
         formData.append('nombre', nombre);
         formData.append('descripcion', descripcion);
         formData.append('sucursal_preferencia', sucursalPreferencia);
         formData.append('categoria', categoriaData.categoriaSeleccionada);
-        formData.append('usuario_id', userId); 
-        
+        formData.append('usuario_id', userId);
+
         for (let i = 0; i < fotos.length; i++) {
             formData.append('foto', fotos[i]);
         }
@@ -76,12 +76,8 @@ const PublicarProductoForm = () => {
         axios.post(`${backendUrl}/publicarProducto`, formData)
             .then(response => {
                 console.log('Producto publicado exitosamente', response.data);
-                const enviado = 'Se publico el producto';
-                setEnviado(enviado);
-                setTimeout(() => {
-                    const enviado = '';
-                    setEnviado(enviado);   
-                }, 5000)
+                setEnviado('Se publico el producto');
+                setTimeout(() => setEnviado(''), 5000);
                 e.target.reset();
                 resetearForm();
             })
@@ -94,21 +90,21 @@ const PublicarProductoForm = () => {
         <Fragment>
             <Navbar />
             <h2 className="mb-4" style={{ backgroundColor: '#2c3359', color: '#ffffff'}}>Publicar Producto</h2>
-            <div className="containermt-5">
+            <div className="container">
                 <form onSubmit={handleSubmit}>
                     <div className="inputContainer">
                         <label htmlFor="nombre" className="form-label">Nombre</label>
-                        <input type="text" className="form-control" id="nombre" value={nombre} placeholder="Ingresa nombre del producto" onChange={(e) => setNombre(e.target.value)}/>
+                        <input type="text" className="form-control" id="nombre" value={nombre} placeholder="Ingresa nombre del producto" onChange={(e) => setNombre(e.target.value)} />
                         <label className="errorLabel">{errores.nombre}</label>
                     </div>
                     <div className="inputContainer">
-                        <label htmlFor="descripcion" className="form-label">Descripción</label>    
+                        <label htmlFor="descripcion" className="form-label">Descripción</label>
                         <textarea className="form-control" id="descripcion" value={descripcion} placeholder="Ingresa descripción del producto" onChange={(e) => setDescripcion(e.target.value)} />
                         <label className="errorLabel">{errores.descripcion}</label>
                     </div>
                     <div className="inputContainer">
                         <label htmlFor="categoria" className="form-label">Categoría</label>
-                        <select className="form-select" id="categoria" value={categoriaData.categoriaSeleccionada} onChange={(e) => setCategoriaData({ ...categoriaData, categoriaSeleccionada: e.target.value })} >
+                        <select className="form-select" id="categoria" value={categoriaData.categoriaSeleccionada} onChange={(e) => setCategoriaData({ ...categoriaData, categoriaSeleccionada: e.target.value })}>
                             <option value="">Selecciona una categoría</option>
                             {categoriaData.categorias.map(categoria => (
                                 <option key={categoria.id} value={categoria.id}>
@@ -118,13 +114,13 @@ const PublicarProductoForm = () => {
                         </select>
                         <label className="errorLabel">{errores.categoria}</label>
                     </div>
-                    <div className="inputContainer">  
+                    <div className="inputContainer">
                         <label htmlFor="fotos" className="form-label">Fotos</label>
                         <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} />
-                    </div> 
+                    </div>
                     <div className="inputContainer">
                         <label htmlFor="sucursalPreferencia" className="form-label">Sucursal de preferencia</label>
-                        <select className="form-select" id="sucursalPreferencia" value={sucursalPreferencia} onChange={(e) => setSucursalPreferencia(e.target.value)} >
+                        <select className="form-select" id="sucursalPreferencia" value={sucursalPreferencia} onChange={(e) => setSucursalPreferencia(e.target.value)}>
                             <option value="">Seleccione una sucursal</option>
                             {sucursales.map(sucursal => (
                                 <option key={sucursal.id} value={sucursal.id}>
@@ -132,7 +128,6 @@ const PublicarProductoForm = () => {
                                 </option>
                             ))}
                         </select>
-                        
                         {errores.sucursal && <div className="errorLabel">{errores.sucursal}</div>}
                     </div>
                     <button type="submit" className="btn btn-primary">Publicar Producto</button>

@@ -9,7 +9,7 @@ const cardProducto = ({ imagenSrc, nombreUsuario, titulo, descripcion }) => {
                 <h5 className="card-title">{titulo}</h5>
                 <p className="card-text">{descripcion}</p>
                 <p className="card-text">Publicado por: {nombreUsuario}</p>
-                <button className="btn btn-primary">Ofertar</button>
+                {/* <button className="btn btn-primary">Ofertar</button> */}
             </div>
         </div>
     );
