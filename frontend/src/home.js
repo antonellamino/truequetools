@@ -43,10 +43,6 @@ const Home = () => {
         return usuarioEncontrado ? usuarioEncontrado.correo : '';
     };
     
-    
-    
-    
-
     return (
         <Fragment>
             <Navbar />

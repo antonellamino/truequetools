@@ -31,26 +31,22 @@ const ClienteDashboard = () => {
             <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff'}}>
                 Mis productos
             </h2>
-            <div className="productos-grid">
-                {productos.length > 0 ? (
-                    productos.map(producto => (
+            <div className='home-principal'>
+            <div className="row">
+                {productos.map(producto => (
+                    <div key={producto.id} className="col-md-4 mb-3 d-flex justify-content-center">
                         <CardProducto
-                            key={producto.id}
-                            imagenSrc={producto.imagen ? `data:image/png;base64,${producto.imagen}` : null}
+                            imagenSrc={producto.imagen ? 'data:image/jpeg;base64,${producto.imagen}' : './logo_2.svg'}
                             nombreUsuario={producto.usuario_id}
                             titulo={producto.nombre}
                             descripcion={producto.descripcion}
                         />
-                    ))
-                ) : (
-                    <div style={{ textAlign: 'center', width: '100%', marginTop: '20px' }}>
-                        <h3>No hay productos publicados.</h3>
                     </div>
-                )}
+                ))}
             </div>
-            
-            <div style={{ marginBottom: '500px' }}> </div>
-            <Footer/>
+            </div>
+            <div style={{ marginBottom: '500px' }}></div> {/* espacio antes del footer */}
+            <Footer />
         </Fragment>
     )
 }
