@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from './navbar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Footer from './footer';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -194,6 +195,7 @@ const Formulario = () => {
                     </div>
                 </div>
             </div>
+            <Footer/>
         </Fragment>
     );
 };

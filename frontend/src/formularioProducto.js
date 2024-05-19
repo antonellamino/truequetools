@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import Navbar from './navbar';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
+import Footer from './footer';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -13,7 +14,7 @@ const PublicarProductoForm = () => {
     const [fotos, setFotos] = useState([]);
     const [sucursales, setSucursales] = useState([]);
     const [sucursalPreferencia, setSucursalPreferencia] = useState('');
-    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '' });
+    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '',  sucursal: '' });
     const [enviado, setEnviado] = useState('');
     
     const resetearForm = () => {
@@ -50,6 +51,9 @@ const PublicarProductoForm = () => {
         if (!nombre.trim()) errores.nombre = 'Por favor ingresa el nombre del producto';
         if (!descripcion.trim()) errores.descripcion = 'Por favor ingresa la descripción del producto';
         if (!categoriaData.categoriaSeleccionada) errores.categoria = 'Por favor selecciona una categoría';
+        if (!sucursalPreferencia) errores.sucursal = 'Debe seleccionar una sucursal'; // Agregar esta línea
+
+
         setErrores(errores);
         return Object.keys(errores).length === 0;
     };
@@ -128,11 +132,14 @@ const PublicarProductoForm = () => {
                                 </option>
                             ))}
                         </select>
+                        
+                        {errores.sucursal && <div className="errorLabel">{errores.sucursal}</div>}
                     </div>
                     <button type="submit" className="btn btn-primary">Publicar Producto</button>
                 </form>
                 <label className="correctLabel">{enviado}</label>
             </div>
+            <Footer />
         </Fragment>
     );
 };

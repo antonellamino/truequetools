@@ -7,6 +7,7 @@ import Footer from './footer';
 import _ from 'lodash'; //sacar lodash
 import "./cardProducto.css"
 
+
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 
@@ -74,7 +75,7 @@ const Home = () => {
                 </div>
             )}
             </div>
-            <Footer /> 
+            <Footer/> 
         </Fragment>
     );
 };
