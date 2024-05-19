@@ -3,7 +3,6 @@ import axios from 'axios';
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
-import Footer from './footer';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -50,8 +49,7 @@ const LoginCliente = () => {
         const isPasswordValid = validatePassword();
         console.log(isEmailValid, isPasswordValid);
 
-        if (isEmailValid || isPasswordValid) {
-
+        if (isEmailValid && isPasswordValid) {
             try {
                 const response = await axios.post(`${backendUrl}/iniciar-sesion-cliente`, { correo: email, contrasena: password });
                 console.log(response.status);
@@ -68,15 +66,17 @@ const LoginCliente = () => {
                 }
             } catch (error) {
                 console.error('entra x el catch:', error.message);
-                if (error.response.status === 401) {
+                if (error.response.status === 404) {
                     console.error('Error:', error.response.data);
                     setMensajeError(error.response.data.error);
                 } else {
-                    console.error('Error:', error.response.data);
-                    setMensajeError(error.response.data.error);
+                        if (error.response.status === 401){
+                        console.error('Error:', error.response.data);
+                        setMensajeError(error.response.data.error);
+                    }
                 }
             }
-        }
+        };
     }
     return (
         <Fragment>
@@ -113,8 +113,6 @@ const LoginCliente = () => {
                     <input className="inputButton" type="button" onClick={onButtonClick} value="ingresar" />
                 </div>
             </div>
-            <div style={{ marginBottom: '100px' }}></div> {/*espacio antes del footer*/}
-            <Footer />
         </Fragment>
     );
 };

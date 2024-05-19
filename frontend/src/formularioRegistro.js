@@ -129,7 +129,7 @@ const Formulario = () => {
             axios.post(`${backendUrl}/registro-cliente`, datosFormulario)
                 .then(response => {
                     console.log('Datos registrados exitosamente:', response.data);
-                    navigate('/');
+                    navigate('/iniciarSesion');
                 })
                 .catch(error => {
                     console.error('Error al registrar los datos:', error);

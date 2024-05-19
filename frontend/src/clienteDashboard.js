@@ -21,27 +21,30 @@ const ClienteDashboard = () => {
             })
             .catch(error => {
                 console.error('Error al obtener productos del usuario:', error);
-            });
+            }); 
         }
     }, [isAuthenticated, userId]);
 
-    return(
-        <Fragment>
+    return( 
+        <Fragment>  
             <Navbar />
             <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff'}}>
                 Mis productos
             </h2>
-            <div className="productos-grid">
+            <div className='home-principal'></div>
+            <div className="row">
                 {productos.length > 0 ? (
                     productos.map(producto => (
+                        <div key={producto.id} className="col-md-4 mb-3 d-flex justify-content-center">
                         <CardProducto
-                            key={producto.id}
-                            imagenSrc={producto.imagen ? `data:image/png;base64,${producto.imagen}` : null}
-                            nombreUsuario={producto.usuario_id}
+                            //key={producto.id}
+                            imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : './logo_2.svg'}
+                            nombreUsuario={"ti"}
                             titulo={producto.nombre}
                             descripcion={producto.descripcion}
                         />
-                    ))
+                        </div>
+                    )) 
                 ) : (
                     <div style={{ textAlign: 'center', width: '100%', marginTop: '20px' }}>
                         <h3>No hay productos publicados.</h3>
@@ -49,7 +52,7 @@ const ClienteDashboard = () => {
                 )}
             </div>
             
-            <div style={{ marginBottom: '500px' }}> </div>
+            <div style={{ marginBottom: '500px' }}></div> {/* espacio antes del footer */}
             <Footer/>
         </Fragment>
     )

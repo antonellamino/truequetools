@@ -62,6 +62,12 @@
   font-size: 12px;
 }
 
+.containermt-5 > .correctLabel {
+  color: green;
+  font-size: 12px;
+}
+
+
 .inputBox {
   height: 48px;
   width: 400px;
@@ -73,15 +79,10 @@
 
 .home-principal{
   padding: 100px;
- }
+}
 
 h2{
   padding: 30px;
   text-align: center;
 }
 
-/*
-.card-style{
-  padding: 50px;
-}
-*/

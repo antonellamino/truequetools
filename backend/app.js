@@ -146,33 +146,70 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
     }
 });
 
+const multer = require('multer');
+const upload = multer();
+app.post('/publicarProducto', upload.array('foto', 1), async (req, res) => {
+    try {
+        //console.log(req.files[0]);
+        const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
+        const imagen = req.files ? req.files[0] : null;
+      
 
 
+        let imagenBase64 = null;
+        if (imagen) {
+            imagenBase64 = imagen.buffer.toString('base64');
+        }
+
+
+
+        const nuevoProducto = await Producto.forge({
+            nombre,
+            descripcion,
+            sucursal_elegida,
+            categoria_id,
+            usuario_id,
+            imagen: imagenBase64 // Guardar foto en la base de datos como base64
+        })
+        await nuevoProducto.save();
+
+        return res.status(201).json({ mensaje: 'Producto creado exitosamente'});
+    } catch (error) {
+        // respuesta si hay error
+        console.error('error al registrar el producto:', error);
+        return res.status(500).json({ error: 'no se pudo registrar el producto' });
+    }
+});
+
+/* EL QUE HABIA HECHO YO
 //endpoint para publicar producto
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
-app.post('/publicarProducto', upload.array('foto',2), async (req, res) => {
+app.post('/publicarProducto', upload.array('foto',1), async (req, res) => {
     try {
         const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
         //console.log(req.files[0]);
-        const imagen = req.files
-        /*
-        const imagen = req.files [0];
-        const imagen2 = req.files[1];
-        */
+        const imagenes = req.files;
+
+        
+        //const imagen = req.files [0];
+        //const imagen2 = req.files[1];
+        
 
         //console.log(req.body.foto);
         //console.log(imagen);
         
+        let imagenesBase64 = null;
+        if( imagenes && imagenes.length > 0){
+            imagenesBase64 = imagenes.map( img => img.buffer.toString('base64'));
+        }
         
-        let imagenesBase64 = imagen.map( img => img.buffer.toString('base64'));
-
         /* if (imagen) {
             imagenBase64 = imagen.buffer.toString('base64');
             
             console.log(imagenBase64);
         }
-        */
+        //ESTO ESTABA COMENTADO
 
         const nuevoProducto = await Producto.forge({
             nombre,
@@ -192,6 +229,8 @@ app.post('/publicarProducto', upload.array('foto',2), async (req, res) => {
         res.status(500).json({ error: 'no se pudo registrar el producto' });
     }
 });
+*/
+
 
 // Endpoint para cerrar sesión
 // app.post('/logout', (req, res) => {
