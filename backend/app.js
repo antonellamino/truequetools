@@ -33,10 +33,10 @@ app.post('/registro-cliente', async (req, res) => {
 
         //verificar si ya existe un usuario con el mismo correo
         let usuarioExistente;
-
+ 
         try {
             console.log(correo);
-            usuarioExistente = await Usuario.where({ correo }).fetch(require=false);
+            usuarioExistente = await Usuario.where({ correo }).fetch({ require:false });
             console.log(usuarioExistente);
         } catch (error) {
             console.error('Error al buscar usuario existente:', error);
@@ -103,82 +103,65 @@ app.post('/registrar-empleado', async (req, res) => {
 //no anda cuando el email es invalido pero la contrasena correcta
 app.post('/iniciar-sesion-cliente', async (req, res) => {
 
-    const login = { correo, contrasena } = req.body;
+    const { correo, contrasena } = req.body;
 
     try {
-        console.log(correo, contrasena); //ok
-        const usuario = await Usuario.where({ correo }).fetch(require=false);
-        console.log(usuario);
+        let usuario;
+        try {
+            usuario = await Usuario.where({ correo }).fetch({ require: false });
+        } catch (fetchError) {
+            console.error("Error al buscar el usuario:", fetchError);
+        }
 
         if (!usuario) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        // si existe verificar contrasena
-        const contrasenaValida = await usuario.validarContrasena(contrasena);
-        if (!contrasenaValida) {
-            return res.status(401).json({ error: 'Credenciales invalidas' });
+        let contrasenaValida;
+        try {
+            contrasenaValida = await usuario.validarContrasena(contrasena);
+        } catch (passwordError) {
+            return res.status(500).send('Error Interno del Servidor');
         }
-        console.log(contrasenaValida);
 
+        if (!contrasenaValida) {
+            return res.status(401).json({ error: 'Contraseña invalida' });
+        }
+
+        // Generar token JWT
         const token = jwt.sign({
             id: usuario.get('id'),
             correo: usuario.get('correo'),
             rol_id: usuario.get('rol_id')
         }, 'secreto', { expiresIn: '1h' });
-        res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token });
+
+        const userId = usuario.get('id');
+        console.log("Token generado:", token);
+
+        // Responder con éxito
+        return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token, userId });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
+        return res.status(500).send('Error Interno del Servidor');
     }
 });
 
-
-
-//iniciar sesion empleado
-//borrar logs
-//empty response cuando dni incorrecto
-app.post('/iniciar-sesion-empleado', async (req, res) => {
-
-    const login = { dni, contrasena } = req.body;
-
-    try {
-        const usuario = await Empleado.where({ dni }).fetch();
-        console.log(usuario);
-
-        if (!usuario) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
-
-        const contrasenaValida = await usuario.validarContrasena(contrasena);
-        if (!contrasenaValida) {
-            return res.status(401).json({ error: 'Credenciales inválidas' });
-        }
-
-
-        res.status(200).json({ mensaje: 'inicio de sesion exitoso', usuario: { rol_id: usuario.get('rol_id') } }); //devuelvo el usuario y que el frontend maneje la redireccion
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-
-
-//endpoint para publicar producto
 const multer = require('multer');
 const upload = multer();
-app.post('/publicar-producto', upload.any(), async (req, res) => {
+app.post('/publicarProducto', upload.array('foto', 1), async (req, res) => {
     try {
-        const { nombre, descripcion, sucursal_elegida, categoria_id } = req.body;
+        //console.log(req.files[0]);
+        const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
         const imagen = req.files ? req.files[0] : null;
+      
+
 
         let imagenBase64 = null;
         if (imagen) {
             imagenBase64 = imagen.buffer.toString('base64');
         }
+
+
 
         const nuevoProducto = await Producto.forge({
             nombre,
@@ -190,6 +173,55 @@ app.post('/publicar-producto', upload.any(), async (req, res) => {
         })
         await nuevoProducto.save();
 
+        return res.status(201).json({ mensaje: 'Producto creado exitosamente'});
+    } catch (error) {
+        // respuesta si hay error
+        console.error('error al registrar el producto:', error);
+        return res.status(500).json({ error: 'no se pudo registrar el producto' });
+    }
+});
+
+/* EL QUE HABIA HECHO YO
+//endpoint para publicar producto
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+app.post('/publicarProducto', upload.array('foto',1), async (req, res) => {
+    try {
+        const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
+        //console.log(req.files[0]);
+        const imagenes = req.files;
+
+        
+        //const imagen = req.files [0];
+        //const imagen2 = req.files[1];
+        
+
+        //console.log(req.body.foto);
+        //console.log(imagen);
+        
+        let imagenesBase64 = null;
+        if( imagenes && imagenes.length > 0){
+            imagenesBase64 = imagenes.map( img => img.buffer.toString('base64'));
+        }
+        
+        /* if (imagen) {
+            imagenBase64 = imagen.buffer.toString('base64');
+            
+            console.log(imagenBase64);
+        }
+        //ESTO ESTABA COMENTADO
+
+        const nuevoProducto = await Producto.forge({
+            nombre,
+            descripcion,
+            sucursal_elegida,
+            categoria_id,
+            usuario_id,
+            imagen: imagenesBase64 // Guardar fotos en la base de datos como base64
+        })
+
+        await nuevoProducto.save();
+
         res.status(201).json({ mensaje: 'Producto creado exitosamente'});
     } catch (error) {
         // respuesta si hay error
@@ -197,7 +229,7 @@ app.post('/publicar-producto', upload.any(), async (req, res) => {
         res.status(500).json({ error: 'no se pudo registrar el producto' });
     }
 });
-
+*/
 
 
 // Endpoint para cerrar sesión

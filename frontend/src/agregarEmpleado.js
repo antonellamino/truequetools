@@ -47,6 +47,7 @@ const AgregarEmpleado = () => {
                     </div>
                 </div>
             </div>
+            
         </Fragment>
     );
 };

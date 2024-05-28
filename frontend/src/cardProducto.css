@@ -1,28 +1,61 @@
 .card-style {
-    border: 1px solid #ddd; /* Borde delgado gris */
-    border-radius: 8px; /* Bordes redondeados /*/
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave /*/
-    transition: box-shadow 0.3s ease; /* Transición suave de la sombra /*/
+    width: 25rem; 
+    border: 1px solid #ddd;    
+    border-radius: 8px;   
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  
+    transition: box-shadow 0.3s ease; 
+    display: flex; /* Usar flexbox */    
 }
+
+
+.card-img-top {
+    width: 10rem;
+    height: 250px;
+
+}
+
+
+.card-img-top{
+    width: 10rem; /* Ancho fijo para todas las tarjetas */
+    height: 250px;  
+}
+.card-img-top{
+    width: 10rem; /* Ancho fijo para todas las tarjetas */
+    height: 250px; 
+}
+
 
 .card-style:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Aumenta la sombra en el hover /*/
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
 }
-
 .card-body {
-    padding: 20px; /* Relleno interno */
+    padding: 20px;   
+    display: flex; /* Usar flexbox */
+    flex-direction: column; /* Dirección de los elementos flexibles */ 
+    justify-content: space-between; /* Distribuir el espacio verticalmente */
 }
-
 .card-title {
-    font-size: 1.2rem; /* Tamaño del título /*/
-    font-weight: bold; /* Texto en negrita /*/
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem; /* Reducir el margen inferior */
+    max-height: 1.2rem; /* Altura máxima para una línea de texto */
+    overflow: hidden; /* Oculta el contenido desbordado */
+    text-overflow: ellipsis; /* Agrega puntos suspensivos al final del texto desbordado */
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
 }
 
 .card-text {
-    font-size: 1rem; /* Tamaño del texto /*/
-    color: #555; /* Color del texto gris oscuro /*/
+
+    font-size: 1rem;  
+    color: #555; 
+    max-height: 8rem; /* Altura máxima para la descripción */
+    overflow: hidden; /* Oculta el contenido desbordado */
+    text-overflow: ellipsis; /* Agrega puntos suspensivos al final del texto desbordado */
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+
 }
 
+
 .btn-primary:hover {
-    background-color: #0056b3; /* Cambia el color de fondo en el hover */
-}
+    background-color: #0056b3;
+}  

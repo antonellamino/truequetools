@@ -57,10 +57,17 @@
   justify-content: center;
 }
 
+/*
 .inputContainer > .errorLabel {
   color: red;
   font-size: 12px;
 }
+
+.containermt-5 > .correctLabel {
+  color: green;
+  font-size: 12px;
+}
+*/
 
 .inputBox {
   height: 48px;
@@ -80,6 +87,3 @@ h2{
   text-align: center;
 }
 
-.card-style{
-  padding: 50px;
-}

@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect } from 'react';
 import Navbar from './navbar';
+import Footer from './footer';
 
 const Logout = () => {
     //esto lo hace el context, el remove de token
@@ -25,6 +26,8 @@ const Logout = () => {
                     </div>
                 </div>
             </div>
+            <div style={{ marginBottom: '200px' }}></div> {/*espacio antes del footer*/}
+            <Footer />
         </Fragment>
     );
 }    

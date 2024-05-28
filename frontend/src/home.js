@@ -20,7 +20,7 @@ const Home = () => {
                 setUsuarios(response.data.usuarios);
             })
             .catch(error => {
-                console.error('Error al obtener la información de los usuarios:', error);
+                console.error('Error al obtener la informaciÃ³n de los usuarios:', error);
             });
     }; 
 
@@ -54,20 +54,26 @@ const Home = () => {
                 Productos disponibles
             </h2>
             <div className='home-principal'>
-                    <div className="row">
-                        {productos.map(producto => (
-                            <div key={producto.id} className="col-md-4 mb-3">
-                                <CardProducto
-                                    imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : null}
-                                    nombreUsuario={obtenerCorreoUsuario(producto.usuario_id)}
-                                    titulo={producto.nombre}
-                                    descripcion={producto.descripcion}
-                                />
-                            </div>
-                        ))}
-                    </div>  
+            {productos.length > 0 ? (
+                <div className="row">
+                    {productos.map(producto => (
+                        <div key={producto.id} className="col-md-4 mb-3">
+                            <CardProducto
+                                imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : './logo_2.svg'}
+                                nombreUsuario={obtenerCorreoUsuario(producto.usuario_id)}
+                                titulo={producto.nombre}
+                                descripcion={producto.descripcion}
+                            />
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div style={{ textAlign: 'center', width: '100%', marginTop: '20px' }}>
+                    <h3>No hay productos disponibles en este momento.</h3>
+                </div>
+            )}
             </div>
-            <Footer /> 
+            <Footer/> 
         </Fragment>
     );
 };
