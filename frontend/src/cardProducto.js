@@ -1,7 +1,7 @@
 import React from 'react';
 import "./cardProducto.css";
 
-const cardProducto = ({ imagenSrc, nombreUsuario, titulo, descripcion }) => {
+const CardProducto = ({ imagenSrc, nombreUsuario, titulo, descripcion }) => {
     return (
         <div className="card card-style" /*style={{ width: '18rem' }}*/ >
             <img src={imagenSrc} className="card-img-top" alt="Imagen del producto" />
@@ -15,4 +15,4 @@ const cardProducto = ({ imagenSrc, nombreUsuario, titulo, descripcion }) => {
     );
 };
 
-export default cardProducto;
+export default CardProducto;

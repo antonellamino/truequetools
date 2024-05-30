@@ -1,7 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useContext } from 'react';
 import axios from 'axios'; 
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -38,6 +39,7 @@ const LoginEmpleado = () => {
         return true;
     };
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext); 
 
     const onButtonClick = async () => {
         const isdniValid = validatedni();
@@ -48,22 +50,26 @@ const LoginEmpleado = () => {
                 const response = await axios.post(`${backendUrl}/iniciar-sesion-empleado`, { dni: dni, contrasena: password });
                 
                 if (response.status === 200) {
-                    const rol_id  = response.data.usuario.rol_id;
-                    console.log(rol_id);
-                    if (rol_id === 1) {
+                    const rol = response.data.rol;
+                    const token = response.data.token;
+                    const userId = response.data.userId;
+                    console.log(rol);
+
+                    login(token, userId, rol)
+                    
+                    if (rol === 1) {
                         navigate('/adminDashboard');
-                    } else if (rol_id === 2) {
+                    } else if (rol === 2) {
                         navigate('/empleadoDashboard');
                     } else {
-                        // si el rol no es ni 1 ni 2, redirigir a una pagina por defecto o mostrar un mensaje de error
-                        console.error('Rol no válido');
+                        console.error('rol no valido');
                     }
                 } else {
-                    console.error('Error al iniciar sesión:', response.data.error);
+                    console.error('Error al iniciar sesion:', response.data.error);
                     setMensajeError(response.data.error);
                 }
             } catch (error) {
-                console.error('Error al iniciar sesión:', error.message);
+                console.error('Error al iniciar sesion:', error.message);
             }
         }
     };

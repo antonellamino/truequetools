@@ -33,10 +33,10 @@ app.post('/registro-cliente', async (req, res) => {
 
         //verificar si ya existe un usuario con el mismo correo
         let usuarioExistente;
- 
+
         try {
             console.log(correo);
-            usuarioExistente = await Usuario.where({ correo }).fetch({ require:false });
+            usuarioExistente = await Usuario.where({ correo }).fetch({ require: false });
             console.log(usuarioExistente);
         } catch (error) {
             console.error('Error al buscar usuario existente:', error);
@@ -67,34 +67,6 @@ app.post('/registro-cliente', async (req, res) => {
     }
 });
 
-
-
-
-// endpoint para registrar un usuario empleado, solo admin
-app.post('/registrar-empleado', async (req, res) => {
-    try {
-        const { dni, contrasena } = req.body;
-
-        // verificar si ya existe un usuario con el mismo nombre de usuario
-        const existingusuario = await Empleado.where({ dni }).fetch();
-        if (existingusuario) {
-            return res.status(400).send(`El usuario con dni ${dni} ya existe`);
-        }
-
-        // crear un nuevo usuario con el rol de empleado
-        const newusuario = await Empleado.forge({
-            dni,
-            contrasena,
-            rol_id: 2
-        });
-        newusuario.save();
-
-        res.status(201).send('Empleado registrado exitosamente');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error interno del servidor');
-    }
-});
 
 
 
@@ -153,7 +125,7 @@ app.post('/publicarProducto', upload.array('foto', 1), async (req, res) => {
         //console.log(req.files[0]);
         const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
         const imagen = req.files ? req.files[0] : null;
-      
+
 
 
         let imagenBase64 = null;
@@ -168,12 +140,12 @@ app.post('/publicarProducto', upload.array('foto', 1), async (req, res) => {
             descripcion,
             sucursal_elegida,
             categoria_id,
-            usuario_id : 17,
+            usuario_id: 17,
             imagen: imagenBase64 // Guardar foto en la base de datos como base64
         })
         await nuevoProducto.save();
 
-        return res.status(201).json({ mensaje: 'Producto creado exitosamente'});
+        return res.status(201).json({ mensaje: 'Producto creado exitosamente' });
     } catch (error) {
         // respuesta si hay error
         console.error('error al registrar el producto:', error);
@@ -244,7 +216,7 @@ app.post('/publicarProducto', upload.array('foto',1), async (req, res) => {
 //solo admin
 app.post('/agregar-sucursal', async (req, res) => {
     try {
-        
+
         const { nombre, direccion, telefono } = req.body;
 
         const nuevaSucursal = await Sucursal.forge({
@@ -301,7 +273,7 @@ app.get('/categorias', async (req, res) => {
 
 
 //ver productos para intercambiar
-app.get('/productos', async(req, res) => {
+app.get('/productos', async (req, res) => {
     try {
         const productos = await Producto.fetchAll();
         res.json({ productos });
@@ -316,7 +288,7 @@ app.get('/productos', async(req, res) => {
 app.get('/productos-usuario', async (req, res) => {
     try {
         const { usuarioId } = req.query;
-        
+
         //verifica si usuarioID esta presente, si no la solicitud deberia fallar porque es un parametro requerido
         if (!usuarioId) {
             return res.status(400).json({ error: 'usuarioId es requerido' });
@@ -346,7 +318,7 @@ app.post('/usuarios', async (req, res) => {
 
     try {
         const usuariosEncontrados = await Usuario.where('id', 'in', userIds).fetchAll();
-        
+
         if (!usuariosEncontrados || usuariosEncontrados.length === 0) {
             return res.status(404).json({ error: 'No se encontraron usuarios para los IDs proporcionados' });
         }
@@ -367,6 +339,100 @@ app.post('/usuarios', async (req, res) => {
 //ver porque se hacen dos llamadas
 
 
+// ------------------------DEMO 2---------------------------------
+
+
+//filtro para sucursal y categoria, devuelve por uno por otro o por los dos o asi deberia funcionar
+app.get('/productos-filtrados', async (req, res) => {
+    try {
+        const { sucursal_elegida, categoria_id } = req.query;
+
+        const query = Producto.forge();
+
+        if (sucursal_elegida) {
+            query.where('sucursal_elegida', sucursal_elegida);
+        }
+        if (categoria_id) {
+            query.where('categoria_id', categoria_id);
+        }
+
+        const productos = await query.fetchAll();
+        res.json({ productos });
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ error: 'Error fetching products' });
+    }
+});
+
+
+
+
+// endpoint para registrar un usuario empleado, solo admin
+app.post('/registrar-empleado', async (req, res) => {
+    try {
+        const { dni, contrasena } = req.body;
+
+        // verificar si ya existe un usuario con el mismo nombre de usuario
+        const existingusuario = await Empleado.where({ dni }).fetch();
+        if (existingusuario) {
+            return res.status(400).send(`El usuario con dni ${dni} ya existe`);
+        }
+
+        // crear un nuevo usuario con el rol de empleado
+        const newusuario = await Empleado.forge({
+            dni,
+            contrasena,
+            rol_id: 2
+        });
+        newusuario.save();
+
+        res.status(201).send('Empleado registrado exitosamente');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
+
+//endpooint a usar cuando el admin quiera obtener la lista de empleados
+app.get('/empleados', async (req, res) => {
+    try {
+        const usuarios = await Empleado.fetchAll();
+        res.json({ usuarios });
+    } catch (error) {
+        console.error('error al obtener los empleados:', error);
+        res.status(500).json({ error: 'ocurrio un error al obtener los empleados' });
+    }
+})
+
+//INICIO DE SESION COMO EMPLEADO
+app.post('/iniciar-sesion-empleado', async (req, res) => {
+    const login = { dni, contrasena } = req.body;
+
+    try {
+        const empleado = await Empleado.where({ dni }).fetch();
+
+        if (!empleado) {
+            return res.status(404).json({ error: 'empleado no encontrado' });
+        }
+
+        const token = jwt.sign({
+            id: empleado.get('id'),
+            rol_id: empleado.get('rol_id')
+        }, 'secreto', { expiresIn: '1h' });
+
+        const userId = empleado.get('id');
+        const rol = empleado.get('rol_id');
+        console.log(rol);
+
+        return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token, userId, rol });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 
 // iniciar servidor

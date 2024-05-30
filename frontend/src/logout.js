@@ -3,13 +3,7 @@ import Navbar from './navbar';
 import Footer from './footer';
 
 const Logout = () => {
-    //esto lo hace el context, el remove de token
-    /*
-    useEffect(() => {
-        localStorage.removeItem('token');
-    }, []);
-    */ 
-   
+
     return (
         <Fragment>
             <Navbar />
@@ -30,6 +24,6 @@ const Logout = () => {
             <Footer />
         </Fragment>
     );
-}    
+}
 
 export default Logout;

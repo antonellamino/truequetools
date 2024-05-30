@@ -1,13 +1,20 @@
-import React, { Fragment } from 'react';
-import Navbar from './navbar';
+import React, { Fragment, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
+import Navbar from './navbar';
 
 const AdminDashboard = () => {
-    //esto esta en el nav hace falta?
+    const { isAuthenticated, rol } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (!isAuthenticated || rol !== 1) {
+            navigate('/home');
+        }
+    }, [isAuthenticated, rol, navigate]);
+
     const handleCerrarSesion = () => {
-        localStorage.removeItem('token'); // Esto asegurará que el token se elimina al cerrar sesión
+        localStorage.removeItem('token');
         navigate('/logout');
     }
 
@@ -15,10 +22,8 @@ const AdminDashboard = () => {
         <Fragment>
             <Navbar />
             <button onClick={handleCerrarSesion}>Cerrar Sesión</button>
-            </Fragment>
-
-
-    )
+        </Fragment>
+    );
 }
 
 export default AdminDashboard;

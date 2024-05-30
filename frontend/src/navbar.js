@@ -56,11 +56,11 @@ const Navbar = () => {
                                 </li>
                             )}
                         </ul>
-                           {/* <form className="d-flex">
-                            <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" />
-                            <button className="btn btn-outline-light" type="submit">Buscar</button>
-                        </form>
-                        */}
+                            <form className="d-flex">
+                                <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" />
+                                <button className="btn btn-outline-light" type="submit">Buscar</button>
+                            </form>
+                        
                     </div>
                 </div>
             </nav>
