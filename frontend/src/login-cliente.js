@@ -33,10 +33,12 @@ const LoginCliente = () => {
             setPasswordError('Por favor ingresa una contraseña');
             return false;
         }
+        /*
         if (password.length < 6 || password.length > 20) {
             setPasswordError('La contraseña debe tener 6 caracteres como minimo y 20 como maximo');
             return false;
         }
+        */
         setPasswordError('');
         return true;
     };
@@ -50,8 +52,7 @@ const LoginCliente = () => {
         const isPasswordValid = validatePassword();
         console.log(isEmailValid, isPasswordValid);
 
-        if (isEmailValid || isPasswordValid) {
-
+        if (isEmailValid && isPasswordValid) {
             try {
                 const response = await axios.post(`${backendUrl}/iniciar-sesion-cliente`, { correo: email, contrasena: password });
                 console.log(response.status);
@@ -68,15 +69,17 @@ const LoginCliente = () => {
                 }
             } catch (error) {
                 console.error('entra x el catch:', error.message);
-                if (error.response.status === 401) {
+                if (error.response.status === 404) {
                     console.error('Error:', error.response.data);
                     setMensajeError(error.response.data.error);
                 } else {
-                    console.error('Error:', error.response.data);
-                    setMensajeError(error.response.data.error);
+                        if (error.response.status === 401){
+                        console.error('Error:', error.response.data);
+                        setMensajeError(error.response.data.error);
+                    }
                 }
             }
-        }
+        };
     }
     return (
         <Fragment>
@@ -113,8 +116,8 @@ const LoginCliente = () => {
                     <input className="inputButton" type="button" onClick={onButtonClick} value="ingresar" />
                 </div>
             </div>
-            <div style={{ marginBottom: '100px' }}></div> {/*espacio antes del footer*/}
-            <Footer />
+            <div style={{ marginBottom: '50px' }}></div>
+            <Footer/>
         </Fragment>
     );
 };
