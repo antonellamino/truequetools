@@ -66,8 +66,8 @@ const PublicarProductoForm = () => {
         let formData = new FormData();
         formData.append('nombre', nombre);
         formData.append('descripcion', descripcion);
-        formData.append('sucursal_preferencia', sucursalPreferencia);
-        formData.append('categoria', categoriaData.categoriaSeleccionada);
+        formData.append('sucursal_elegida', sucursalPreferencia);
+        formData.append('categoria_id', categoriaData.categoriaSeleccionada);
         formData.append('usuario_id', userId);
 
         for (let i = 0; i < fotos.length; i++) {

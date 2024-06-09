@@ -33,11 +33,16 @@ const Categoria = bookshelf.model('Categoria', {
     tableName: 'categorias'
 })
 
+const Comentario = bookshelf.model('Comentario', {
+    tableName: 'comentarios'
+})
+
 module.exports = {
     Usuario,
     Empleado,
     Producto,
     Roles,
     Sucursal,
-    Categoria
+    Categoria,
+    Comentario
 }

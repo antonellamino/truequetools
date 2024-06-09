@@ -11,6 +11,8 @@ import CardProducto from './cardProducto';
 import LoginEmpleado from './login-empleado';
 import AdminDashboard from './adminDashboard';
 import { AuthProvider } from './AuthContext';
+import EmpleadoDashboard from './empleadoDashboard';
+import Publicacion from './publicacion'
 
 function App() {
 
@@ -30,6 +32,8 @@ function App() {
           <Route path="/iniciarSesionEmpleado" element={<LoginEmpleado />} />
           <Route path="/adminDashboard" element={<AdminDashboard />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/empleadoDashboard" element={<EmpleadoDashboard />} />
+          <Route path='/publicacion/:id' element={<Publicacion />} />
         </Routes>
         </AuthProvider>
       </BrowserRouter>
