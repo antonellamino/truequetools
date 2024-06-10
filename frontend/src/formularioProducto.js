@@ -16,7 +16,7 @@ const PublicarProductoForm = () => {
     const [fotos, setFotos] = useState([]);
     const [sucursales, setSucursales] = useState([]);
     const [sucursalPreferencia, setSucursalPreferencia] = useState('');
-    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '', sucursal: '' });
+    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '', sucursal: '', imagen: '' });
     const [enviado, setEnviado] = useState('');
 
     const resetearForm = () => {
@@ -55,6 +55,8 @@ const PublicarProductoForm = () => {
         if (!categoriaData.categoriaSeleccionada) errores.categoria = 'Por favor selecciona una categoría';
         if (!sucursalPreferencia) errores.sucursal = 'Debe seleccionar una sucursal';
 
+        if (fotos.length > 4 ) errores.imagen = 'Se pueden publicar como máximo 4 imagenes';
+
         setErrores(errores);
         return Object.keys(errores).length === 0;
     };
@@ -70,9 +72,13 @@ const PublicarProductoForm = () => {
         formData.append('categoria_id', categoriaData.categoriaSeleccionada);
         formData.append('usuario_id', userId);
 
+
         for (let i = 0; i < fotos.length; i++) {
             formData.append('foto', fotos[i]);
+            console.log(fotos[i]);
         }
+
+        
 
         axios.post(`${backendUrl}/publicarProducto`, formData)
             .then(response => {
@@ -115,10 +121,15 @@ const PublicarProductoForm = () => {
                         </select>
                         <label className="errorLabel">{errores.categoria}</label>
                     </div>
+
                     <div className="inputContainer">
                         <label htmlFor="fotos" className="form-label">Fotos</label>
-                        <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} />
+                        <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple/>
+
+                        <label className="errorLabel">{errores.imagen}</label>
                     </div>
+
+
                     <div className="inputContainer">
                         <label htmlFor="sucursalPreferencia" className="form-label">Sucursal de preferencia</label>
                         <select className="form-select" id="sucursalPreferencia" value={sucursalPreferencia} onChange={(e) => setSucursalPreferencia(e.target.value)}>

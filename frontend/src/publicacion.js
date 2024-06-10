@@ -1,8 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './publicacion.css';
 import { AuthContext } from './AuthContext';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Footer from './footer';
+import Navbar from './navbar';
+
+
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -13,9 +20,11 @@ const Publicacion = () => {
     const [comentarios, setComentarios] = useState([]);
     const [nuevoComentario, setNuevoComentario] = useState('');
     const [esCreador, setEsCreador] = useState(false);
+    const [respuesta, setNuevaRespuesta] = useState('');
 
     useEffect(() => {
         obtenerProducto(id);
+        console.log("ID del producto:", id);
         obtenerComentarios(id);
     }, [id]);
 
@@ -66,6 +75,14 @@ const Publicacion = () => {
         });
     };
 
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1
+      };
+
     const handleResponderComentario = (comentarioId, respuesta) => {
         axios.post(`${backendUrl}/agregar-respuesta`, {
             id_comentario: comentarioId,
@@ -74,6 +91,7 @@ const Publicacion = () => {
         })
         .then(response => {
             console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuesta}`);
+            setNuevaRespuesta('');
             obtenerComentarios(id);  // Actualizar los comentarios para incluir la nueva respuesta
         })
         .catch(error => {
@@ -84,12 +102,18 @@ const Publicacion = () => {
     console.log(esCreador);
 
     return (
+        <Fragment>
+        <Navbar />
         <div className="publicacion-container">
             {producto ? (
                 <div>
                     <h1>{producto.nombre}</h1>
-                    <img src={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : './logo_2.svg'} alt={producto.nombre} />
-                    <p>Descripcion</p>
+                    <Slider {...settings}>
+                        {[producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4].map((img, index) => (
+                            img ? <div key={index}><img src={`data:image/jpeg;base64,${img}`} alt={`Imagen ${index + 1}`} /></div> : null
+                        ))}
+                    </Slider>
+                    <p>Descripción</p>
                     <p>{producto.descripcion}</p>
                     <p>Usuario</p>
                     <p>{producto.nombre_usuario}</p>
@@ -99,8 +123,10 @@ const Publicacion = () => {
                     <p>{producto.nombre_sucursal}</p>
                 </div>
             ) : (
-                <p>Cargando...</p>
+            <p>Cargando...</p>
             )}
+            
+            
 
             <div className="comentarios-container">
                 <h2>Comentarios</h2>
@@ -113,10 +139,11 @@ const Publicacion = () => {
                             ) : (
                                 <p>No hay respuesta.</p>
                             )}
-                            {esCreador && (
+                            { (esCreador) && (comentario.respuesta == null) &&(
                                 <form onSubmit={(e) => {
                                     e.preventDefault();
                                     const respuesta = e.target.elements.respuesta.value;
+
                                     handleResponderComentario(comentario.id, respuesta);
                                     e.target.reset(); // Limpiar el formulario de respuesta después del envío
                                 }}>
@@ -144,6 +171,8 @@ const Publicacion = () => {
                 )}
             </div>
         </div>
+       <Footer/>
+        </Fragment>
     );
 };
 

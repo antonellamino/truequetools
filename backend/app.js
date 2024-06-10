@@ -121,12 +121,11 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
 const multer = require('multer');
 const upload = multer();
 
-app.post('/publicarProducto', upload.array('foto', 5), async (req, res) => {
+app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
     try {
         const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
         const imagenes = req.files;
-        console.log(imagenes);
-        console.log('otro', req.files);
+        
         // Array para almacenar las imágenes en base64
         let imagenesBase64 = [];
 
@@ -144,7 +143,10 @@ app.post('/publicarProducto', upload.array('foto', 5), async (req, res) => {
             sucursal_elegida,
             categoria_id,
             usuario_id,
-            imagen : imagenesBase64[0] // Spread operator para agregar las imágenes al objeto
+            imagen_1 : imagenesBase64[0], // Spread operator para agregar las imágenes al objeto
+            imagen_2 : imagenesBase64[1],
+            imagen_3 : imagenesBase64[2],
+            imagen_4 : imagenesBase64[3]
         });
         console.log(nuevoProducto);
         await nuevoProducto.save();
@@ -440,6 +442,7 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
 app.get('/datos-producto', async (req, res) => {
     const id = req.query.id;
     try {
+        //CONSULTA A LA BD FILTRANDO LA TABLA PRODUCTOS POR ID RECIBIDO
         const producto = await Producto.query(qb => {
             qb.where('productos.id', id)
               .join('sucursales', 'productos.sucursal_elegida', 'sucursales.id')
