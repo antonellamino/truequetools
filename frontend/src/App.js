@@ -35,8 +35,8 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/empleadoDashboard" element={<EmpleadoDashboard />} />
           <Route path='/publicacion/:id' element={<Publicacion />} />
-          <Route path="/opciones/:data" element={<Opciones/>} />
           <Route path="/notificaciones/:id" element={<Notificaciones />} /> 
+          <Route path="/opciones/:productoId/:usuarioId/:categoriaId" element={<Opciones />} />
         </Routes>
         </AuthProvider>
       </BrowserRouter>

@@ -24,11 +24,8 @@ const Publicacion = () => {
 
     const navigate = useNavigate(); // Se obtiene el hook useNavigate
    
-
-
     useEffect(() => {
         obtenerProducto(id);
-        console.log("ID del producto:", id);
         obtenerComentarios(id);
     }, [id]);
 
@@ -103,28 +100,17 @@ const Publicacion = () => {
         });
     };
 
-    console.log(esCreador);
-
-
     //al apretar el boton, guardo los datos
     const enviarDatos = (producto) => {
         const data = {
             productoId: producto.id,
-            //el user id es del propietarip
             usuarioId: userId,
             categoriaId: producto.categoria_id
-        }
-
-        // Envío de datos utilizando parámetros de consulta en una solicitud GET
-        axios.get(`${backendUrl}/productos-truequear`,{params:{data}})
-            .then(response => {
-            console.log('Datos enviados correctamente:', response.data);
-            navigate(`/opciones/${data}`);  // Redireccionar con parámetros            
-        })
-        .catch(error => {
-            console.error('Error al enviar datos:', error);
-        });
-    };
+        };
+    
+        const parametros = `${data.productoId}/${data.usuarioId}/${data.categoriaId}`;
+        navigate(`/opciones/${parametros}`);
+    }
 
     return (
         <Fragment>
@@ -204,12 +190,14 @@ const Publicacion = () => {
 
                 
             </div>
-            <button onClick={() => enviarDatos(producto)}>
-             Truequear
-            </button>
+            {(!esCreador && isAuthenticated && (
+                <button onClick={() => enviarDatos(producto)}>
+                Truequear
+                </button>
+            ))}
         </div>
        <Footer/>
-        </Fragment>
+    </Fragment>
     );
 };
 
