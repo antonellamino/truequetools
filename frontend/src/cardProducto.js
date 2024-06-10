@@ -6,8 +6,6 @@ const CardProducto = ({ id, imagenSrc, nombreUsuario, titulo, descripcion }) => 
     const navigate = useNavigate();
 
     const verDetalles = () => {
-        console.log("hola");
-        console.log(id);
         navigate(`/publicacion/${id}`); 
     };
 
