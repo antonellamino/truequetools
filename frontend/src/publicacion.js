@@ -120,7 +120,7 @@ const Publicacion = () => {
             .then(response => {
             console.log('Datos enviados correctamente:', response.data);
 
-            navigate(`/opciones/${response.data}`);  // Redireccionar con parámetros
+            navigate(`/opciones/${data}`);  // Redireccionar con parámetros
         })
         .catch(error => {
             console.error('Error al enviar datos:', error);

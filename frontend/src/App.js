@@ -12,11 +12,11 @@ import LoginEmpleado from './login-empleado';
 import AdminDashboard from './adminDashboard';
 import { AuthProvider } from './AuthContext';
 import EmpleadoDashboard from './empleadoDashboard';
-import Publicacion from './publicacion'
+import Publicacion from './publicacion';
+import Notificaciones from './notificaciones'; 
 import Opciones from './opciones';
 
 function App() {
-
   return (
     <div className="App">
       <BrowserRouter>
@@ -36,6 +36,7 @@ function App() {
           <Route path="/empleadoDashboard" element={<EmpleadoDashboard />} />
           <Route path='/publicacion/:id' element={<Publicacion />} />
           <Route path="/opciones/:data" element={<Opciones/>} />
+          <Route path="/notificaciones" element={<Notificaciones />} /> {/* Añade esta línea */}
         </Routes>
         </AuthProvider>
       </BrowserRouter>
@@ -43,4 +44,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

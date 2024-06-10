@@ -1,0 +1,44 @@
+.navbar-custom {
+    background-color: #24242c !important; /* Color negro menos oscuro */
+}
+
+.navbar-custom .nav-link {
+    color: #cccccc !important; /* Color gris para los enlaces */
+}
+
+.navbar-custom .nav-link.active {
+    color: #ffffff !important; /* Color blanco para el enlace activo */
+}
+
+.navbar-custom .navbar-toggler-icon {
+    filter: brightness(0) invert(1); /* Icono del toggler en blanco */
+}
+
+.navbar-custom .bell-icon {
+    color: #ffffff; /* Color blanco para el icono de la campana */
+    font-size: 1.2rem; /* Tamaño del icono de la campana */
+}
+
+.notification-button {
+    position: relative;
+}
+
+.notification-count {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 4px;
+    font-size: 0.8rem;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.navbar-custom .nav-item:hover .nav-link {
+    color: white !important; /* Cambia el color del texto al pasar el cursor */
+    transition: color 0.3s ease; /* Agrega una transición suave */
+}
