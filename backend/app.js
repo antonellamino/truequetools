@@ -311,6 +311,8 @@ app.get('/productos-usuario', async (req, res) => {
 
 
 
+
+
 //prueba
 // Importar Bookshelf y el modelo de usuario
 // Endpoint para obtener información de usuarios por ids, devuelve el correo, con el id
@@ -514,6 +516,28 @@ app.post('/agregar-respuesta', async (req, res) => {
         res.status(500).json({ message: 'Error del servidor' });
     }
 });
+
+app.get('/productos-truequear', async (req,res) => {
+    try{
+
+        const { productoId, usuarioId, categoriaId } = req.query.data;
+
+        console.log(productoId);
+        console.log(usuarioId);
+        
+        const productos = await Producto.query((p) => {
+            p.where('productos.usuario_id', usuarioId)
+              .join('categorias', 'productos.categoria_id', 'categorias.id');
+        }).fetchAll();
+        
+        res.json({productos});
+    }
+        catch (error) {
+        console.error('error al obtener los productos:', error);
+        res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
+    }
+});
+
 
 // iniciar servidor
 app.listen(PORT, () => {
