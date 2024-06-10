@@ -133,11 +133,15 @@ const Publicacion = () => {
             {producto ? (
                 <div>
                     <h1>{producto.nombre}</h1>
-                    <Slider {...settings}>
-                        {[producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4].map((img, index) => (
-                            img ? <div key={index}><img src={`data:image/jpeg;base64,${img}`} alt={`Imagen ${index + 1}`} /></div> : null
-                        ))}
-                    </Slider>
+                    {producto.imagen_1 === null ? (
+                        <img src="/logo_2.svg" alt="Default Logo" />
+                    ) : (
+                        <Slider {...settings}>
+                            {[producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4].map((img, index) => (
+                                img ? <div key={index}><img src={`data:image/jpeg;base64,${img}`} alt={`Imagen ${index + 1}`} /></div> : null
+                            ))}
+                        </Slider>
+                    )}
                     <p>Descripción</p>
                     <p>{producto.descripcion}</p>
                     <p>Usuario</p>
@@ -148,11 +152,8 @@ const Publicacion = () => {
                     <p>{producto.nombre_sucursal}</p>
                 </div>
             ) : (
-            <p>Cargando...</p>
+                <p>Cargando...</p>
             )}
-            
-            
-
             <div className="comentarios-container">
                 <h2>Comentarios</h2>
                 {comentarios.length > 0 ? (
