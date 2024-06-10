@@ -128,20 +128,26 @@ const Publicacion = () => {
 
     return (
         <Fragment>
-        <Navbar />
-        <div className="publicacion-container">
-            {producto ? (
-                <div>
-                    <h1>{producto.nombre}</h1>
-                    {producto.imagen_1 === null ? (
-                        <img src="/logo_2.svg" alt="Default Logo" />
-                    ) : (
-                        <Slider {...settings}>
-                            {[producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4].map((img, index) => (
-                                img ? <div key={index}><img src={`data:image/jpeg;base64,${img}`} alt={`Imagen ${index + 1}`} /></div> : null
-                            ))}
-                        </Slider>
-                    )}
+            <Navbar />
+            <div className="publicacion-container">
+                {producto ? (
+                    <div>
+                        <h1>{producto.nombre}</h1>
+                        {producto.imagen_1 === null ? (
+                            <img src="/logo_2.svg" alt="Default Logo" />
+                        ) : (
+                            <>
+                                {producto.imagen_2 === null ? (
+                                    <img src={`data:image/jpeg;base64,${producto.imagen_1}`} alt="Imagen 1" />
+                                ) : (
+                                    <Slider {...settings}>
+                                        {[producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4].filter(img => img !== null).map((img, index) => (
+                                            <div key={index}><img src={`data:image/jpeg;base64,${img}`} alt={`Imagen ${index + 1}`} /></div>
+                                        ))}
+                                    </Slider>
+                                )}
+                            </>
+                        )}
                     <p>Descripción</p>
                     <p>{producto.descripcion}</p>
                     <p>Usuario</p>
