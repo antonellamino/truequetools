@@ -10,15 +10,15 @@ const Notificaciones = () => {
         const fetchNotificaciones = async () => {
             const data = [
                 { id: 1, mensaje: 'Tienes una nueva oferta de trueque.', leida: false, link: '/oferta-trueque' },
-                { id: 2, mensaje: 'Tu producto ha sido vendido.', leida: true, link: '/producto-vendido' },
+                { id: 2, mensaje: 'Tu producto ha sido vendido.', leida: false, link: null },
                 { id: 3, mensaje: 'Tienes un nuevo mensaje.', leida: false, link: null },
-                { id: 4, mensaje: 'Se ha actualizado tu perfil.', leida: true, link: '/perfil-actualizado' },
+                { id: 4, mensaje: 'Se ha actualizado tu perfil.', leida: true, link: null },
                 { id: 5, mensaje: 'Tienes una nueva solicitud de amistad de AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.', leida: false, link: '/solicitud-amistad' },
                 { id: 6, mensaje: 'Tu pedido ha sido enviado.', leida: false, link: '/pedido-enviado' },
                 { id: 7, mensaje: 'Tienes una nueva tarea asignada.', leida: true, link: '/nueva-tarea' },
-                { id: 8, mensaje: 'Tu factura está lista para descargar.', leida: false, link: '/factura-lista' },
+                { id: 8, mensaje: 'Tu factura está lista para descargar.', leida: true, link: '/factura-lista' },
                 { id: 9, mensaje: 'Se ha publicado un nuevo artículo en el blog.', leida: true, link: '/nuevo-articulo' },
-                { id: 10, mensaje: 'Hoy es el último día para completar la encuesta.', leida: false, link: '/encuesta' },
+                { id: 10, mensaje: 'Hoy es el último día para completar la encuesta.', leida: true, link: '/encuesta' },
 
             ];
             setNotificaciones(data);

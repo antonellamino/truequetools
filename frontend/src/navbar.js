@@ -15,6 +15,8 @@ const Navbar = () => {
         navigate('/logout'); // Redirige a la página de logout
     }
 
+
+    
     const handleNotificationClick = () => {
         navigate('/notificaciones'); // Redirige a la página de notificaciones
     }
