@@ -14,7 +14,7 @@ const Navbar = () => {
     }
 
     const isHomePage = location.pathname === '/';
-    const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };   //si es home el color es gris
+    const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };   // Si es home, el color es gris
 
     return (
         <Fragment>
@@ -44,6 +44,11 @@ const Navbar = () => {
                             {isAuthenticated && (
                                 <li className="nav-item">
                                     <NavLink className="nav-link" to="/ClienteDashboard" activeClassName="active">Ver mis productos</NavLink>
+                                </li>
+                            )}
+                            {isAuthenticated && (
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/truequesPendientes" activeClassName="active">Trueques Pendientes</NavLink>
                                 </li>
                             )}
                             {isAuthenticated ? (
