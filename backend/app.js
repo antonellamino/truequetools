@@ -517,27 +517,23 @@ app.post('/agregar-respuesta', async (req, res) => {
     }
 });
 
-app.get('/productos-truequear', async (req,res) => {
-    try{
+app.get('/productos-truequear', async (req, res) => {
+    try {
+        const { usuarioId, categoriaId } = req.query;
 
-        const { productoId, usuarioId, categoriaId } = req.query.data;
-
-        console.log(productoId);
-        console.log(usuarioId);
-        
-        const productos = await Producto.query((p) => {
-            p.where('productos.usuario_id', usuarioId)
-              .join('categorias', 'productos.categoria_id', 'categorias.id');
+        const productos = await Producto.query(p => {
+            p.where('usuario_id', usuarioId)
+             .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+             .join('categorias', 'productos.categoria_id', 'categorias.id')
+             .select('productos.*', 'categorias.nombre as nombre_categoria');
         }).fetchAll();
-        
-        res.json({productos});
-    }
-        catch (error) {
-        console.error('error al obtener los productos:', error);
-        res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
+
+        res.json({ productos });
+    } catch (error) {
+        console.error('Error al obtener los productos:', error);
+        res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
     }
 });
-
 
 // iniciar servidor
 app.listen(PORT, () => {
