@@ -1,3 +1,5 @@
+
+
 .publicacion-container {
     max-width: 800px;
     margin: 0 auto;
@@ -15,12 +17,17 @@
 }
 
 .publicacion-container img {
-    display: block;
-    margin: 0 auto 20px;
-    max-width: 100%;
-    height: auto;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: block;           /* Establece la imagen como un bloque, lo que permite aplicar márgenes automáticos */
+    margin: 0 auto 20px;      /* Centra la imagen horizontalmente y añade un margen inferior de 20px */
+    max-width: 100%;          /* Asegura que la imagen nunca sea más ancha que su contenedor */
+    height: 500px;            /* Establece una altura fija de 500px para todas las imágenes */
+    border-radius: 12px;      /* Redondea las esquinas de la imagen para dar un aspecto suavizado */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);/* Añade una sombra ligera para dar profundidad */
+}
+/*rgba(0, 0, 0, 0.1); */
+
+.publicacion-container h2{
+    color:#fff;
 }
 
 .publicacion-container p {
