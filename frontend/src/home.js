@@ -53,7 +53,7 @@ const Home = () => {
             {productos.length > 0 ? (
                 <div className="row">
                     {productos.map(producto => (
-                        <div key={producto.id} className="col-md-4 mb-3">
+                        <div key={producto.id} className="col-md-4 mb-3 d-flex justify-content-center">
                             <CardProducto
                                 id = {producto.id}
                                 imagenSrc={producto.imagen_1 ? `data:image/jpeg;base64,${producto.imagen_1}` : './logo_2.svg'}
