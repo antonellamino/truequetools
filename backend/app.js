@@ -4,7 +4,7 @@ const knex = require('knex');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
-const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion } = require('./models');
+const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion} = require('./models');
 
 
 // Configuración de Bookshelf
@@ -551,6 +551,20 @@ app.get('/notificaciones', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor al obtener las notificaciones' });
     }
 });
+
+// Endpoint para obtener la cantidad de notificaciones no leídas de un usuario
+app.get('/notificaciones/no-leidas', async (req, res) => {
+    const idUsuario = req.query.userId;
+    try {
+        // Consultar la base de datos para obtener la cantidad de notificaciones no leídas
+        const count = await Notificacion.where({ id_usuario: idUsuario, leido: false }).count();
+        res.json({ count });
+    } catch (error) {
+        console.error('Error al obtener la cantidad de notificaciones no leídas:', error);
+        res.status(500).json({ error: 'Error interno del servidor al obtener la cantidad de notificaciones no leídas' });
+    }
+});
+
 
 
 
