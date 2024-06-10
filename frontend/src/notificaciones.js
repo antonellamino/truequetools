@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import './notificaciones.css';
 import Navbar from './navbar';
-import axios from 'axios'; // Importa axios para realizar solicitudes HTTP
+import axios from 'axios';
 import { AuthContext } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -21,7 +21,7 @@ const Notificaciones = () => {
         .catch(error => {
             console.error('Error al obtener las notificaciones:', error);
         });
-    }, []);
+    }, [userId]); // Cambio aquí para que el efecto se ejecute cuando userId cambie
 
     return (
         <div>
