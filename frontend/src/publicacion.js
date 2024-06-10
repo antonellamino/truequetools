@@ -108,22 +108,18 @@ const Publicacion = () => {
 
     //al apretar el boton, guardo los datos
     const enviarDatos = (producto) => {
-        const data = new URLSearchParams({
+        const data = {
             productoId: producto.id,
             //el user id es del propietarip
             usuarioId: userId,
             categoriaId: producto.categoria_id
-        }).toString();
-
-        console.log(data);
+        }
 
         // Envío de datos utilizando parámetros de consulta en una solicitud GET
         axios.get(`${backendUrl}/productos-truequear`,{params:{data}})
             .then(response => {
             console.log('Datos enviados correctamente:', response.data);
-            navigate(`/opciones/${data}`);  // Redireccionar con parámetros
-
-            
+            navigate(`/opciones/${data}`);  // Redireccionar con parámetros            
         })
         .catch(error => {
             console.error('Error al enviar datos:', error);
