@@ -13,6 +13,7 @@ import AdminDashboard from './adminDashboard';
 import { AuthProvider } from './AuthContext';
 import EmpleadoDashboard from './empleadoDashboard';
 import Publicacion from './publicacion'
+import Opciones from './opciones';
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/empleadoDashboard" element={<EmpleadoDashboard />} />
           <Route path='/publicacion/:id' element={<Publicacion />} />
+          <Route path="/opciones/:data" element={<Opciones/>} />
         </Routes>
         </AuthProvider>
       </BrowserRouter>

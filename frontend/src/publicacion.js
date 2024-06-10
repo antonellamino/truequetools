@@ -8,7 +8,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Footer from './footer';
 import Navbar from './navbar';
-
+import { useNavigate } from 'react-router-dom';
 
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -21,6 +21,10 @@ const Publicacion = () => {
     const [nuevoComentario, setNuevoComentario] = useState('');
     const [esCreador, setEsCreador] = useState(false);
     const [respuesta, setNuevaRespuesta] = useState('');
+
+    const navigate = useNavigate(); // Se obtiene el hook useNavigate
+   
+
 
     useEffect(() => {
         obtenerProducto(id);
@@ -101,6 +105,31 @@ const Publicacion = () => {
 
     console.log(esCreador);
 
+
+    //al apretar el boton, guardo los datos
+    const enviarDatos = (producto) => {
+        const data = new URLSearchParams({
+            productoId: producto.id,
+            //el user id es del propietarip
+            usuarioId: userId,
+            categoriaId: producto.categoria_id
+        }).toString();
+
+        console.log(data);
+
+        // Envío de datos utilizando parámetros de consulta en una solicitud GET
+        axios.get(`${backendUrl}/productos-truequear`,{params:{data}})
+            .then(response => {
+            console.log('Datos enviados correctamente:', response.data);
+            navigate(`/opciones/${data}`);  // Redireccionar con parámetros
+
+            
+        })
+        .catch(error => {
+            console.error('Error al enviar datos:', error);
+        });
+    };
+
     return (
         <Fragment>
         <Navbar />
@@ -170,7 +199,12 @@ const Publicacion = () => {
                 {!isAuthenticated && (
                     <p>Debes iniciar sesión para comentar.</p>
                 )}
+
+                
             </div>
+            <button onClick={() => enviarDatos(producto)}>
+             Truequear
+            </button>
         </div>
        <Footer/>
         </Fragment>
