@@ -1,12 +1,14 @@
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import Header from './header';
 import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
+import './navbar.css';
 
 const Navbar = () => {
     const { isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
     const navigate = useNavigate();
     const location = useLocation();
+    const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para el dropdown
 
     const handleCerrarSesion = () => {
         logout(); // Cierra sesión utilizando el contexto de autenticación
@@ -16,10 +18,14 @@ const Navbar = () => {
     const isHomePage = location.pathname === '/';
     const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };   // Si es home, el color es gris
 
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen); // Alterna el estado del dropdown
+    }
+
     return (
         <Fragment>
             <Header />
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+            <nav className="navbar navbar-expand-lg navbar-dark navbar-custom">
                 <div className="container-fluid">
                     <ul className="navbar-nav">
                         <li className="nav-item">
@@ -61,6 +67,25 @@ const Navbar = () => {
                                 </li>
                             )}
                         </ul>
+                        {isAuthenticated && (
+                            <div className="nav-item dropdown">
+                                <button
+                                    className="nav-link btn btn-link dropdown-toggle"
+                                    id="navbarDropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded={dropdownOpen}
+                                    onClick={toggleDropdown}
+                                    style={{ color: 'white' }}
+                                >
+                                    <i className="fas fa-bell"></i>
+                                </button>
+                                <div className={`dropdown-menu dropdown-menu-right ${dropdownOpen ? 'show' : ''}`} aria-labelledby="navbarDropdown">
+                                    <NavLink className="dropdown-item" to="/notificaciones">Notificación 1</NavLink>
+                                    <NavLink className="dropdown-item" to="/notificaciones">Notificación 2</NavLink>
+                                    <NavLink className="dropdown-item" to="/notificaciones">Notificación 3</NavLink>
+                                </div>
+                            </div>
+                        )}
                            {/* <form className="d-flex">
                             <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" />
                             <button className="btn btn-outline-light" type="submit">Buscar</button>

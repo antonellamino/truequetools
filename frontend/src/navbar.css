@@ -1,0 +1,26 @@
+.navbar-custom {
+    background-color: #24242c !important; /* Color negro menos oscuro */
+}
+.navbar-custom .nav-link {
+    color: #ffffff !important; /* Color blanco para los enlaces */
+}
+.navbar-custom .nav-link:hover {
+    color: #cccccc !important; /* Color gris claro al pasar el ratón */
+}
+.navbar-custom .navbar-toggler-icon {
+    filter: brightness(0) invert(1); /* Icono del toggler en blanco */
+}
+.navbar-custom .dropdown-menu {
+    background-color: #333333; /* Fondo del dropdown en gris oscuro */
+}
+.navbar-custom .dropdown-item {
+    color: #ffffff !important; /* Color blanco para los elementos del dropdown */
+}
+.navbar-custom .dropdown-item:hover {
+    background-color: #444444; /* Color de fondo al pasar el ratón por encima */
+}
+.navbar-custom .bell-icon {
+    color: #ffffff; /* Color blanco para el icono de la campana */
+    font-size: 1.2rem; /* Tamaño del icono de la campana */
+    margin-right: 5px; /* Espacio entre el icono de la campana y el texto */
+}
