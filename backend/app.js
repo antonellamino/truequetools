@@ -4,7 +4,7 @@ const knex = require('knex');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
-const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario } = require('./models');
+const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion } = require('./models');
 
 
 // Configuración de Bookshelf
@@ -66,6 +66,7 @@ app.post('/registro-cliente', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor al registrar el usuario' });
     }
 });
+
 
 
 
@@ -537,6 +538,20 @@ app.get('/productos-truequear', async (req,res) => {
         res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
     }
 });
+
+
+// Endpoint para obtener notificaciones
+app.get('/notificaciones', async (req, res) => {
+    const idusuario = req.query.userId; // Accede al userId a través de req.query
+    try {
+        const notificaciones = await Notificacion.where({ id_usuario: idusuario }).fetchAll(); // Usa fetchAll() directamente después de where()
+        res.json({ notificaciones });
+    } catch (error) {
+        console.error('Error al obtener las notificaciones:', error);
+        res.status(500).json({ error: 'Error interno del servidor al obtener las notificaciones' });
+    }
+});
+
 
 
 // iniciar servidor

@@ -5,7 +5,7 @@ import { AuthContext } from './AuthContext'; // Importa el contexto de autentica
 import './navbar.css';
 
 const Navbar = () => {
-    const { isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
+    const { userId,isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
     const navigate = useNavigate();
     const location = useLocation();
     const [unreadNotifications, setUnreadNotifications] = useState(5); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
@@ -18,7 +18,7 @@ const Navbar = () => {
 
     
     const handleNotificationClick = () => {
-        navigate('/notificaciones'); // Redirige a la página de notificaciones
+        navigate(`/notificaciones/${userId}`); // Redirige a la página de notificaciones
     }
 
     const isHomePage = location.pathname === '/';
