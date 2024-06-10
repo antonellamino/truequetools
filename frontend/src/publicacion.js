@@ -119,7 +119,8 @@ const Publicacion = () => {
         axios.get(`${backendUrl}/productos-truequear`,{params:{data}})
             .then(response => {
             console.log('Datos enviados correctamente:', response.data);
-            navigate(`/opciones/${data}`);  // Redireccionar con parámetros
+
+            navigate(`/opciones/${response.data}`);  // Redireccionar con parámetros
         })
         .catch(error => {
             console.error('Error al enviar datos:', error);
@@ -133,8 +134,10 @@ const Publicacion = () => {
             {producto ? (
                 <div>
                     <h1>{producto.nombre}</h1>
+
+                    
                     {producto.imagen_1 === null ? (
-                        <img src="/logo_2.svg" alt="Default Logo" />
+                        <img src="/logo_2.svg" alt="Default Logo" />  
                     ) : (
                         <Slider {...settings}>
                             {[producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4].map((img, index) => (
