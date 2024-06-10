@@ -8,19 +8,19 @@ const Navbar = () => {
     const { isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
     const navigate = useNavigate();
     const location = useLocation();
-    const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para el dropdown
+    const [unreadNotifications, setUnreadNotifications] = useState(5); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
 
     const handleCerrarSesion = () => {
         logout(); // Cierra sesión utilizando el contexto de autenticación
         navigate('/logout'); // Redirige a la página de logout
     }
 
+    const handleNotificationClick = () => {
+        navigate('/notificaciones'); // Redirige a la página de notificaciones
+    }
+
     const isHomePage = location.pathname === '/';
     const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };   // Si es home, el color es gris
-
-    const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen); // Alterna el estado del dropdown
-    }
 
     return (
         <Fragment>
@@ -68,29 +68,15 @@ const Navbar = () => {
                             )}
                         </ul>
                         {isAuthenticated && (
-                            <div className="nav-item dropdown">
-                                <button
-                                    className="nav-link btn btn-link dropdown-toggle"
-                                    id="navbarDropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded={dropdownOpen}
-                                    onClick={toggleDropdown}
-                                    style={{ color: 'white' }}
-                                >
-                                    <i className="fas fa-bell"></i>
+                            <div className="d-flex align-items-center"> {/* Añade una clase d-flex y align-items-center */}
+                                <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
+                                    <i className="fas fa-bell bell-icon"></i>
+                                    {unreadNotifications > 0 && (
+                                        <span className="notification-count">{unreadNotifications}</span>
+                                    )}
                                 </button>
-                                <div className={`dropdown-menu dropdown-menu-right ${dropdownOpen ? 'show' : ''}`} aria-labelledby="navbarDropdown">
-                                    <NavLink className="dropdown-item" to="/notificaciones">Notificación 1</NavLink>
-                                    <NavLink className="dropdown-item" to="/notificaciones">Notificación 2</NavLink>
-                                    <NavLink className="dropdown-item" to="/notificaciones">Notificación 3</NavLink>
-                                </div>
                             </div>
                         )}
-                           {/* <form className="d-flex">
-                            <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" />
-                            <button className="btn btn-outline-light" type="submit">Buscar</button>
-                        </form>
-                        */}
                     </div>
                 </div>
             </nav>
