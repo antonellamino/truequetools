@@ -1,28 +1,43 @@
-import React, { Fragment, useContext, useState } from 'react';
+import React, { Fragment, useContext, useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import Header from './header';
+import axios from 'axios'; // Importa axios para realizar solicitudes HTTP
 import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
 import './navbar.css';
 
+const backendUrl = process.env.REACT_APP_BACK_URL;
+
 const Navbar = () => {
-    const { isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
+    const { userId, isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
     const navigate = useNavigate();
     const location = useLocation();
-    const [unreadNotifications, setUnreadNotifications] = useState(5); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
+    const [unreadNotifications, setUnreadNotifications] = useState(0); // Número de notificaciones no leídas, inicialmente cero
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            // Realiza la solicitud HTTP para obtener la cantidad de notificaciones no leídas
+            axios.get(`${backendUrl}/notificaciones/no-leidas`, { params: { userId } })
+                .then(response => {
+                    const count = response.data.count; // Obtiene la cantidad de notificaciones no leídas
+                    setUnreadNotifications(count);
+                })
+                .catch(error => {
+                    console.error('Error al obtener la cantidad de notificaciones no leídas:', error);
+                });
+        }
+    }, [userId, isAuthenticated]);
 
     const handleCerrarSesion = () => {
         logout(); // Cierra sesión utilizando el contexto de autenticación
         navigate('/logout'); // Redirige a la página de logout
     }
 
-
-    
     const handleNotificationClick = () => {
-        navigate('/notificaciones'); // Redirige a la página de notificaciones
+        navigate(`/notificaciones/${userId}`); // Redirige a la página de notificaciones
     }
 
     const isHomePage = location.pathname === '/';
-    const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };   // Si es home, el color es gris
+    const homeButtonStyle = isHomePage ? {} : { color: '#ccc' }; // Si es home, el color es gris
 
     return (
         <Fragment>
@@ -70,7 +85,7 @@ const Navbar = () => {
                             )}
                         </ul>
                         {isAuthenticated && (
-                            <div className="d-flex align-items-center"> {/* Añade una clase d-flex y align-items-center */}
+                            <div className="d-flex align-items-center">
                                 <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
                                     <i className="fas fa-bell bell-icon"></i>
                                     {unreadNotifications > 0 && (

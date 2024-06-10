@@ -1,63 +1,48 @@
-import { useLocation } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import './opciones.css';
+
+const backendUrl = process.env.REACT_APP_BACK_URL;
 
 
 // navigate(`/opciones/${data}`); 
 const Opciones = () => {
-    const location = useLocation();
-
-    const searchParams = new URLSearchParams(location.search);
-    const usuarioId = searchParams.get('usuarioId');
-    const categoriaId = searchParams.get('categoriaId');
-
+    const { productoId, usuarioId, categoriaId } = useParams();
     const [productos, setProductos] = useState([]);
 
     useEffect(() => {
-        //si tengo un usuario y una categoria que buscar
-        console.log("aaaaaaaaa")
-        console.log(usuarioId)
-        console.log(categoriaId)
-        if (usuarioId && categoriaId) {
-            //consulta al back para traerme los productos
-            axios.get(`http://localhost:5000/productos-truequear`, {
-                params: { usuarioId, categoriaId }
-            })
-            .then(response => {
-                setProductos(response.data.productos);
-            })
-            .catch(error => {
-                console.error('Error al cargar los productos:', error);
-            });
-        }
-    }, [usuarioId, categoriaId]);
+        console.log(productoId, usuarioId, categoriaId);
 
-    /*
-    useEffect(() => {
-        axios.get(`${backendUrl}/productos`)
-            .then(response => {
-                setProductos(response.data.productos);
-                const userIds = response.data.productos.map(producto => producto.usuario_id);
-                obtenerUsuarios(userIds);
-            })
-            .catch(error => {
-                console.error('Error al obtener los productos:', error);
-            });
-    } , [] );
-    */
+        axios.get(`${backendUrl}/productos-truequear`, { params: { productoId, usuarioId, categoriaId } })
+        .then(response => {
+            console.log('Datos obtenidos correctamente:', response.data);
+            const productosArray = response.data.productos; // Obtener el array de productos de la respuesta
+            setProductos(productosArray); // Asignar el array de productos al estado
+        })
+        .catch(error => {
+            console.error('Error al obtener datos:', error);
+        });
+    }, [productoId, usuarioId, categoriaId]);
+
+    const seleccionar = () => {
+        console.log("a");
+    };
 
     return (
-        <div>
-            <h1>Opciones de Trueque para la Categoría: {categoriaId}</h1>
-            {productos.map((producto, index) => (
-                <div key={index}>
-                    <h2>{producto.nombre}</h2>
-                    <img src={`data:image/jpeg;base64,${producto.imagen_1}`} alt={`Imagen de ${producto.nombre}`} />
-                    {/* Añadir más detalles de cada producto según necesites */}
+        <div className="trueque-options-container">
+            <h1>Opciones de Trueque</h1>
+            {productos.map(producto => (
+                <div key={producto.id} className="trueque-option">
+                    <img 
+                        src={producto.imagen_1 ? `data:image/jpeg;base64,${producto.imagen_1}` : '/logo_2.svg'}
+                        alt="Imagen del producto"
+                    />
+                    <h5>{producto.nombre}</h5>
+                    <button className="btn btn-primary" onClick={() => seleccionar(producto)}>Seleccionar</button>
                 </div>
             ))}
         </div>
     );
 };
-
 export default Opciones;

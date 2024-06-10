@@ -4,7 +4,7 @@ const knex = require('knex');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
-const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario } = require('./models');
+const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion} = require('./models');
 
 
 // Configuración de Bookshelf
@@ -66,6 +66,7 @@ app.post('/registro-cliente', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor al registrar el usuario' });
     }
 });
+
 
 
 
@@ -517,26 +518,51 @@ app.post('/agregar-respuesta', async (req, res) => {
     }
 });
 
-app.get('/productos-truequear', async (req,res) => {
-    try{
+app.get('/productos-truequear', async (req, res) => {
+    try {
+        const { usuarioId, categoriaId } = req.query;
 
-        const { productoId, usuarioId, categoriaId } = req.query.data;
-
-        console.log(productoId);
-        console.log(usuarioId);
-        
-        const productos = await Producto.query((p) => {
-            p.where('productos.usuario_id', usuarioId)
-              .join('categorias', 'productos.categoria_id', 'categorias.id');
+        const productos = await Producto.query(p => {
+            p.where('usuario_id', usuarioId)
+             .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+             .join('categorias', 'productos.categoria_id', 'categorias.id')
+             .select('productos.*', 'categorias.nombre as nombre_categoria');
         }).fetchAll();
-        
-        res.json({productos});
-    }
-        catch (error) {
-        console.error('error al obtener los productos:', error);
-        res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
+
+        res.json({ productos });
+    } catch (error) {
+        console.error('Error al obtener los productos:', error);
+        res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
     }
 });
+
+
+// Endpoint para obtener notificaciones
+app.get('/notificaciones', async (req, res) => {
+    const idusuario = req.query.userId; // Accede al userId a través de req.query
+    try {
+        const notificaciones = await Notificacion.where({ id_usuario: idusuario }).fetchAll(); // Usa fetchAll() directamente después de where()
+        res.json({ notificaciones });
+    } catch (error) {
+        console.error('Error al obtener las notificaciones:', error);
+        res.status(500).json({ error: 'Error interno del servidor al obtener las notificaciones' });
+    }
+});
+
+// Endpoint para obtener la cantidad de notificaciones no leídas de un usuario
+app.get('/notificaciones/no-leidas', async (req, res) => {
+    const idUsuario = req.query.userId;
+    try {
+        // Consultar la base de datos para obtener la cantidad de notificaciones no leídas
+        const count = await Notificacion.where({ id_usuario: idUsuario, leido: false }).count();
+        res.json({ count });
+    } catch (error) {
+        console.error('Error al obtener la cantidad de notificaciones no leídas:', error);
+        res.status(500).json({ error: 'Error interno del servidor al obtener la cantidad de notificaciones no leídas' });
+    }
+});
+
+
 
 
 // iniciar servidor
