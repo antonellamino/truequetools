@@ -7,6 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { setHours, setMinutes } from 'date-fns';
 import Footer from './footer';
 import Navbar from './navbar';
+import './truequesPendientes.css';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -87,6 +88,19 @@ const TruequesPendientes = () => {
                         {trueques.map((trueque) => (
                             <li key={trueque.id}>
                                 Trueque entre {trueque.propietario.nombre} y {trueque.ofertante.nombre}
+                                {/* aca tendria que ir la foto de ambos productos */}
+                                <div>
+
+                                <img src={trueque.imagenPropietario ? `data:image/jpeg;base64,${trueque.imagenPropietario}` : '/logo_2.svg'}
+                                alt="Imagen del producto propietario"
+                                ></img>
+
+                                <img src={trueque.imagenOfertante ? `data:image/jpeg;base64,${trueque.imagenOfertante}` : '/logo_2.svg'}
+                                alt="Imagen del producto ofertante"
+                                ></img>
+                                
+                                </div>
+
                                 <div>
                                     {trueque.propietario.id === userId ? (
                                         <div>

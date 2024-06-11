@@ -913,19 +913,28 @@ app.get('/mis_trueques', async (req, res) => {
         if (!usuario_id) {
             return res.status(400).json({ error: 'Usuario ID es requerido' });
         }
-        // Construyendo la consulta para buscar trueques donde el usuario es propietario o ofertante
+        
         const trueques = await Trueque.query(qb => {
-            qb.where('id_propietario', usuario_id).orWhere('id_ofertante', usuario_id);
+            qb.where('id_propietario', usuario_id)
+              .orWhere('id_ofertante', usuario_id)
+              .leftJoin('productos as propietario_productos', 'trueque.id_producto_propietario', 'propietario_productos.id')
+              .leftJoin('productos as ofertante_productos', 'trueque.id_producto_ofertante', 'ofertante_productos.id')
+              .select('trueque.*', 'propietario_productos.imagen_1 as imagenPropietario', 'ofertante_productos.imagen_1 as imagenOfertante');
         }).fetchAll({
-            withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante'] // Asegúrate de que estos nombres coincidan con los métodos definidos en tu modelo Trueque
+            withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante'] 
         });
+        
+        console.log("aaa");
+        console.log(trueques.imagenPropietario);
+        console.log(trueques.imagenOfertante);
+
         res.json({ trueques });
+
     } catch (error) {
         console.error('Error al obtener los trueques:', error);
         res.status(500).json({ error: 'Error al obtener los trueques' });
     }
 });
-
 app.post('/elegir_horario', async (req, res) => {
     try {
         const { idTrueque, fecha } = req.body;
@@ -942,6 +951,25 @@ app.post('/elegir_horario', async (req, res) => {
     }
 });
 
+app.post('/rechazar_trueque',async (req, res) => {
+    try{
+        const { idTrueque } = req.body;
+
+        const trueque = await Trueque.where({ id : idTrueque }).fetch();
+        const estado = "rechazado";
+        trueque.set({ estado });
+
+        await trueque.save();
+
+        res.status(200).json({ message: 'Trueque rechazado con exito' });
+    
+
+    } catch(error) {
+        console.error('Error al rechazar el trueque:', error); // Imprime en consola si hay un error.
+        res.status(500).json({ message: 'Error del servidor' }); // Envía un mensaje de error con un código de estado 500 (Error Interno del Servidor).
+    }
+});
+
 app.post('/aceptar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
@@ -955,40 +983,6 @@ app.post('/aceptar_trueque', async (req, res) => {
     } catch (error) {
         console.error('Error al aceptar el trueque:', error);
         res.status(500).json({ error: 'Error al aceptar el trueque' });
-    }
-});
-
-app.post('/rechazar_trueque',async (req, res) => {
-    try{
-        const { idTrueque } = req.body;
-
-        const trueque = await Trueque.where({ id : idTrueque }).fetch();
-        const estado = "rechazado";
-        trueque.set({ estado });
-
-        await trueque.save();
-
-        res.status(200).json({ message: 'Trueque rechazado con exito' });
-
-
-    } catch(error) {
-        console.error('Error al rechazar el trueque:', error); // Imprime en consola si hay un error.
-        res.status(500).json({ message: 'Error del servidor' }); // Envía un mensaje de error con un código de estado 500 (Error Interno del Servidor).
-    }
-});
-
-app.get('/trueques_Sucursal', async (req, res) => {
-    try {
-        const { idSucursal } = req.query;
-        const trueques = await Trueque.where({
-            sucursal_id: idSucursal,
-            estado: 'pendiente'
-        }).fetchAll();
-
-        res.status(200).json({ trueques });
-    } catch (error) {
-        console.error('Error al obtener los trueques de la sucursal:', error);
-        res.status(500).json({ error: 'Error al obtener los trueques de la sucursal' });
     }
 });
 
