@@ -84,12 +84,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                             )}
                             {isAuthenticated && rol === 3 && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/productosCliente" activeClassName="active">Ver mis productos</NavLink>
-                                </li>
-                            )}
-                            {isAuthenticated && (
-                                <li className="nav-item">
-                                    <NavLink className="nav-link" to="/truequesPendientes" activeClassName="active">Trueques Pendientes</NavLink>
+                                    <NavLink className="nav-link" to="/clienteDashboard" activeClassName="active">Ver mis productos</NavLink>
                                 </li>
                             )}
                             {isAuthenticated && (
