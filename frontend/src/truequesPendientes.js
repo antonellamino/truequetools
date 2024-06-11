@@ -2,13 +2,14 @@ import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios'; 
 
+const backendUrl = process.env.REACT_APP_BACK_URL; 
+
 const TruequesPendientes = () => {
     const { usuarioId } = useParams(); // Obtener el ID del usuario desde la URL
     const [trueques, setTrueques] = useState([]);
     const [error, setError] = useState(null);
     
-    const backendUrl = process.env.REACT_APP_BACKEND_URL; 
-
+    
     useEffect(() => {
         console.log("usuarioId:", usuarioId);  // Esto te mostrará el valor actual de usuarioId
    
@@ -22,7 +23,7 @@ const TruequesPendientes = () => {
     }, [usuarioId]);
 
     const obtenerTrueques = (usuarioId) => {
-        axios.get(`${backendUrl}/mis-trueques`, { params: { usuario_id: usuarioId } })
+        axios.get(`${backendUrl}/mis_trueques`, { params: { usuarioId } })
             .then(response => {
                 setTrueques(response.data.trueques);
             })
@@ -31,6 +32,8 @@ const TruequesPendientes = () => {
                 setError('Error al obtener los trueques pendientes');
             });
     }
+
+
 
     if (!trueques.length && !error) return <div>Cargando trueques...</div>;
     if (error) return <div>Error: {error}</div>;
