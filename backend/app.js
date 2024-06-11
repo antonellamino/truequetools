@@ -639,26 +639,20 @@ app.post('/guardar-trueque',async (req,res) => {
         console.error('Error al guardar el trueque:', error); // Imprime en consola si hay un error.
         res.status(500).json({ message: 'Error del servidor' }); // Envía un mensaje de error con un código de estado 500 (Error Interno del Servidor).
     }
-})
+});
 
-
-app.get('/mis-trueques', async (req, res) => {
+app.get('/mis_trueques', async (req, res) => {
     try {
-        const { usuario_id } = req.query; // Asume que el ID del usuario se pasa como parámetro de consulta
-
-        console.log("AAAAA", usuario_id);
-
+        const { usuario_id } = req.query; // Cambiado de req.body a req.query
         if (!usuario_id) {
             return res.status(400).json({ error: 'Usuario ID es requerido' });
         }
-
         // Construyendo la consulta para buscar trueques donde el usuario es propietario o ofertante
         const trueques = await Trueque.query(qb => {
             qb.where('id_propietario', usuario_id).orWhere('id_ofertante', usuario_id);
         }).fetchAll({
             withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante'] // Asegúrate de que estos nombres coincidan con los métodos definidos en tu modelo Trueque
         });
-
         res.json({ trueques });
     } catch (error) {
         console.error('Error al obtener los trueques:', error);
