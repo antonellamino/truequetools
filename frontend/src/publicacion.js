@@ -192,7 +192,8 @@ const Publicacion = () => {
                                     e.target.reset(); // Limpiar el formulario de respuesta después del envío
                                 }}>
                                     <input type="text" name="respuesta" placeholder="Responder..." />
-                                    <button type="submit">Responder</button>
+                                    <button type="submit" className="btn btn-custom-short btn-custom-primary-short">Responder</button>
+
                                 </form>
                             )}
                         </div>
@@ -207,7 +208,7 @@ const Publicacion = () => {
                             onChange={handleComentarioChange} 
                             placeholder="Escribe un comentario..."
                         />
-                        <button type="submit">Enviar</button>
+                        <button type="submit" className=" btn-custom-short btn-custom-primary-short">Enviar</button>
                     </form>
                 )}
                 {!isAuthenticated && (
@@ -218,7 +219,7 @@ const Publicacion = () => {
             </div>
             {(!esCreador && isAuthenticated && (
                 //productoActual --> producto
-                <button onClick={() => enviarDatos(producto)}>
+                <button type="submit" className=" btn-custom-short btn-custom-primary-short" onClick={() => enviarDatos(producto)}>
                 Truequear
                 </button>
             ))}
