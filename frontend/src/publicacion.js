@@ -16,6 +16,7 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 const Publicacion = () => {
     const { id } = useParams();
     const { userId, isAuthenticated } = useContext(AuthContext);
+    //esto es lo que me ingresan
     const [producto, setProducto] = useState(null);
     const [comentarios, setComentarios] = useState([]);
     const [nuevoComentario, setNuevoComentario] = useState('');
@@ -44,6 +45,7 @@ const Publicacion = () => {
             .catch(error => {
                 console.error('Error al obtener la información del producto:', error);
             });
+
     };
 
     const obtenerComentarios = (id) => {
@@ -105,35 +107,44 @@ const Publicacion = () => {
         const data = {
             productoId: producto.id,
             usuarioId: userId,
-            categoriaId: producto.categoria_id
+            categoriaId: producto.categoria_id,
+            propietarioId: producto.usuario_id
         };
-    
-        const parametros = `${data.productoId}/${data.usuarioId}/${data.categoriaId}`;
+        
+       //producto.id_usuario seria el usuario de la publicacion que muestra
+        const parametros = `${data.productoId}/${data.usuarioId}/${data.categoriaId}/${data.propietarioId}`;
         navigate(`/opciones/${parametros}`);
     }
 
     return (
         <Fragment>
-        <Navbar />
-        <div className="publicacion-container">
-            {producto ? (
-                <div>
-                    <h1>{producto.nombre}</h1>
-
-                    
-                    {producto.imagen_1 === null ? (
-                        <img src="/logo_2.svg" alt="Default Logo" />  
-                    ) : (
-                        <Slider {...settings}>
-                            {[producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4].map((img, index) => (
-                                img ? <div key={index}><img src={`data:image/jpeg;base64,${img}`} alt={`Imagen ${index + 1}`} /></div> : null
-                            ))}
-                        </Slider>
-                    )}
+            <Navbar />
+            <div className="publicacion-container">
+                {producto ? (
+                    <div>
+                        <h1>{producto.nombre}</h1>
+                        {producto.imagen_1 === null ? (
+                            <img src="/logo_2.svg" alt="Default Logo" />
+                        ) : (
+                            <>
+                                {producto.imagen_2 === null ? (
+                                    <img src={`data:image/jpeg;base64,${producto.imagen_1}`} alt="Imagen 1" />
+                                ) : (
+                                    <Slider {...settings}>
+                                        {[producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4].filter(img => img !== null).map((img, index) => (
+                                            <div key={index}><img src={`data:image/jpeg;base64,${img}`} alt={`Imagen ${index + 1}`} /></div>
+                                        ))}
+                                    </Slider>
+                                )}
+                            </>
+                        )}
                     <p>Descripción</p>
                     <p>{producto.descripcion}</p>
                     <p>Usuario</p>
                     <p>{producto.nombre_usuario}</p>
+                    
+                    <p>{producto.usuario_id}</p>
+
                     <p>Categoría</p>
                     <p>{producto.nombre_categoria}</p>
                     <p>Sucursal</p> 
@@ -187,6 +198,7 @@ const Publicacion = () => {
                 
             </div>
             {(!esCreador && isAuthenticated && (
+                //productoActual --> producto
                 <button onClick={() => enviarDatos(producto)}>
                 Truequear
                 </button>
