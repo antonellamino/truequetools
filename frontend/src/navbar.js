@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useState, useEffect} from 'react';
+import React, { Fragment, useState, useEffect} from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import Header from './header';
 import { useAuth } from './AuthContext';
@@ -88,12 +88,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     <NavLink className="nav-link" to="/productosCliente" activeClassName="active">Ver mis productos</NavLink>
                                 </li>
                             )}
-                            {isAuthenticated && (
-                                <li className="nav-item">
-                                    <NavLink className="nav-link" to="/truequesPendientes" activeClassName="active">Trueques Pendientes</NavLink>
-                                </li>
-                            )}
-                            {isAuthenticated && (
+                            {isAuthenticated && rol === 3 &&(
                                 <li className="nav-item">
                                 <button className="nav-link btn" onClick={handleTruequeClick}> Trueques Pendientes </button>
                                 </li>

@@ -60,9 +60,10 @@ const Home = () => {
                 {productosFiltrados.length > 0 ? (
                     <div className="row">
                         {productosFiltrados.map(producto => (
-                            <div key={producto.id} className="col-md-4 mb-3 d-flex justify-content-center">
+                            <div key={producto.id} className="col-md-4 mb-3 justify-content-center">
                                 <CardProducto
-                                    imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : './logo_2.svg'}
+                                    id={producto.id}
+                                    imagenSrc={producto.imagen_1 ? `data:image/jpeg;base64,${producto.imagen_1}` : './logo_2.svg'}
                                     nombreUsuario={obtenerCorreoUsuario(producto.usuario_id)}
                                     titulo={producto.nombre}
                                     descripcion={producto.descripcion}

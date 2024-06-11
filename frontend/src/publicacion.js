@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import './publicacion.css';
-import { useAuth } from './AuthContext';
+import { AuthContext } from './AuthContext';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Footer from './footer';
 import Navbar from './navbar';
+import { useNavigate } from 'react-router-dom';
 
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -23,17 +23,16 @@ const Publicacion = () => {
     const [esCreador, setEsCreador] = useState(false);
     const [respuesta, setNuevaRespuesta] = useState('');
 
-    const navigate = useNavigate();
-
+    const navigate = useNavigate(); // Se obtiene el hook useNavigate
+   
     useEffect(() => {
         obtenerProducto(id);
-        console.log("ID del producto:", id);
         obtenerComentarios(id);
     }, [id]);
 
     useEffect(() => {
         if (producto && userId) {
-            const result = (producto.usuario_id === userId);
+            const result = (producto.usuario_id == userId);
             setEsCreador(result);
         }
     }, [producto, userId]);
@@ -46,6 +45,7 @@ const Publicacion = () => {
             .catch(error => {
                 console.error('Error al obtener la información del producto:', error);
             });
+
     };
 
     const obtenerComentarios = (id) => {
@@ -124,7 +124,6 @@ const Publicacion = () => {
         slidesToScroll: 1
     };
 
-
     //al apretar el boton, guardo los datos
     const enviarDatos = (producto) => {
         const data = {
@@ -165,9 +164,6 @@ const Publicacion = () => {
                     <p>{producto.descripcion}</p>
                     <p>Usuario</p>
                     <p>{producto.nombre_usuario}</p>
-                    
-                    <p>{producto.usuario_id}</p>
-
                     <p>Categoría</p>
                     <p>{producto.nombre_categoria}</p>
                     <p>Sucursal</p> 
