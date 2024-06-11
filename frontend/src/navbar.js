@@ -8,10 +8,11 @@ import './navbar.css';
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const Navbar = ({ actualizarProductosFiltrados }) => {
-    const { userId, isAuthenticated, logout, rol } = useAuth();
+    const { userId,isAuthenticated, logout, rol } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [unreadNotifications, setUnreadNotifications] = useState(5); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
+    const [unreadNotifications, setUnreadNotifications] = useState(0); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
+
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -87,7 +88,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     <NavLink className="nav-link" to="/clienteDashboard" activeClassName="active">Ver mis productos</NavLink>
                                 </li>
                             )}
-                            {isAuthenticated && (
+                            {isAuthenticated && rol === 3 &&(
                                 <li className="nav-item">
                                 <button className="nav-link btn" onClick={handleTruequeClick}> Trueques Pendientes </button>
                                 </li>
@@ -103,7 +104,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                             )}
                         </ul>
                         {isAuthenticated && (
-                            <div className="d-flex align-items-center"> {/* Añade una clase d-flex y align-items-center */}
+                            <div className="d-flex align-items-center">
                                 <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
                                     <i className="fas fa-bell bell-icon"></i>
                                     {unreadNotifications > 0 && (

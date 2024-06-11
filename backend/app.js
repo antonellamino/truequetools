@@ -4,8 +4,7 @@ const knex = require('knex');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
-
-const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion, Trueque, Venta } = require('./models');
+const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion, Trueque, Venta} = require('./models');
 
 
 // Configuración de Bookshelf
@@ -345,6 +344,8 @@ app.post('/usuarios', async (req, res) => {
 
 
 // ------------------------DEMO 2---------------------------------
+
+
 //filtro para sucursal y categoria, devuelve por uno por otro o por los dos o asi deberia funcionar
 app.get('/productos-filtrados', async (req, res) => {
     try {
@@ -590,26 +591,26 @@ app.post('/agregar-respuesta', async (req, res) => {//ok
 });
 
 
-// app.get('/productos-truequear', async (req, res) => {
-//     try {
+app.get('/productos-truequear', async (req, res) => {
+    try {
 
-//         const { productoId, usuarioId, categoriaId } = req.query.data;
+        const { productoId, usuarioId, categoriaId } = req.query;
 
-//         console.log(productoId);
-//         console.log(usuarioId);
+        console.log(productoId);
+        console.log("me llego el usuario", usuarioId);
 
-//         const productos = await Producto.query((p) => {
-//             p.where('productos.usuario_id', usuarioId)
-//                 .join('categorias', 'productos.categoria_id', 'categorias.id');
-//         }).fetchAll();
+        const productos = await Producto.query((p) => {
+            p.where('productos.usuario_id', usuarioId)
+                .join('categorias', 'productos.categoria_id', 'categorias.id');
+        }).fetchAll();
 
-//         res.json({ productos });
-//     }
-//     catch (error) {
-//         console.error('error al obtener los productos:', error);
-//         res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
-//     }
-// });
+        res.json({ productos });
+    }
+    catch (error) {
+        console.error('error al obtener los productos:', error);
+        res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
+    }
+});
 
 
 //filtro para sucursal y categoria, devuelve por uno por otro o por los dos o asi deberia funcionar
@@ -782,23 +783,23 @@ app.post('/agregar-respuesta', async (req, res) => {
 });
 
 
-app.get('/productos-truequear', async (req, res) => {
-    try {
-        const { usuarioId, categoriaId } = req.query;
+// app.get('/productos-truequear', async (req, res) => {
+//     try {
+//         const { usuarioId, categoriaId } = req.query;
 
-        const productos = await Producto.query(p => {
-            p.where('usuario_id', usuarioId)
-                .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
-                .join('categorias', 'productos.categoria_id', 'categorias.id')
-                .select('productos.*', 'categorias.nombre as nombre_categoria');
-        }).fetchAll();
+//         const productos = await Producto.query(p => {
+//             p.where('usuario_id', usuarioId)
+//                 .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+//                 .join('categorias', 'productos.categoria_id', 'categorias.id')
+//                 .select('productos.*', 'categorias.nombre as nombre_categoria');
+//         }).fetchAll();
 
-        res.json({ productos });
-    } catch (error) {
-        console.error('Error al obtener los productos:', error);
-        res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
-    }
-});
+//         res.json({ productos });
+//     } catch (error) {
+//         console.error('Error al obtener los productos:', error);
+//         res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
+//     }
+// });
 
 
 // Endpoint para obtener notificaciones
@@ -909,24 +910,18 @@ app.post('/guardar-trueque', async (req, res) => {
     }
 });
 
-
 app.get('/mis_trueques', async (req, res) => {
     try {
-        const { usuario_id } = req.query; // Asume que el ID del usuario se pasa como parámetro de consulta
-
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAA", usuario_id);
-
+        const { usuario_id } = req.query; // Cambiado de req.body a req.query
         if (!usuario_id) {
             return res.status(400).json({ error: 'Usuario ID es requerido' });
         }
-
         // Construyendo la consulta para buscar trueques donde el usuario es propietario o ofertante
         const trueques = await Trueque.query(qb => {
             qb.where('id_propietario', usuario_id).orWhere('id_ofertante', usuario_id);
         }).fetchAll({
             withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante'] // Asegúrate de que estos nombres coincidan con los métodos definidos en tu modelo Trueque
         });
-
         res.json({ trueques });
     } catch (error) {
         console.error('Error al obtener los trueques:', error);

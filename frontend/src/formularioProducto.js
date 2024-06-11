@@ -16,7 +16,7 @@ const PublicarProductoForm = () => {
     const [fotos, setFotos] = useState([]);
     const [sucursales, setSucursales] = useState([]);
     const [sucursalPreferencia, setSucursalPreferencia] = useState('');
-    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '', sucursal: '', imagen: '' }); //agregue imagen
+    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '', sucursal: '', imagen: '' });
     const [enviado, setEnviado] = useState('');
 
     const resetearForm = () => {
@@ -55,7 +55,7 @@ const PublicarProductoForm = () => {
         if (!categoriaData.categoriaSeleccionada) errores.categoria = 'Por favor selecciona una categoría';
         if (!sucursalPreferencia) errores.sucursal = 'Debe seleccionar una sucursal';
 
-        if (fotos.length > 4 ) errores.imagen = 'Se pueden publicar como máximo 4 imagenes'; //agregado ahora
+        if (fotos.length > 4 ) errores.imagen = 'Se pueden publicar como máximo 4 imagenes';
 
         setErrores(errores);
         return Object.keys(errores).length === 0;

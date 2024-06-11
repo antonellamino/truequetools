@@ -23,7 +23,6 @@ const Publicacion = () => {
     const [respuesta, setNuevaRespuesta] = useState('');
 
     const navigate = useNavigate(); // Se obtiene el hook useNavigate
-
     useEffect(() => {
         obtenerProducto(id);
         obtenerComentarios(id);
@@ -60,6 +59,23 @@ const Publicacion = () => {
         setNuevoComentario(e.target.value);
     };
 
+    const setNotificacion = (idUsuario, comentario) => {
+        const notificacionData = {
+            idUser: idUsuario,
+            comentario: comentario,
+            link: `/publicacion/${id}`
+        };
+
+        axios.post(`${backendUrl}/agregar-notificacion`, notificacionData)
+            .then(response => {
+                console.log("Se agregó la notificación");
+            })
+            .catch(error => {
+                console.error("Error al agregar la notificación de comentario:", error);
+            });
+    };
+
+
     const handleComentarioSubmit = (e) => {
         e.preventDefault();
         axios.post(`${backendUrl}/agregar-comentario`, {
@@ -70,9 +86,30 @@ const Publicacion = () => {
             .then(response => {
                 setNuevoComentario('');
                 obtenerComentarios(id);
+                const comentario = "Tienes un nuevo comentario"
+                const usuarioComentario = producto.usuario_id;
+                setNotificacion(usuarioComentario, comentario);
             })
             .catch(error => {
                 console.error('Error al agregar el comentario:', error);
+            });
+    };
+
+    const handleResponderComentario = (comentarioId, respuesta, idComentario) => {
+        const usuarioComentario = idComentario;
+        axios.post(`${backendUrl}/agregar-respuesta`, {
+            id_comentario: comentarioId,
+            id_usuario: userId,
+            respuesta: respuesta
+        })
+            .then(response => {
+                setNuevaRespuesta('');
+                obtenerComentarios(id);
+                const textoNotificacion = "Tienes una nueva respuesta"
+                setNotificacion(usuarioComentario, textoNotificacion);
+            })
+            .catch(error => {
+                console.error('Error al agregar la respuesta:', error);
             });
     };
 
@@ -82,22 +119,6 @@ const Publicacion = () => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1
-    };
-
-    const handleResponderComentario = (comentarioId, respuesta) => {
-        axios.post(`${backendUrl}/agregar-respuesta`, {
-            id_comentario: comentarioId,
-            id_usuario: userId,
-            respuesta: respuesta
-        })
-            .then(response => {
-                console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuesta}`);
-                setNuevaRespuesta('');
-                obtenerComentarios(id);  // Actualizar los comentarios para incluir la nueva respuesta
-            })
-            .catch(error => {
-                console.error('Error al agregar la respuesta:', error);
-            });
     };
 
     //al apretar el boton, guardo los datos
@@ -142,9 +163,6 @@ const Publicacion = () => {
                         <p>{producto.descripcion}</p>
                         <p>Usuario</p>
                         <p>{producto.nombre_usuario}</p>
-
-                        <p>{producto.usuario_id}</p>
-
                         <p>Categoría</p>
                         <p>{producto.nombre_categoria}</p>
                         <p>Sucursal</p>
@@ -169,11 +187,12 @@ const Publicacion = () => {
                                         e.preventDefault();
                                         const respuesta = e.target.elements.respuesta.value;
 
-                                        handleResponderComentario(comentario.id, respuesta);
+                                        handleResponderComentario(comentario.id, respuesta, comentario.id_usuario);
                                         e.target.reset(); // Limpiar el formulario de respuesta después del envío
                                     }}>
                                         <input type="text" name="respuesta" placeholder="Responder..." />
-                                        <button type="submit">Responder</button>
+                                        <button type="submit" className="btn btn-custom-short btn-custom-primary-short">Responder</button>
+
                                     </form>
                                 )}
                             </div>
@@ -188,7 +207,7 @@ const Publicacion = () => {
                                 onChange={handleComentarioChange}
                                 placeholder="Escribe un comentario..."
                             />
-                            <button type="submit">Enviar</button>
+                            <button type="submit" className=" btn-custom-short btn-custom-primary-short">Enviar</button>
                         </form>
                     )}
                     {!isAuthenticated && (
@@ -199,7 +218,7 @@ const Publicacion = () => {
                 </div>
                 {(!esCreador && isAuthenticated && (
                     //productoActual --> producto
-                    <button onClick={() => enviarDatos(producto)}>
+                    <button type="submit" className=" btn-custom-short btn-custom-primary-short" onClick={() => enviarDatos(producto)}>
                         Truequear
                     </button>
                 ))}

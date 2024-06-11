@@ -24,7 +24,6 @@ import Opciones from './opciones';
 import FormularioVenta from './formularioVenta';
 import TruequesPendientes from './truequesPendientes';
 
-
 function App() {
   return (
     <div className="App">
