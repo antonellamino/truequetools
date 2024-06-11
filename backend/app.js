@@ -597,10 +597,10 @@ app.post('/agregar-respuesta', async (req, res) => {//ok
 app.get('/productos-truequear', async (req, res) => {
     try {
 
-        const { productoId, usuarioId, categoriaId } = req.query.data;
+        const { productoId, usuarioId, categoriaId } = req.query;
 
         console.log(productoId);
-        console.log(usuarioId);
+        console.log("me llego el usuario", usuarioId);
 
         const productos = await Producto.query((p) => {
             p.where('productos.usuario_id', usuarioId)

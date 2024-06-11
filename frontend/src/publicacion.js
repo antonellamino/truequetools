@@ -15,7 +15,7 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const Publicacion = () => {
     const { id } = useParams();
-    const { userId, isAuthenticated } = useContext(AuthContext);
+    const { userId, isAuthenticated, rol } = useContext(AuthContext);
     //esto es lo que me ingresan
     const [producto, setProducto] = useState(null);
     const [comentarios, setComentarios] = useState([]);
@@ -172,7 +172,8 @@ const Publicacion = () => {
                                     e.target.reset(); // Limpiar el formulario de respuesta después del envío
                                 }}>
                                     <input type="text" name="respuesta" placeholder="Responder..." />
-                                    <button type="submit">Responder</button>
+                                    <button type="submit" className="btn btn-custom-short btn-custom-primary-short">Responder</button>
+
                                 </form>
                             )}
                         </div>
@@ -180,14 +181,14 @@ const Publicacion = () => {
                 ) : (
                     <p>No hay comentarios.</p>
                 )}
-                {!esCreador && isAuthenticated && (
+                {!esCreador && isAuthenticated &&  (
                     <form onSubmit={handleComentarioSubmit}>
                         <textarea 
                             value={nuevoComentario} 
                             onChange={handleComentarioChange} 
                             placeholder="Escribe un comentario..."
                         />
-                        <button type="submit">Enviar</button>
+                        <button type="submit" className=" btn-custom-short btn-custom-primary-short">Enviar</button>
                     </form>
                 )}
                 {!isAuthenticated && (
@@ -196,9 +197,9 @@ const Publicacion = () => {
 
                 
             </div>
-            {(!esCreador && isAuthenticated && (
+            {(!esCreador && isAuthenticated && rol != 1 && (
                 //productoActual --> producto
-                <button onClick={() => enviarDatos(producto)}>
+                <button type="submit" className=" btn-custom-short btn-custom-primary-short" onClick={() => enviarDatos(producto)}>
                 Truequear
                 </button>
             ))}
