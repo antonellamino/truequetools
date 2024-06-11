@@ -1,21 +1,17 @@
 .trueque-options-container {
     display: flex;
     flex-direction: column;
-    
     padding: 20px;
 }
 
 .trueque-option {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Para mover el botón a la derecha */
     margin-bottom: 20px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
-
-    
 }
 
 .trueque-option:hover {
@@ -31,16 +27,26 @@
 }
 
 .trueque-option-content {
+    display: flex;
+    flex-direction: column;
     flex: 1;
 }
 
 .trueque-option h5 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.8rem; /* Ajustar el tamaño de fuente según sea necesario */
     color: #333;
+    text-align: left; /* Alinear el texto a la izquierda */
+    margin-bottom: 10px; /* Agregar un pequeño margen inferior */
+}
+
+.trueque-option p {
+    font-size: 1.5rem; /* Ajustar el tamaño de fuente según sea necesario */
+    margin-left: auto; /* Mover el elemento a la derecha */
 }
 
 .trueque-option button {
+    width: 50%; /* Ajustar al 50% del contenedor */
     background-color: #007bff;
     color: #fff;
     border: none;
@@ -49,6 +55,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-left: auto; /* Alinea el botón a la derecha */
+    font-size: 1.2rem;
 }
 
 .trueque-option button:hover {
