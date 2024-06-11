@@ -45,7 +45,6 @@ const Publicacion = () => {
             .catch(error => {
                 console.error('Error al obtener la información del producto:', error);
             });
-
     };
 
     const obtenerComentarios = (id) => {

@@ -942,6 +942,82 @@ app.post('/elegir_horario', async (req, res) => {
     }
 });
 
+app.post('/aceptar_trueque', async (req, res) => {
+    try {
+        const { idTrueque } = req.body;
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
+        const estado = "espera";
+        trueque.set({ estado });
+
+        await trueque.save();
+
+        res.status(200).json({ message: 'Trueque aceptado con éxito' });
+    } catch (error) {
+        console.error('Error al aceptar el trueque:', error);
+        res.status(500).json({ error: 'Error al aceptar el trueque' });
+    }
+});
+
+app.post('/rechazar_trueque',async (req, res) => {
+    try{
+        const { idTrueque } = req.body;
+
+        const trueque = await Trueque.where({ id : idTrueque }).fetch();
+        const estado = "rechazado";
+        trueque.set({ estado });
+
+        await trueque.save();
+
+        res.status(200).json({ message: 'Trueque rechazado con exito' });
+
+
+    } catch(error) {
+        console.error('Error al rechazar el trueque:', error); // Imprime en consola si hay un error.
+        res.status(500).json({ message: 'Error del servidor' }); // Envía un mensaje de error con un código de estado 500 (Error Interno del Servidor).
+    }
+});
+
+app.get('/trueques_Sucursal', async (req, res) => {
+    try {
+        const { idSucursal } = req.query;
+        const trueques = await Trueque.where({
+            sucursal_id: idSucursal,
+            estado: 'pendiente'
+        }).fetchAll();
+
+        res.status(200).json({ trueques });
+    } catch (error) {
+        console.error('Error al obtener los trueques de la sucursal:', error);
+        res.status(500).json({ error: 'Error al obtener los trueques de la sucursal' });
+    }
+});
+
+app.post('/confirmar_trueque', async (req, res) => {
+    try {
+        const { idTrueque } = req.body;
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
+
+        const estado = "completado";
+        trueque.set({ estado });
+
+        await trueque.save();
+
+        res.status(200).json({ message: 'Trueque confirmado exitosamente', trueque });
+    } catch (error) {
+        console.error('Error al confirmar el trueque:', error);
+        res.status(500).json({ error: 'Error al confirmar el trueque' });
+    }
+});
+
+
+
+
+
+
+
+
+
+
 // iniciar servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

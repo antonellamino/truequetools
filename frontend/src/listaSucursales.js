@@ -25,6 +25,9 @@ const ListaSucursales = () => {
         fetchsucursales();
     }, []);
 
+    const ListaTruequesPendientes = (sucursalID) => {
+        navigate(`/ventas${sucursalID}`);
+    }
 
     return (
         <Fragment>
@@ -46,6 +49,7 @@ const ListaSucursales = () => {
                             <td>{sucursal.nombre}</td>
                             <td>{sucursal.direccion}</td>
                             <td>{sucursal.telefono}</td>
+                            <button onClick={ListaTruequesPendientes(sucursal.id)}>Trueques por confirmar</button>
                         </tr>
                     ))}
                 </tbody>
