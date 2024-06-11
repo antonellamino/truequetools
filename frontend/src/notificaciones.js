@@ -12,12 +12,11 @@ const Notificaciones = () => {
     const [notificaciones, setNotificaciones] = useState([]);
 
     useEffect(() => {
-        axios.get(`${backendUrl}/notificaciones`, { params: { userId } }) 
+        axios.get(`${backendUrl}/notificaciones`, { params: { userId } })
         .then(response => {
             const data = response.data.notificaciones;
             const sortedNotificaciones = data.sort((a, b) => b.id - a.id);
             setNotificaciones(sortedNotificaciones);
-
 
             axios.put(`${backendUrl}/notificaciones/leer`, { userId })
             .then(() => {
@@ -25,13 +24,12 @@ const Notificaciones = () => {
             })
             .catch(error => {
                 console.error('Error al marcar las notificaciones como leídas:', error);
-            });  
-          
+            });
         })
         .catch(error => {
             console.error('Error al obtener las notificaciones:', error);
         });
-    }, [userId]); // Cambio aquí para que el efecto se ejecute cuando userId cambie
+    }, [userId]);
 
     return (
         <div>
@@ -40,17 +38,25 @@ const Notificaciones = () => {
                 <h1>Notificaciones</h1>
                 <ul className="list-group">
                     {notificaciones.map(notificacion => (
-                        <li key={notificacion.id} className={`list-group-item ${notificacion.leida ? 'notification-read' : 'notification-unread'} ${notificacion.link ? 'has-link' : ''}`}>
+                        <li 
+                            key={notificacion.id} 
+                            className={`list-group-item ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}
+                        >
                             {notificacion.link ? (
-                                <NavLink to={notificacion.link || '#'} className={`notification-link ${notificacion.leida=true ? 'notification-read' : 'notification-unread'}`}>
-                                    <button className={`notification-button ${notificacion.leida=true ? 'notification-read' : 'notification-unread'}`} disabled={!notificacion.link}>
+                                <NavLink to={notificacion.link || '#'}>
+                                    <button 
+                                        className={`notification-button ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}
+                                    >
                                         {notificacion.mensaje}
                                     </button>
                                 </NavLink>
                             ) : (
-                                <span className={`notification-message ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}>
+                                <button
+                                    className={`notification-button ${notificacion.leida ? 'notification-read' : 'notification-unread'} disabled`}
+                                    disabled
+                                >
                                     {notificacion.mensaje}
-                                </span>
+                                </button>
                             )}
                         </li>
                     ))}
@@ -58,6 +64,6 @@ const Notificaciones = () => {
             </div>
         </div>
     );
-}    
+};
 
 export default Notificaciones;
