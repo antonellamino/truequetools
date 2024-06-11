@@ -1,54 +1,82 @@
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import Header from './header';
-import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from './AuthContext';
+import axios from 'axios';
+import './navbar.css';
 
-const Navbar = () => {
-    const { isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
+const backendUrl = process.env.REACT_APP_BACK_URL;
+
+const Navbar = ({ actualizarProductosFiltrados }) => {
+    const { isAuthenticated, logout, rol } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const [unreadNotifications, setUnreadNotifications] = useState(5); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
+
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleCerrarSesion = () => {
-        logout(); // Cierra sesión utilizando el contexto de autenticación
-        navigate('/logout'); // Redirige a la página de logout
+        logout();
     }
 
     const isHomePage = location.pathname === '/';
-    const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };   //si es home el color es gris
+    const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };
+
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.get(`${backendUrl}/productos-filtrados`, { params: { nombre: searchQuery } });
+            actualizarProductosFiltrados(response.data.productos);
+        } catch (error) {
+            console.error('Error al buscar productos:', error);
+        }
+    };
+
+    const handleNotificationClick = () => {
+        navigate('/notificaciones'); // Redirige a la página de notificaciones
+    }
 
     return (
         <Fragment>
             <Header />
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div className="container-fluid">
-                    <ul className="navbar-nav">
-                        <li className="nav-item">
-                            <NavLink className="nav-link" exact to="/" activeClassName="active" style={homeButtonStyle}>Inicio</NavLink>
-                        </li>
-                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                    </ul>
+
+
                     <div className="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
                         <ul className="navbar-nav">
+                            <li className="nav-item">
+                                <NavLink className="nav-link" exact to="/" activeClassName="active" style={homeButtonStyle}>Inicio</NavLink>
+                            </li>
+                            {isAuthenticated && rol === 1 && (
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/adminDashboard" activeClassName="active">Panel de control</NavLink>
+                                </li>
+                            )}
                             {!isAuthenticated && (
                                 <li className="nav-item">
                                     <NavLink className="nav-link" to="/registro" activeClassName="active">Regístrate</NavLink>
                                 </li>
                             )}
-                            {isAuthenticated && (
+                            {isAuthenticated && rol === 3 && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/publicarProducto" activeClassName="active">Publicar Producto</NavLink>
+                                    <NavLink className="nav-link" to="/publicarProducto" activeClassName="active">Publicar producto</NavLink>
+                                </li>
+                            )}
+                            {isAuthenticated && rol === 3 && (
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/productosCliente" activeClassName="active">Ver mis productos</NavLink>
                                 </li>
                             )}
                             {isAuthenticated && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/ClienteDashboard" activeClassName="active">Ver mis productos</NavLink>
+                                    <NavLink className="nav-link" to="/truequesPendientes" activeClassName="active">Trueques Pendientes</NavLink>
                                 </li>
                             )}
                             {isAuthenticated ? (
                                 <li className="nav-item">
-                                    <button className="nav-link btn" onClick={handleCerrarSesion}>Cerrar Sesión</button>
+                                    <button className="nav-link btn" onClick={handleCerrarSesion}>Cerrar sesión</button>
                                 </li>
                             ) : (
                                 <li className="nav-item">
@@ -56,11 +84,20 @@ const Navbar = () => {
                                 </li>
                             )}
                         </ul>
-                            <form className="d-flex">
-                                <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" />
-                                <button className="btn btn-outline-light" type="submit">Buscar</button>
-                            </form>
-                        
+                        {isAuthenticated && (
+                            <div className="d-flex align-items-center"> {/* Añade una clase d-flex y align-items-center */}
+                                <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
+                                    <i className="fas fa-bell bell-icon"></i>
+                                    {unreadNotifications > 0 && (
+                                        <span className="notification-count">{unreadNotifications}</span>
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                        <form className="d-flex" onSubmit={handleSearch}>
+                            <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                            <button className="btn btn-outline-light" type="submit">Buscar</button>
+                        </form>
                     </div>
                 </div>
             </nav>

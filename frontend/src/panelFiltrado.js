@@ -85,7 +85,7 @@ const PanelFiltrado = ({ actualizarProductosFiltrados }) => {
                         ))}
                     </select>
                 </div>
-                <div className="mb-3 form-check">
+                {/* <div className="mb-3 form-check">
                     <input
                         type="checkbox"
                         className="form-check-input"
@@ -95,7 +95,7 @@ const PanelFiltrado = ({ actualizarProductosFiltrados }) => {
                         onChange={handleChange}
                     />
                     <label className="form-check-label" htmlFor="productosPromocionadosCheck">Filtrar productos promocionados</label>
-                </div>
+                </div> */}
                 <div className="d-flex justify-content-center">
                     <button className="btn btn-primary w-50" onClick={handleFiltrar}>Filtrar</button>
                 </div>

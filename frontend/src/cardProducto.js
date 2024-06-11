@@ -1,7 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./cardProducto.css";
 
-const CardProducto = ({ imagenSrc, nombreUsuario, titulo, descripcion }) => {
+const CardProducto = ({ id, imagenSrc, nombreUsuario, titulo, descripcion }) => {
+    const navigate = useNavigate();
+
+    const verDetalles = () => {
+        console.log("hola");
+        console.log(id);
+        navigate(`/publicacion/${id}`); 
+    }
     return (
         <div className="card card-style" /*style={{ width: '18rem' }}*/ >
             <img src={imagenSrc} className="card-img-top" alt="Imagen del producto" />
@@ -9,7 +17,7 @@ const CardProducto = ({ imagenSrc, nombreUsuario, titulo, descripcion }) => {
                 <h5 className="card-title">{titulo}</h5>
                 <p className="card-text">{descripcion}</p>
                 <p className="card-text">Publicado por: {nombreUsuario}</p>
-                {/* <button className="btn btn-primary">Ofertar</button> */}
+                <button className="btn btn-primary" onClick={verDetalles}>ver detalles</button> 
             </div>
         </div>
     );

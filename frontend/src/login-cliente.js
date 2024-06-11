@@ -1,8 +1,8 @@
-import React, { Fragment, useState, useContext} from 'react';
+import React, { Fragment, useState} from 'react';
 import axios from 'axios';
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
+import { useAuth } from './AuthContext';
 import Footer from './footer';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -44,7 +44,7 @@ const LoginCliente = () => {
     };
 
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext); // Obtiene la función de login del contexto de autenticación
+    const { login } = useAuth();
 
 
     const onButtonClick = async () => {
@@ -60,12 +60,8 @@ const LoginCliente = () => {
                     const token = response.data.token;
                     const userId = response.data.userId;
                     const rol = response.data.rol_id;
-                    //localStorage.setItem('token', token);
-
-                    //el login tambien tiene que recibir el id
 
                     login(token,userId, rol)
-                    //que me lleve al inicio no al productos publicados
                     navigate('/home');
                 }
             } catch (error) {

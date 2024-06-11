@@ -6,13 +6,17 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const AgregarEmpleado = () => {
     const [contrasena, setContrasena] = useState('');
-    const [dni, setDni] = useState('');
+    const [nombre, setNombre] = useState('');
+    const [apellido, setApellido] = useState('');
+    const [nombre_usuario, setNombreUsuario] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const datosEmpleado = {
-            dni: dni,
+            nombre: nombre,
+            apellido: apellido,
+            nombre_usuario: nombre_usuario,
             contrasena: contrasena,
             rol_id: 2
         };
@@ -35,8 +39,16 @@ const AgregarEmpleado = () => {
                     <div className="col-md-8">
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
-                                <label htmlFor="nombre" className="form-label">DNI empleado</label>
-                                <input type="text" className="form-control" id="nombre" value={dni} onChange={(e) => setDni(e.target.value)} required />
+                                <label htmlFor="nombre" className="form-label">Nombre empleado</label>
+                                <input type="text" className="form-control" id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="nombre" className="form-label">Apellido empleado</label>
+                                <input type="text" className="form-control" id="nombre" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="nombre" className="form-label">Nombre usuario</label>
+                                <input type="text" className="form-control" id="nombre" value={nombre_usuario} onChange={(e) => setNombreUsuario(e.target.value)} required />
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="nombre" className="form-label">Contraseña</label>

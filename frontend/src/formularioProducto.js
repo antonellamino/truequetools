@@ -16,7 +16,7 @@ const PublicarProductoForm = () => {
     const [fotos, setFotos] = useState([]);
     const [sucursales, setSucursales] = useState([]);
     const [sucursalPreferencia, setSucursalPreferencia] = useState('');
-    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '', sucursal: '' });
+    const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '', sucursal: '', imagen: '' }); //agregue imagen
     const [enviado, setEnviado] = useState('');
 
     const resetearForm = () => {
@@ -55,6 +55,8 @@ const PublicarProductoForm = () => {
         if (!categoriaData.categoriaSeleccionada) errores.categoria = 'Por favor selecciona una categoría';
         if (!sucursalPreferencia) errores.sucursal = 'Debe seleccionar una sucursal';
 
+        if (fotos.length > 4 ) errores.imagen = 'Se pueden publicar como máximo 4 imagenes'; //agregado ahora
+
         setErrores(errores);
         return Object.keys(errores).length === 0;
     };
@@ -66,8 +68,8 @@ const PublicarProductoForm = () => {
         let formData = new FormData();
         formData.append('nombre', nombre);
         formData.append('descripcion', descripcion);
-        formData.append('sucursal_preferencia', sucursalPreferencia);
-        formData.append('categoria', categoriaData.categoriaSeleccionada);
+        formData.append('sucursal_elegida', sucursalPreferencia);
+        formData.append('categoria_id', categoriaData.categoriaSeleccionada);
         formData.append('usuario_id', userId);
 
         for (let i = 0; i < fotos.length; i++) {
@@ -117,7 +119,8 @@ const PublicarProductoForm = () => {
                     </div>
                     <div className="inputContainer">
                         <label htmlFor="fotos" className="form-label">Fotos</label>
-                        <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} />
+                        <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple/>
+                        <label className="errorLabel">{errores.imagen}</label>
                     </div>
                     <div className="inputContainer">
                         <label htmlFor="sucursalPreferencia" className="form-label">Sucursal de preferencia</label>

@@ -35,6 +35,7 @@ const ClienteDashboard = () => {
             })
                 .then(response => {
                     setProductos(response.data.productos);
+                    console.log(response.data.productos);
                 })
                 .catch(error => {
                     console.error('Error al obtener productos del usuario:', error);
@@ -55,7 +56,8 @@ const ClienteDashboard = () => {
                         {productos.map(producto => (
                             <div key={producto.id} className="col-md-4 mb-3 d-flex justify-content-center">
                                 <CardProducto
-                                    imagenSrc={producto.imagen ? `data:image/jpeg;base64,${producto.imagen}` : './logo_2.svg'}
+                                    id={producto.id}
+                                    imagenSrc={producto.imagen_1 ? `data:image/jpeg;base64,${producto.imagen_1}` : './logo_2.svg'}
                                     nombreUsuario={'ti'}
                                     titulo={producto.nombre}
                                     descripcion={producto.descripcion}

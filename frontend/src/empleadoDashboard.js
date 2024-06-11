@@ -1,33 +1,50 @@
-import React, { Fragment } from 'react';
-import Navbar from './navbar';
+import React, { Fragment, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import Navbar from './navbar';
 
 const EmpleadoDashboard = () => {
+    const { isAuthenticated, rol } = useAuth();
     const navigate = useNavigate();
 
-    const handleCerrarSesion = () => {
-        localStorage.removeItem('token');
-        navigate('/logout');
+    const handleAltaVenta = () => {
+        navigate('/altaVenta');
+    };
+
+    const handleConfirmarTrueque = () => {
+        navigate('/confirmarTrueque');
+    }
+
+    const handleTruequesPendientes = () => {
+        navigate('/listaSucursales');
+    }
+
+    const handleVentasRegistradas = () => {
+        navigate('/ventas');
     }
 
     return (
         <Fragment>
-        <Navbar />
-        <div className="container-4 mt">
-            <div className="card">
-                <div className="card-body">
-                    <div className="d-grid gap-2">
-                        <button className="btn btn-primary mb-2" >Registrar ventaenta</button>
-                        <button className="btn btn-primary mb-2" >Lista de trueques pendientes</button>
-                        <button className="btn btn-primary mb-2" >Ventas registradas</button>
+            <Navbar />
+            <div className="container mt-5">
+                <div className="row justify-content-center">
+                    <div className="col-md-10">
+                        <div className="card">
+                            <div className="card-body">
+                                <div className="d-grid gap-2">
+                                    <button className="btn btn-primary mb-3" onClick={handleAltaVenta}>Registrar venta</button>
+                                    <button className="btn btn-primary mb-3" onClick={handleConfirmarTrueque}>Confirmar trueque</button>
+                                    <button className="btn btn-primary mb-3" onClick={handleTruequesPendientes}>Lista de trueques pendientes</button>
+                                    <button className="btn btn-primary mb-3" onClick={handleVentasRegistradas}>Ventas registradas</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </Fragment>
+        </Fragment>
 
-
-    )
+    );
 }
 
 export default EmpleadoDashboard;
