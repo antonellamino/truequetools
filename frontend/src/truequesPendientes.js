@@ -10,6 +10,7 @@ import Navbar from './navbar';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
+
 const TruequesPendientes = () => {
     const { userId } = useContext(AuthContext);
     const [trueques, setTrueques] = useState([]);
