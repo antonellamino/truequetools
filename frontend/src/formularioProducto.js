@@ -72,9 +72,13 @@ const PublicarProductoForm = () => {
         formData.append('categoria_id', categoriaData.categoriaSeleccionada);
         formData.append('usuario_id', userId);
 
+
         for (let i = 0; i < fotos.length; i++) {
             formData.append('foto', fotos[i]);
+            console.log(fotos[i]);
         }
+
+        
 
         axios.post(`${backendUrl}/publicarProducto`, formData)
             .then(response => {
@@ -117,11 +121,14 @@ const PublicarProductoForm = () => {
                         </select>
                         <label className="errorLabel">{errores.categoria}</label>
                     </div>
+
                     <div className="inputContainer">
                         <label htmlFor="fotos" className="form-label">Fotos</label>
                         <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple/>
                         <label className="errorLabel">{errores.imagen}</label>
                     </div>
+
+
                     <div className="inputContainer">
                         <label htmlFor="sucursalPreferencia" className="form-label">Sucursal de preferencia</label>
                         <select className="form-select" id="sucursalPreferencia" value={sucursalPreferencia} onChange={(e) => setSucursalPreferencia(e.target.value)}>

@@ -11,7 +11,7 @@ const CardProducto = ({ id, imagenSrc, nombreUsuario, titulo, descripcion }) => 
         navigate(`/publicacion/${id}`); 
     }
     return (
-        <div className="card card-style" /*style={{ width: '18rem' }}*/ >
+        <div className="card card-style">
             <img src={imagenSrc} className="card-img-top" alt="Imagen del producto" />
             <div className="card-body">
                 <h5 className="card-title">{titulo}</h5>

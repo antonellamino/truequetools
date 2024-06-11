@@ -22,9 +22,10 @@ import Ventas from './ventas';
 import Notificaciones from './notificaciones'; 
 import Opciones from './opciones';
 import FormularioVenta from './formularioVenta';
+import TruequesPendientes from './truequesPendientes';
+
 
 function App() {
-
   return (
     <div className="App">
       <BrowserRouter>
@@ -34,7 +35,7 @@ function App() {
             <Route path="/iniciarSesion" element={<LoginCliente />} />
             <Route path="/registro" element={<FormularioRegistroCliente />} />
             <Route path="/publicarProducto" element={<ProtectedRoute requiredRole={3}><PublicarProductoForm /></ProtectedRoute>}/>
-            <Route path="/productosCliente" element={ <ProtectedRoute requiredRole={3}><ClienteDashboard /></ProtectedRoute>} />
+            <Route path="/clienteDashboard" element={ <ProtectedRoute requiredRole={3}><ClienteDashboard /></ProtectedRoute>} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/cardProducto" element={<CardProducto />} />
             <Route path="/iniciarSesionEmpleado" element={<LoginEmpleado />} />
@@ -49,11 +50,10 @@ function App() {
             <Route path='/publicacion/:id' element={<Publicacion />} />
             <Route path='/listaSucursales' element={ <ListaSucursales /> } />
             <Route path='/ventas' element={  <Ventas /> }/>
-            <Route path="/notificaciones" element={<Notificaciones />} /> 
-            <Route path="/opciones/:data" element={<Opciones/>} />
+            <Route path="/notificaciones/:id" element={<Notificaciones />} /> 
+            <Route path="/opciones/:productoId/:usuarioId/:categoriaId/:propietarioId" element={<Opciones />} />
             <Route path="/registrarVenta" element={<FormularioVenta/>} />
-            
-
+          <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
@@ -61,4 +61,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

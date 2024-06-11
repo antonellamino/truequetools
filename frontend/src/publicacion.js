@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import './publicacion.css';
 import { useAuth } from './AuthContext';
 import Slider from "react-slick";
@@ -9,7 +8,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Footer from './footer';
 import Navbar from './navbar';
-
+import { useNavigate } from 'react-router-dom';
 
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -23,17 +22,16 @@ const Publicacion = () => {
     const [esCreador, setEsCreador] = useState(false);
     const [respuesta, setNuevaRespuesta] = useState('');
 
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Se obtiene el hook useNavigate
 
     useEffect(() => {
         obtenerProducto(id);
-        console.log("ID del producto:", id);
         obtenerComentarios(id);
     }, [id]);
 
     useEffect(() => {
         if (producto && userId) {
-            const result = (producto.usuario_id === userId);
+            const result = (producto.usuario_id == userId);
             setEsCreador(result);
         }
     }, [producto, userId]);
@@ -102,26 +100,21 @@ const Publicacion = () => {
             });
     };
 
-
     //al apretar el boton, guardo los datos
     const enviarDatos = (producto) => {
         const data = {
+            //el productoId este es el del propietario :)
             productoId: producto.id,
-            //el user id es del propietarip
             usuarioId: userId,
-            categoriaId: producto.categoria_id
-        }
-        // Envío de datos utilizando parámetros de consulta en una solicitud GET
-        axios.get(`${backendUrl}/productos-truequear`, { params: { data } })
-            .then(response => {
-                console.log('Datos enviados correctamente:', response.data);
-                navigate(`/opciones/${data}`);  // Redireccionar con parámetros
-            })
-            .catch(error => {
-                console.error('Error al enviar datos:', error);
-            });
-    };
+            categoriaId: producto.categoria_id,
+            //se supone que
+            propietarioId: producto.usuario_id
+        };
 
+        //producto.id_usuario seria el usuario de la publicacion que muestra
+        const parametros = `${data.productoId}/${data.usuarioId}/${data.categoriaId}/${data.propietarioId}`;
+        navigate(`/opciones/${parametros}`);
+    }
 
     return (
         <Fragment>
@@ -149,6 +142,9 @@ const Publicacion = () => {
                         <p>{producto.descripcion}</p>
                         <p>Usuario</p>
                         <p>{producto.nombre_usuario}</p>
+
+                        <p>{producto.usuario_id}</p>
+
                         <p>Categoría</p>
                         <p>{producto.nombre_categoria}</p>
                         <p>Sucursal</p>
@@ -201,9 +197,12 @@ const Publicacion = () => {
 
 
                 </div>
-                <button onClick={() => enviarDatos(producto)}>
-                    Truequear
-                </button>
+                {(!esCreador && isAuthenticated && (
+                    //productoActual --> producto
+                    <button onClick={() => enviarDatos(producto)}>
+                        Truequear
+                    </button>
+                ))}
             </div>
             <Footer />
         </Fragment>

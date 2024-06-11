@@ -1,0 +1,56 @@
+.trueque-options-container {
+    display: flex;
+    flex-direction: column;
+    
+    padding: 20px;
+}
+
+.trueque-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Para mover el botón a la derecha */
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+
+    
+}
+
+.trueque-option:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.trueque-option img {
+    width: 150px;
+    height: auto;
+    margin-right: 20px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.trueque-option-content {
+    flex: 1;
+}
+
+.trueque-option h5 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.trueque-option button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 10px; /* Reducido el padding para hacer el botón más pequeño */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: auto; /* Alinea el botón a la derecha */
+}
+
+.trueque-option button:hover {
+    background-color: #0056b3;
+}

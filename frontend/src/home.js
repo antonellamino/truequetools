@@ -44,7 +44,6 @@ const Home = () => {
         const usuarioEncontrado = Object.values(usuarios).find(usuario => usuario.id === usuarioId);
         return usuarioEncontrado ? usuarioEncontrado.correo : '';
     };
-
     return (
         <Fragment>
             <Navbar actualizarProductosFiltrados={actualizarProductosFiltrados} />

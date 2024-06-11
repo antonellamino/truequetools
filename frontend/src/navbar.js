@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment,useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import Header from './header';
 import { useAuth } from './AuthContext';
@@ -8,15 +8,37 @@ import './navbar.css';
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const Navbar = ({ actualizarProductosFiltrados }) => {
-    const { isAuthenticated, logout, rol } = useAuth();
+    const { userId, isAuthenticated, logout, rol } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [unreadNotifications, setUnreadNotifications] = useState(5); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
-
     const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            // Realiza la solicitud HTTP para obtener la cantidad de notificaciones no leídas
+            axios.get(`${backendUrl}/notificaciones/no-leidas`, { params: { userId } })
+                .then(response => {
+                    const count = response.data.count; // Obtiene la cantidad de notificaciones no leídas
+                    setUnreadNotifications(count);
+                })
+                .catch(error => {
+                    console.error('Error al obtener la cantidad de notificaciones no leídas:', error);
+                });
+        }
+    }, [userId, isAuthenticated]);
+
 
     const handleCerrarSesion = () => {
         logout();
+    }
+
+    const handleNotificationClick = () => {
+        navigate(`/notificaciones/${userId}`); // Redirige a la página de notificaciones
+    }
+
+    const handleTruequeClick = () => {
+        navigate(`/truequesPendientes/${userId}`);
     }
 
     const isHomePage = location.pathname === '/';
@@ -33,14 +55,10 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
         }
     };
 
-    const handleNotificationClick = () => {
-        navigate('/notificaciones'); // Redirige a la página de notificaciones
-    }
-
     return (
         <Fragment>
             <Header />
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+            <nav className="navbar navbar-expand-lg navbar-dark navbar-custom">
                 <div className="container-fluid">
 
 
@@ -72,6 +90,11 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                             {isAuthenticated && (
                                 <li className="nav-item">
                                     <NavLink className="nav-link" to="/truequesPendientes" activeClassName="active">Trueques Pendientes</NavLink>
+                                </li>
+                            )}
+                            {isAuthenticated && (
+                                <li className="nav-item">
+                                <button className="nav-link btn" onClick={handleTruequeClick}> Trueques Pendientes </button>
                                 </li>
                             )}
                             {isAuthenticated ? (
