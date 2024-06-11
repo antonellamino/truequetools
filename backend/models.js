@@ -48,6 +48,23 @@ const Notificacion = bookshelf.model('Notificacion', {
     }
 });
 
+const Trueque = bookshelf.model('Trueque', {
+    tableName: 'trueque',
+
+    propietario() {
+        return this.belongsTo('Usuario', 'id_propietario');
+    },
+    ofertante() {
+        return this.belongsTo('Usuario', 'id_ofertante');
+    },
+    productoPropietario() {
+        return this.belongsTo('Producto', 'id_producto_propietario');
+    },
+    productoOfertante() {
+        return this.belongsTo('Producto', 'id_producto_ofertante');
+    }
+})
+
 module.exports = {
     Usuario,
     Empleado,
@@ -56,5 +73,6 @@ module.exports = {
     Sucursal,
     Categoria,
     Comentario,
-    Notificacion
+    Notificacion,
+    Trueque
 };
