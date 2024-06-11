@@ -125,7 +125,6 @@ const PublicarProductoForm = () => {
                     <div className="inputContainer">
                         <label htmlFor="fotos" className="form-label">Fotos</label>
                         <input type="file" name="foto" className="form-control" id="fotos" onChange={(e) => setFotos(e.target.files)} multiple/>
-
                         <label className="errorLabel">{errores.imagen}</label>
                     </div>
 

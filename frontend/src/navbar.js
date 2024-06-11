@@ -1,17 +1,19 @@
-import React, { Fragment, useContext, useState, useEffect } from 'react';
+import React, { Fragment, useState, useState, useEffect} from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import Header from './header';
-import axios from 'axios'; // Importa axios para realizar solicitudes HTTP
-import { AuthContext } from './AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from './AuthContext';
+import axios from 'axios';
 import './navbar.css';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
-const Navbar = () => {
-    const { userId, isAuthenticated, logout } = useContext(AuthContext); // Obtiene el estado de autenticación del contexto
+const Navbar = ({ actualizarProductosFiltrados }) => {
+    const { userId,isAuthenticated, logout, rol } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [unreadNotifications, setUnreadNotifications] = useState(0); // Número de notificaciones no leídas, inicialmente cero
+    const [unreadNotifications, setUnreadNotifications] = useState(0); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
+
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -27,9 +29,9 @@ const Navbar = () => {
         }
     }, [userId, isAuthenticated]);
 
+
     const handleCerrarSesion = () => {
-        logout(); // Cierra sesión utilizando el contexto de autenticación
-        navigate('/logout'); // Redirige a la página de logout
+        logout();
     }
 
     const handleNotificationClick = () => {
@@ -41,36 +43,54 @@ const Navbar = () => {
     }
 
     const isHomePage = location.pathname === '/';
-    const homeButtonStyle = isHomePage ? {} : { color: '#ccc' }; // Si es home, el color es gris
+    const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };
+
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.get(`${backendUrl}/productos-filtrados`, { params: { nombre: searchQuery } });
+            actualizarProductosFiltrados(response.data.productos);
+        } catch (error) {
+            console.error('Error al buscar productos:', error);
+        }
+    };
 
     return (
         <Fragment>
             <Header />
             <nav className="navbar navbar-expand-lg navbar-dark navbar-custom">
                 <div className="container-fluid">
-                    <ul className="navbar-nav">
-                        <li className="nav-item">
-                            <NavLink className="nav-link" exact to="/" activeClassName="active" style={homeButtonStyle}>Inicio</NavLink>
-                        </li>
-                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                    </ul>
+
+
                     <div className="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
                         <ul className="navbar-nav">
+                            <li className="nav-item">
+                                <NavLink className="nav-link" exact to="/" activeClassName="active" style={homeButtonStyle}>Inicio</NavLink>
+                            </li>
+                            {isAuthenticated && rol === 1 && (
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/adminDashboard" activeClassName="active">Panel de control</NavLink>
+                                </li>
+                            )}
                             {!isAuthenticated && (
                                 <li className="nav-item">
                                     <NavLink className="nav-link" to="/registro" activeClassName="active">Regístrate</NavLink>
                                 </li>
                             )}
-                            {isAuthenticated && (
+                            {isAuthenticated && rol === 3 && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/publicarProducto" activeClassName="active">Publicar Producto</NavLink>
+                                    <NavLink className="nav-link" to="/publicarProducto" activeClassName="active">Publicar producto</NavLink>
+                                </li>
+                            )}
+                            {isAuthenticated && rol === 3 && (
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/productosCliente" activeClassName="active">Ver mis productos</NavLink>
                                 </li>
                             )}
                             {isAuthenticated && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/ClienteDashboard" activeClassName="active">Ver mis productos</NavLink>
+                                    <NavLink className="nav-link" to="/truequesPendientes" activeClassName="active">Trueques Pendientes</NavLink>
                                 </li>
                             )}
                             {isAuthenticated && (
@@ -80,7 +100,7 @@ const Navbar = () => {
                             )}
                             {isAuthenticated ? (
                                 <li className="nav-item">
-                                    <button className="nav-link btn" onClick={handleCerrarSesion}>Cerrar Sesión</button>
+                                    <button className="nav-link btn" onClick={handleCerrarSesion}>Cerrar sesión</button>
                                 </li>
                             ) : (
                                 <li className="nav-item">
@@ -98,6 +118,10 @@ const Navbar = () => {
                                 </button>
                             </div>
                         )}
+                        <form className="d-flex" onSubmit={handleSearch}>
+                            <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                            <button className="btn btn-outline-light" type="submit">Buscar</button>
+                        </form>
                     </div>
                 </div>
             </nav>

@@ -3,12 +3,12 @@ import Navbar from './navbar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Footer from './footer';
-import './formulario.css';  // Make sure to import the CSS file here
+import './formulario.css';
 
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
-const Formulario = () => {
+const FormularioRegistroCliente = () => {
     const [nombre, setNombre] = useState('');
     const [nombreError, setNombreError] = useState('');
     const [apellido, setApellido] = useState('');
@@ -204,4 +204,4 @@ const Formulario = () => {
     );
 };
 
-export default Formulario;
+export default FormularioRegistroCliente;

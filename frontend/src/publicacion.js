@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './publicacion.css';
-import { AuthContext } from './AuthContext';
+import { useAuth } from './AuthContext';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Footer from './footer';
 import Navbar from './navbar';
-import { useNavigate } from 'react-router-dom';
 
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -23,16 +23,17 @@ const Publicacion = () => {
     const [esCreador, setEsCreador] = useState(false);
     const [respuesta, setNuevaRespuesta] = useState('');
 
-    const navigate = useNavigate(); // Se obtiene el hook useNavigate
-   
+    const navigate = useNavigate();
+
     useEffect(() => {
         obtenerProducto(id);
+        console.log("ID del producto:", id);
         obtenerComentarios(id);
     }, [id]);
 
     useEffect(() => {
         if (producto && userId) {
-            const result = (producto.usuario_id == userId);
+            const result = (producto.usuario_id === userId);
             setEsCreador(result);
         }
     }, [producto, userId]);
@@ -45,7 +46,6 @@ const Publicacion = () => {
             .catch(error => {
                 console.error('Error al obtener la información del producto:', error);
             });
-
     };
 
     const obtenerComentarios = (id) => {
@@ -123,6 +123,7 @@ const Publicacion = () => {
         slidesToShow: 1,
         slidesToScroll: 1
     };
+
 
     //al apretar el boton, guardo los datos
     const enviarDatos = (producto) => {

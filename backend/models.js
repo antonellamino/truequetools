@@ -65,6 +65,10 @@ const Trueque = bookshelf.model('Trueque', {
     }
 })
 
+const Venta = bookshelf.model('Venta', {
+    tableName: 'ventas' })
+
+
 module.exports = {
     Usuario,
     Empleado,
@@ -74,5 +78,6 @@ module.exports = {
     Categoria,
     Comentario,
     Notificacion,
-    Trueque
-};
+    Trueque,
+    Venta,
+}
