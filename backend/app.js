@@ -589,6 +589,34 @@ app.post('/enviar-notificacion', async (req, res) => {
     }
 });
 
+app.put('/notificaciones/leer', (req, res) => {
+    const { userId } = req.body;
+    Notificacion.where({ id_usuario: userId }).save({ leido: true }, { patch: true })
+        .then(() => {
+            res.status(200).send('Notificaciones marcadas como leídas correctamente.');
+        })
+        .catch(error => {
+            console.error('Error al marcar las notificaciones como leídas:', error);
+            res.status(500).send('Error al marcar las notificaciones como leídas.');
+        });
+});
+
+app.post('/agregar-notificacion', async (req, res) => {
+    try {
+        const { idUser, comentario, link } = req.body;
+        const nuevaNotificacion = await Notificacion.forge({
+            id_usuario: idUser,
+            mensaje: comentario,
+            link: link,
+            leido: false 
+        });
+        await nuevaNotificacion.save(); 
+        res.status(200).json({ message: 'Se agregó la notificación' });
+    } catch (error) {
+        console.error('Error al agregar la notificación de comentario:', error);
+        res.status(500).json({ error: 'Hubo un error al procesar la solicitud' });
+    }
+});
 
 app.post('/guardar-trueque',async (req,res) => {
     try{
