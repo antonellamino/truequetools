@@ -562,9 +562,22 @@ app.get('/notificaciones/no-leidas', async (req, res) => {
     }
 });
 
-
-
-
+app.post('/agregar-notificacion', async (req, res) => {
+    try {
+        const { idUser, comentario, link } = req.body;
+        const nuevaNotificacion = await Notificacion.forge({
+            id_usuario: idUser,
+            mensaje: comentario,
+            link: link,
+            leido: false 
+        });
+        await nuevaNotificacion.save(); 
+        res.status(200).json({ message: 'Se agregó la notificación' });
+    } catch (error) {
+        console.error('Error al agregar la notificación de comentario:', error);
+        res.status(500).json({ error: 'Hubo un error al procesar la solicitud' });
+    }
+});
 // iniciar servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
