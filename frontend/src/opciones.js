@@ -13,6 +13,8 @@ const Opciones = () => {
     const [mensaje, setMensaje] = useState('');
 
     useEffect(() => {
+        console.log("mi usuario para traer los productos es", usuarioId);
+        
         axios.get(`${backendUrl}/productos-truequear`, { params: { productoId, usuarioId, categoriaId } })
         .then(response => {
             const productosArray = response.data.productos.map(producto => ({

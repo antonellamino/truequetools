@@ -25,7 +25,7 @@ const TruequesPendientes = () => {
             })
             .catch(error => {
                 console.error('Error al obtener los trueques pendientes:', error); //404
-                setError('Error al obtener los trueques pendientes');
+                //setError('Error al obtener los trueques pendientes');
             });
     }
     /*
