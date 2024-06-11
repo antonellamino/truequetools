@@ -1,0 +1,26 @@
+/* Estilos para la lista de trueques */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+
+
+
+/* Estilos para las imágenes de los productos */
+img {
+    width: 100%;
+    max-width: 200px; /* Tamaño máximo de las imágenes */
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+
+/* Estilos para el mensaje de confirmación */
+.confirmation-message {
+    font-style: italic;
+    color: #666666;
+    margin-top: 10px;
+}
