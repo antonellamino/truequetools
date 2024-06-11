@@ -13,6 +13,8 @@ const Opciones = () => {
     const [mensaje, setMensaje] = useState('');
 
     useEffect(() => {
+        console.log("mi usuario para traer los productos es", usuarioId);
+        
         axios.get(`${backendUrl}/productos-truequear`, { params: { productoId, usuarioId, categoriaId } })
         .then(response => {
             const productosArray = response.data.productos.map(producto => ({
@@ -33,7 +35,7 @@ const Opciones = () => {
             id_usuario : propietarioId,
             mensaje : `Nuevo interés en el producto: ${productoId}`,
             leido : false,
-            link : `/truequesPendientes`
+            link : `/truequesPendientes/${propietarioId}`
         }
 
         axios.post(`${backendUrl}/enviar-notificacion`, notificacion)
@@ -49,7 +51,7 @@ const Opciones = () => {
             id_ofertante : usuarioId,
             id_producto_propietario : productoId,
             id_producto_ofertante : producto.id,
-            fecha : new Date().toISOString().slice(0, 10)
+            //fecha : null
         };
     
         axios.post(`${backendUrl}/guardar-trueque`, datosTrueque)

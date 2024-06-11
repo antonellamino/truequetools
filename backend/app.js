@@ -926,6 +926,22 @@ app.get('/mis_trueques', async (req, res) => {
     }
 });
 
+app.post('/elegir_horario', async (req, res) => {
+    try {
+        const { idTrueque, fecha } = req.body;
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
+        if (!trueque) {
+            return res.status(404).json({ error: 'Trueque no encontrado' });
+        }
+        trueque.set('fecha', fecha);
+        await trueque.save();
+        res.status(200).json({ message: 'Fecha del trueque actualizada correctamente', trueque: trueque });
+    } catch (error) {
+        console.error('Error al actualizar la fecha del trueque:', error);
+        res.status(500).json({ error: 'Error al actualizar la fecha del trueque' });
+    }
+});
+
 // iniciar servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
