@@ -36,6 +36,10 @@ const Navbar = () => {
         navigate(`/notificaciones/${userId}`); // Redirige a la página de notificaciones
     }
 
+    const handleTruequeClick = () => {
+        navigate(`/truequesPendientes/${userId}`);
+    }
+
     const isHomePage = location.pathname === '/';
     const homeButtonStyle = isHomePage ? {} : { color: '#ccc' }; // Si es home, el color es gris
 
@@ -71,7 +75,7 @@ const Navbar = () => {
                             )}
                             {isAuthenticated && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/truequesPendientes" activeClassName="active">Trueques Pendientes</NavLink>
+                                <button className="nav-link btn" onClick={handleTruequeClick}> Trueques Pendientes </button>
                                 </li>
                             )}
                             {isAuthenticated ? (

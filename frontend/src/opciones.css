@@ -1,4 +1,7 @@
 .trueque-options-container {
+    display: flex;
+    flex-direction: column;
+    
     padding: 20px;
 }
 
@@ -8,9 +11,11 @@
     justify-content: space-between; /* Para mover el botón a la derecha */
     margin-bottom: 20px;
     background-color: #fff;
-    border-radius: 10px;
+    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
+
+    
 }
 
 .trueque-option:hover {
@@ -18,10 +23,10 @@
 }
 
 .trueque-option img {
-    width: 70px;
-    height: 70px;
+    width: 150px;
+    height: auto;
     margin-right: 20px;
-    border-radius: 5px;
+    border-radius: 8px;
     object-fit: cover;
 }
 
@@ -39,7 +44,7 @@
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 4px 8px; /* Reducido el padding para hacer el botón más pequeño */
+    padding: 5px 10px; /* Reducido el padding para hacer el botón más pequeño */
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;

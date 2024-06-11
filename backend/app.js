@@ -4,7 +4,7 @@ const knex = require('knex');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
-const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion} = require('./models');
+const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion, Trueque} = require('./models');
 
 
 // Configuración de Bookshelf
@@ -562,6 +562,32 @@ app.get('/notificaciones/no-leidas', async (req, res) => {
     }
 });
 
+//endpoint para guardar notificaciones
+app.post('/enviar-notificacion', async (req, res) => {
+    try {
+        const { id_usuario, mensaje, link } = req.body;
+
+        console.log( id_usuario );
+        console.log( mensaje );
+        console.log( link );
+
+    
+        const nuevaNotificacion = await Notificacion.forge({
+            id_usuario,
+            mensaje,
+            leido: false,  // Default es 'false' según tu esquem
+            link
+        });
+        
+        nuevaNotificacion.save();
+
+        res.status(201).json({ message: 'Notificación creada', notificacion: nuevaNotificacion });
+    
+    } catch (error) {
+        console.error('Error al crear la notificación:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
 
 app.put('/notificaciones/leer', (req, res) => {
     const { userId } = req.body;
@@ -576,6 +602,53 @@ app.put('/notificaciones/leer', (req, res) => {
 });
 
 
+app.post('/guardar-trueque',async (req,res) => {
+    try{
+        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, fecha } = req.body;
+
+        const nuevoTrueque = await Trueque.forge({
+            id_propietario,
+            id_ofertante,
+            id_producto_propietario,
+            id_producto_ofertante,
+            fecha
+        });
+        
+        console.log("aaasfa");
+        console.log(nuevoTrueque);
+
+        await nuevoTrueque.save(); // Guarda el nuevo trueque en la base de datos.
+        res.status(201).json(nuevoTrueque); // Envía de vuelta el trueque guardado con un código de estado 201 (Creado).
+    } catch (error) {
+        console.error('Error al guardar el trueque:', error); // Imprime en consola si hay un error.
+        res.status(500).json({ message: 'Error del servidor' }); // Envía un mensaje de error con un código de estado 500 (Error Interno del Servidor).
+    }
+})
+
+
+app.get('/mis-trueques', async (req, res) => {
+    try {
+        const { usuario_id } = req.query; // Asume que el ID del usuario se pasa como parámetro de consulta
+
+        console.log("AAAAA", usuario_id);
+
+        if (!usuario_id) {
+            return res.status(400).json({ error: 'Usuario ID es requerido' });
+        }
+
+        // Construyendo la consulta para buscar trueques donde el usuario es propietario o ofertante
+        const trueques = await Trueque.query(qb => {
+            qb.where('id_propietario', usuario_id).orWhere('id_ofertante', usuario_id);
+        }).fetchAll({
+            withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante'] // Asegúrate de que estos nombres coincidan con los métodos definidos en tu modelo Trueque
+        });
+
+        res.json({ trueques });
+    } catch (error) {
+        console.error('Error al obtener los trueques:', error);
+        res.status(500).json({ error: 'Error al obtener los trueques' });
+    }
+});
 
 // iniciar servidor
 app.listen(PORT, () => {

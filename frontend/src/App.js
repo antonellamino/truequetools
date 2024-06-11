@@ -15,6 +15,8 @@ import EmpleadoDashboard from './empleadoDashboard';
 import Publicacion from './publicacion';
 import Notificaciones from './notificaciones'; 
 import Opciones from './opciones';
+import TruequesPendientes from './truequesPendientes';
+
 
 function App() {
   return (
@@ -36,7 +38,8 @@ function App() {
           <Route path="/empleadoDashboard" element={<EmpleadoDashboard />} />
           <Route path='/publicacion/:id' element={<Publicacion />} />
           <Route path="/notificaciones/:id" element={<Notificaciones />} /> 
-          <Route path="/opciones/:productoId/:usuarioId/:categoriaId" element={<Opciones />} />
+          <Route path="/opciones/:productoId/:usuarioId/:categoriaId/:propietarioId" element={<Opciones />} />
+          <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
         </Routes>
         </AuthProvider>
       </BrowserRouter>

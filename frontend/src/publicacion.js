@@ -16,6 +16,7 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 const Publicacion = () => {
     const { id } = useParams();
     const { userId, isAuthenticated } = useContext(AuthContext);
+    //esto es lo que me ingresan
     const [producto, setProducto] = useState(null);
     const [comentarios, setComentarios] = useState([]);
     const [nuevoComentario, setNuevoComentario] = useState('');
@@ -44,6 +45,7 @@ const Publicacion = () => {
             .catch(error => {
                 console.error('Error al obtener la información del producto:', error);
             });
+
     };
 
     const obtenerComentarios = (id) => {
@@ -105,10 +107,12 @@ const Publicacion = () => {
         const data = {
             productoId: producto.id,
             usuarioId: userId,
-            categoriaId: producto.categoria_id
+            categoriaId: producto.categoria_id,
+            propietarioId: producto.usuario_id
         };
-    
-        const parametros = `${data.productoId}/${data.usuarioId}/${data.categoriaId}`;
+        
+       //producto.id_usuario seria el usuario de la publicacion que muestra
+        const parametros = `${data.productoId}/${data.usuarioId}/${data.categoriaId}/${data.propietarioId}`;
         navigate(`/opciones/${parametros}`);
     }
 
@@ -138,6 +142,9 @@ const Publicacion = () => {
                     <p>{producto.descripcion}</p>
                     <p>Usuario</p>
                     <p>{producto.nombre_usuario}</p>
+                    
+                    <p>{producto.usuario_id}</p>
+
                     <p>Categoría</p>
                     <p>{producto.nombre_categoria}</p>
                     <p>Sucursal</p> 
@@ -191,6 +198,7 @@ const Publicacion = () => {
                 
             </div>
             {(!esCreador && isAuthenticated && (
+                //productoActual --> producto
                 <button onClick={() => enviarDatos(producto)}>
                 Truequear
                 </button>
