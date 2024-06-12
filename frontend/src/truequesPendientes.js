@@ -14,7 +14,6 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 const TruequesPendientes = () => {
     const { userId } = useContext(AuthContext);
     const [trueques, setTrueques] = useState([]);
-    const [error, setError] = useState(null);
     const [selectedDates, setSelectedDates] = useState({});
     const [horarioConfirmado, setHorarioConfirmado] = useState({});
     const [truequeMensajes, setTruequeMensajes] = useState({});
@@ -58,7 +57,6 @@ const TruequesPendientes = () => {
             })
             .catch(error => {
                 console.error('Error al obtener los trueques pendientes:', error);
-                setError('Error al obtener los trueques pendientes');
             });
     };
 
