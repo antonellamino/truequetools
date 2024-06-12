@@ -58,11 +58,10 @@ const Publicacion = () => {
     };
 
     const handleComentarioChange = (e) => {
-        setNuevoComentario(e.target.value);
+        setNuevoComentario(e.target.value.substring(0, 50)); // Limitar a 50 caracteres
     };
 
     const handleComentarioSubmit = (e) => {
-        e.preventDefault();
         axios.post(`${backendUrl}/agregar-comentario`, {
             id_producto: id,
             id_usuario: userId, 
@@ -83,28 +82,27 @@ const Publicacion = () => {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1
-      };
+    };
 
     const handleResponderComentario = (comentarioId, respuesta) => {
+        const respuestaTruncada = respuesta.substring(0, 50); // Limitar a 50 caracteres
         axios.post(`${backendUrl}/agregar-respuesta`, {
             id_comentario: comentarioId,
             id_usuario: userId,
-            respuesta: respuesta
+            respuesta: respuestaTruncada
         })
         .then(response => {
-            console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuesta}`);
+            console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuestaTruncada}`);
             setNuevaRespuesta('');
-            obtenerComentarios(id);  // Actualizar los comentarios para incluir la nueva respuesta
+            obtenerComentarios(id);
         })
         .catch(error => {
             console.error('Error al agregar la respuesta:', error);
         });
     };
 
-    //al apretar el boton, guardo los datos
     const enviarDatos = (producto) => {
         const data = {
-            //el productoId este es el del propietario :)
             productoId: producto.id,
             usuarioId: userId,
             categoriaId: producto.categoria_id,
@@ -112,7 +110,6 @@ const Publicacion = () => {
             propietarioId: producto.usuario_id
         };
         
-       //producto.id_usuario seria el usuario de la publicacion que muestra
         const parametros = `${data.sucursalId}/${data.productoId}/${data.usuarioId}/${data.categoriaId}/${data.propietarioId}`;
         navigate(`/opciones/${parametros}`);
     }
@@ -139,72 +136,79 @@ const Publicacion = () => {
                                 )}
                             </>
                         )}
-                    <p>Descripción</p>
-                    <p>{producto.descripcion}</p>
-                    <p>Usuario</p>
-                    <p>{producto.nombre_usuario}</p>
-                    <p>Categoría</p>
-                    <p>{producto.nombre_categoria}</p>
-                    <p>Sucursal</p> 
-                    <p>{producto.nombre_sucursal}</p>
-                </div>
-            ) : (
-                <p>Cargando...</p>
-            )}
-            <div className="comentarios-container">
-                <h2>Comentarios</h2>
-                {comentarios.length > 0 ? (
-                    comentarios.map((comentario) => (
-                        <div key={comentario.id} className="comentario">
-                            <p>{comentario.comentario}</p>
-                            {comentario.respuesta != null ? (
-                                <p>{comentario.respuesta}</p>
-                            ) : (
-                                <p>No hay respuesta.</p>
-                            )}
-                            { (esCreador) && (comentario.respuesta == null) &&(
-                                <form onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const respuesta = e.target.elements.respuesta.value;
-
-                                    handleResponderComentario(comentario.id, respuesta);
-                                    e.target.reset(); // Limpiar el formulario de respuesta después del envío
-                                }}>
-                                    <input type="text" name="respuesta" placeholder="Responder..." />
-                                    <button type="submit" className="btn btn-custom-short btn-custom-primary-short">Responder</button>
-
-                                </form>
-                            )}
-                        </div>
-                    ))
+                        <p>Descripción</p>
+                        <p>{producto.descripcion}</p>
+                        <p>Usuario</p>
+                        <p>{producto.nombre_usuario}</p>
+                        <p>Categoría</p>
+                        <p>{producto.nombre_categoria}</p>
+                        <p>Sucursal</p> 
+                        <p>{producto.nombre_sucursal}</p>
+                    </div>
                 ) : (
-                    <p>No hay comentarios.</p>
+                    <p>Cargando...</p>
                 )}
-                {!esCreador && isAuthenticated &&  (
-                    <form onSubmit={handleComentarioSubmit}>
-                        <textarea 
+                <div className="comentarios-container">
+                    <h2>Comentarios</h2>
+                    {comentarios.length > 0 ? (
+                        comentarios.map((comentario) => (
+                            <div key={comentario.id} className="comentario">
+                                <p>{comentario.comentario}</p>
+                                {comentario.respuesta != null ? (
+                                    <p>{comentario.respuesta}</p>
+                                ) : (
+                                    <p>No hay respuesta.</p>
+                                )}
+                                { (esCreador) && (comentario.respuesta == null) &&(
+                                    <form onSubmit={(e) => {
+                                        e.preventDefault();
+                                        const respuesta = e.target.elements.respuesta.value.trim(); // Eliminar espacios en blanco al principio y al final
+                                        if (respuesta !== "") { // Validar que la respuesta no esté vacía
+                                            handleResponderComentario(comentario.id, respuesta.substring(0, 50)); // Limitar a 50 caracteres
+                                            e.target.reset(); // Limpiar el formulario de respuesta después del envío
+                                        }
+                                    }}>
+                                        <input type="text" name="respuesta" placeholder="Responder..." />
+                                        <button type="submit" className="btn btn-custom-short btn-custom-primary-short">Responder</button>
+                                    </form>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p>No hay comentarios.</p>
+                    )}
+                    {!esCreador && isAuthenticated &&  (
+                        <form className="caja_comentario" onSubmit={(e) => {
+                            e.preventDefault();
+                            const comentario = nuevoComentario.trim(); // Eliminar espacios en blanco al principio y al final
+                            if (comentario !== "") { // Validar que el comentario no esté vacío
+                                handleComentarioSubmit();
+                            }else{
+                                <p>No puedes enviar un mensaje vacío.</p>
+                            }
+                        }}>
+                            <textarea 
                             value={nuevoComentario} 
                             onChange={handleComentarioChange} 
                             placeholder="Escribe un comentario..."
+                            maxLength={50} // Limitar a 50 caracteres
                         />
+                        {nuevoComentario.length === 50 && <p>Has alcanzado el límite de 50 caracteres.</p>}
                         <button type="submit" className=" btn-custom-short btn-custom-primary-short">Enviar</button>
-                    </form>
+                        </form>
+                    )}
+                    {!isAuthenticated && (
+                        <p>Debes iniciar sesión para comentar.</p>
+                    )}
+                </div>
+                {!esCreador && isAuthenticated && rol !== 1 && (
+                    <button type="submit" className="boton_trueque" onClick={() => enviarDatos(producto)}>
+                        Truequear
+                    </button>
                 )}
-                {!isAuthenticated && (
-                    <p>Debes iniciar sesión para comentar.</p>
-                )}
-
-                
             </div>
-            {(!esCreador && isAuthenticated && rol != 1 && (
-                //productoActual --> producto
-                <button type="submit" className=" btn-custom-short btn-custom-primary-short" onClick={() => enviarDatos(producto)}>
-                Truequear
-                </button>
-            ))}
-        </div>
-       <Footer/>
-    </Fragment>
+            <Footer/>
+        </Fragment>
     );
 };
 

@@ -87,7 +87,7 @@ const Opciones = () => {
                         {producto.seleccionado ? (
                             <p>{mensaje}</p>
                         ) : (
-                            <button className="btn btn-primary" onClick={() => seleccionar(producto)}>Seleccionar</button>
+                            <button className="boton_seleccionar" onClick={() => seleccionar(producto)}>Seleccionar</button>
                         )}
                     </div>
                 ))}
