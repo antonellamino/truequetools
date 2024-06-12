@@ -185,7 +185,7 @@ const TruequesPendientes = () => {
                                          className="trueque-image"/>
                                 </div>
                                 <div className="trueque-actions">
-                                    {trueque.propietario.id === userId ? (
+                                    {trueque.id_propietario === userId ? (
                                         <div className="trueque-fecha-hora">
                                             {!horarioConfirmado[trueque.id] && trueque.estado !== 'espera' ? (
                                                 <div>

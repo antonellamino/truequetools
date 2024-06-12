@@ -371,8 +371,7 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
 
     try {
-        const empleado = await Empleado.where({ nombre_usuario }).fetch({ require: false });
-
+        const empleado = await Empleado.where({ nombre: nombre_usuario }).fetch();
         if (!empleado) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
@@ -542,28 +541,6 @@ app.post('/agregar-respuesta', async (req, res) => {//ok
     }
 });
 
-/*
-app.get('/productos-truequear', async (req, res) => {
-    try {
-
-        const { productoId, usuarioId, categoriaId } = req.query;
-
-        console.log(productoId);
-        console.log("me llego el usuario", usuarioId);
-
-        const productos = await Producto.query((p) => {
-            p.where('productos.usuario_id', usuarioId)
-                .join('categorias', 'productos.categoria_id', 'categorias.id');
-        }).fetchAll();
-
-        res.json({ productos });
-    }
-    catch (error) {
-        console.error('error al obtener los productos:', error);
-        res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
-    }
-});
-*/
 
 //filtro para sucursal y categoria, devuelve por uno por otro o por los dos o asi deberia funcionar
 app.get('/productos-filtrados', async (req, res) => {
@@ -761,6 +738,8 @@ app.get('/productos_truequear', async (req, res) => {
     }
 });
 
+
+
 // Endpoint para obtener notificaciones
 app.get('/notificaciones', async (req, res) => {
     const idusuario = req.query.userId; // Accede al userId a través de req.query
@@ -894,7 +873,6 @@ app.get('/mis_trueques', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener los trueques' });
     }
 });
-
 app.post('/elegir_horario', async (req, res) => {
     try {
         const { idTrueque, fecha } = req.body;
@@ -910,6 +888,10 @@ app.post('/elegir_horario', async (req, res) => {
         res.status(500).json({ error: 'Error al actualizar la fecha del trueque' });
     }
 });
+
+
+//cuando aprieto el boton como ofertante, cambio el estado
+//el propietario deberia ver los cambios con este estado en su interfaz
 
 app.post('/rechazar_trueque',async (req, res) => {
     try{
