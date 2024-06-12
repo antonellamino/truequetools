@@ -8,35 +8,47 @@ export const AuthProvider = ({ children }) => {
     const [userId, setUsuarioId] = useState(null);
     const [rol, setRol] = useState(null);
     const navigate = useNavigate();
+    // const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         const storedUserId = localStorage.getItem('userId');
         const storedRol = localStorage.getItem('rol');
-        if (token) {
-            setIsAuthenticated(true);
+        // if (token) {
+        //     setIsAuthenticated(true);
+        //     setUsuarioId(storedUserId);
+        //     setRol(storedRol);
+        // }
+
+        if (storedUserId && storedRol) {
             setUsuarioId(storedUserId);
-            setRol(storedRol);
+            setRol(parseInt(storedRol, 10));
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
         }
+        // setLoading(false);
     }, []);
 
     const login = (token, userId, rol) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('userId', userId);
-        localStorage.setItem('rol', rol);
+
         setIsAuthenticated(true);
         setUsuarioId(userId);
         setRol(rol);
+        localStorage.setItem('token', token);
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('rol', rol);
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('rol');
+
         setIsAuthenticated(false);
         setUsuarioId(null);
         setRol(null);
         navigate('/iniciarSesion');
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('rol');
     };
 
     return (

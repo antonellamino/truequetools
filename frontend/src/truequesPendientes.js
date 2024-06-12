@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { setHours, setMinutes } from 'date-fns';
 import Footer from './footer';
 import Navbar from './navbar';
-import './truequesPendientes.css';
+import './truequesPendientes.css'; // Importamos el archivo CSS
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -16,7 +16,7 @@ const TruequesPendientes = () => {
     const [trueques, setTrueques] = useState([]);
     const [error, setError] = useState(null);
     const [selectedDates, setSelectedDates] = useState({});
-    const [horarioConfirmado, setHorarioConfirmado] = useState({}); // Estado para controlar la confirmación para cada trueque
+    const [horarioConfirmado, setHorarioConfirmado] = useState({}); 
 
     useEffect(() => {
         obtenerTrueques(userId);
@@ -57,7 +57,7 @@ const TruequesPendientes = () => {
     const aceptarTrueque = (trueque) => {
         axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
             .then(response => {
-                obtenerTrueques(userId); // Actualiza la lista de trueques después de aceptar
+                obtenerTrueques(userId);
             })
             .catch(error => {
                 console.error('Error al aceptar el trueque:', error);
@@ -67,7 +67,7 @@ const TruequesPendientes = () => {
     const rechazarTrueque = (trueque) => {
         axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id })
             .then(response => {
-                obtenerTrueques(userId); // Actualiza la lista de trueques después de rechazar
+                obtenerTrueques(userId);
             })
             .catch(error => {
                 console.error('Error al rechazar el trueque:', error);
@@ -77,32 +77,27 @@ const TruequesPendientes = () => {
     return (
         <Fragment>
             <Navbar />
-            <div>
-                <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff' }}>
-                    Trueques Pendientes
-                </h2>
+            <div className="trueques-pendientes-container">
+                <h2 className="header">Trueques Pendientes</h2>
                 {trueques.length > 0 ? (
-                    <ul>
+                    <ul className="trueques-list">
                         {trueques.map((trueque) => (
-                            <li key={trueque.id}>
-                                Trueque entre {trueque.propietario.nombre} y {trueque.ofertante.nombre}
-                                {/* aca tendria que ir la foto de ambos productos */}
-                                <div>
-
-                                <img src={trueque.imagenPropietario ? `data:image/jpeg;base64,${trueque.imagenPropietario}` : '/logo_2.svg'}
-                                alt="Imagen del producto propietario"
-                                ></img>
-
-                                <img src={trueque.imagenOfertante ? `data:image/jpeg;base64,${trueque.imagenOfertante}` : '/logo_2.svg'}
-                                alt="Imagen del producto ofertante"
-                                ></img>
-                                
+                            <li key={trueque.id} className="trueque-item">
+                                <div className="trueque-header">
+                                    Trueque entre {trueque.propietario.nombre} y {trueque.ofertante.nombre}
                                 </div>
-
-                                <div>
+                                <div className="trueque-images">
+                                    <img src={trueque.imagenPropietario ? `data:image/jpeg;base64,${trueque.imagenPropietario}` : '/logo_2.svg'}
+                                         alt="Imagen del producto propietario"
+                                         className="trueque-image"/>
+                                    <img src={trueque.imagenOfertante ? `data:image/jpeg;base64,${trueque.imagenOfertante}` : '/logo_2.svg'}
+                                         alt="Imagen del producto ofertante"
+                                         className="trueque-image"/>
+                                </div>
+                                <div className="trueque-actions">
                                     {trueque.propietario.id === userId ? (
-                                        <div>
-                                            <h2>Selecciona Fecha y Hora</h2>
+                                        <div className="trueque-fecha-hora">
+                                            <h3>Selecciona Fecha y Hora</h3>
                                             {!horarioConfirmado[trueque.id] ? (
                                                 <div>
                                                     <DatePicker
@@ -115,8 +110,9 @@ const TruequesPendientes = () => {
                                                         placeholderText="Elige una fecha y hora"
                                                         filterDate={date => date.getDay() !== 0}
                                                         locale={es}
+                                                        className="date-picker"
                                                     />
-                                                    <button onClick={() => confirmarFecha(trueque)}>Confirmar Fecha y Hora</button>
+                                                    <button className="confirm-button" onClick={() => confirmarFecha(trueque)}>Confirmar Fecha y Hora</button>
                                                 </div>
                                             ) : (
                                                 <p>Horario confirmado, esperando respuesta.</p>
@@ -124,9 +120,9 @@ const TruequesPendientes = () => {
                                         </div>
                                     ) : (
                                         trueque.fecha != null ? (
-                                            <div>
-                                                <button onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
-                                                <button onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
+                                            <div className="trueque-respuesta">
+                                                <button className="accept-button" onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
+                                                <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
                                             </div>
                                         ) : (
                                             <p>Esperando confirmación de fecha</p>
