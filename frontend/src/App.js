@@ -34,19 +34,19 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/iniciarSesion" element={<LoginCliente />} />
             <Route path="/registro" element={<FormularioRegistroCliente />} />
-            <Route path="/publicarProducto" element={<ProtectedRoute requiredRole={3}><PublicarProductoForm /></ProtectedRoute>}/>
-            <Route path="/productosCliente" element={ <ProtectedRoute requiredRole={3}><ClienteDashboard /></ProtectedRoute>} />
+            <Route path="/publicarProducto" element={<PublicarProductoForm />} />
+            <Route path="/productosCliente" element={ <ClienteDashboard />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/cardProducto" element={<CardProducto />} />
             <Route path="/iniciarSesionEmpleado" element={<LoginEmpleado />} />
-            <Route path="/adminDashboard" element={ <ProtectedRoute requiredRole={1}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/adminDashboard" element={ <AdminDashboard />} />
             <Route path="/home" element={<Home />} />
             <Route path="/empleadoDashboard" element={<EmpleadoDashboard />} />
             <Route path="/formularioRegistroEmpleado" element={<AltaEmpleado />} />
             <Route path="/listaEmpleados" element={<ListaEmpleados />} />
-            <Route path="/listaEmpleados" element={<ProtectedRoute requiredRole={1}><ListaEmpleados /></ProtectedRoute>} />
-            <Route path="/formularioSucursal" element={<ProtectedRoute requiredRole={1}><AltaSucursal /></ProtectedRoute>} />
-            <Route path='/altaEmpleado' element={<ProtectedRoute requiredRole={1}><FormularioRegistroEmpleado /></ProtectedRoute>} />
+            <Route path="/listaEmpleados" element={<ListaEmpleados />} />
+            <Route path="/formularioSucursal" element={<AltaSucursal />} />
+            <Route path='/altaEmpleado' element={<FormularioRegistroEmpleado />}/>
             <Route path='/publicacion/:id' element={<Publicacion />} />
             <Route path='/listaSucursales' element={ <ListaSucursales /> } />
             <Route path='/ConfirmarTrueque/:id' element={ <ConfirmarTrueque /> } />
