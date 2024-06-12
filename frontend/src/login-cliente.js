@@ -83,7 +83,7 @@ const LoginCliente = () => {
             <Navbar />
             <div className="mainContainer">
                 <div className="titleContainer">
-                    <div>Inicia sesion</div>
+                    <div>Inicia sesión</div>
                 </div>
                 <br />
                 <div className="inputContainer">
