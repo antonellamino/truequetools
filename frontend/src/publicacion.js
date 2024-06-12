@@ -108,12 +108,12 @@ const Publicacion = () => {
             productoId: producto.id,
             usuarioId: userId,
             categoriaId: producto.categoria_id,
-            //se supone que 
+            sucursalId: producto.sucursal_elegida,
             propietarioId: producto.usuario_id
         };
         
        //producto.id_usuario seria el usuario de la publicacion que muestra
-        const parametros = `${data.productoId}/${data.usuarioId}/${data.categoriaId}/${data.propietarioId}`;
+        const parametros = `${data.sucursalId}/${data.productoId}/${data.usuarioId}/${data.categoriaId}/${data.propietarioId}`;
         navigate(`/opciones/${parametros}`);
     }
 

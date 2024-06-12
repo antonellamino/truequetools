@@ -422,8 +422,7 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
 
     try {
-        const empleado = await Empleado.where({ nombre_usuario }).fetch({ require: false });
-
+        const empleado = await Empleado.where({ nombre: nombre_usuario }).fetch();
         if (!empleado) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
@@ -886,16 +885,17 @@ app.post('/agregar-notificacion', async (req, res) => {
 
 app.post('/guardar-trueque',async (req,res) => {
     try{
-        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, fecha } = req.body;
+        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, fecha, id_sucursal } = req.body;
 
         const nuevoTrueque = await Trueque.forge({
             id_propietario,
             id_ofertante,
             id_producto_propietario,
             id_producto_ofertante,
-            fecha
+            fecha,
+            id_sucursal
         });
-        
+
         console.log("aaasfa");
         console.log(nuevoTrueque);
 
@@ -1003,14 +1003,23 @@ app.post('/confirmar_trueque', async (req, res) => {
     }
 });
 
+app.get('/trueques_Sucursal', async (req, res) => {
+    try {
+        const idSucursal = req.query.idSucursal;
 
+        if (!idSucursal) {
+            return res.status(400).json({ error: 'El idSucursal es requerido' });
+        }
 
+        const trueques = await Trueque.where({ id_sucursal: idSucursal, estado: 'espera' })
+            .fetchAll({ withRelated: ['productoPropietario', 'productoOfertante', 'propietario', 'ofertante'] });
 
-
-
-
-
-
+        res.json({ trueques });
+    } catch (error) {
+        console.error('Error al obtener trueques:', error);
+        res.status(500).json({ error: 'Error al obtener trueques' });
+    }
+});
 
 // iniciar servidor
 app.listen(PORT, () => {

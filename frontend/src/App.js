@@ -23,6 +23,7 @@ import Notificaciones from './notificaciones';
 import Opciones from './opciones';
 import FormularioVenta from './formularioVenta';
 import TruequesPendientes from './truequesPendientes';
+import ConfirmarTrueque from './ConfirmarTrueque';
 
 function App() {
   return (
@@ -48,10 +49,11 @@ function App() {
             <Route path='/altaEmpleado' element={<ProtectedRoute requiredRole={1}><FormularioRegistroEmpleado /></ProtectedRoute>} />
             <Route path='/publicacion/:id' element={<Publicacion />} />
             <Route path='/listaSucursales' element={ <ListaSucursales /> } />
+            <Route path='/ConfirmarTrueque/:id' element={ <ConfirmarTrueque /> } />
             <Route path='/ventas' element={  <Ventas /> }/>
             <Route path="/registrarVenta" element={<FormularioVenta/>} />
             <Route path="/notificaciones/:id" element={<Notificaciones />} /> 
-            <Route path="/opciones/:productoId/:usuarioId/:categoriaId/:propietarioId" element={<Opciones />} />
+            <Route path="/opciones/:sucursalId/:productoId/:usuarioId/:categoriaId/:propietarioId" element={<Opciones />} />
             <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
           </Routes>
         </AuthProvider>

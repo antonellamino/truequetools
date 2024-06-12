@@ -29,7 +29,7 @@ const EmpleadoDashboard = () => {
                             <div className="card-body">
                                 <div className="d-grid gap-2">
                                     <button className="btn btn-primary mb-3" onClick={handleAltaVenta}>Registrar venta</button>
-                                    <button className="btn btn-primary mb-3" onClick={handleTruequesPendientes}>Lista de sucursales</button>
+                                    <button className="btn btn-primary mb-3" onClick={handleTruequesPendientes}>Trueques pendientes por sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleVentasRegistradas}>Ventas registradas</button>
                                 </div>
                             </div>
