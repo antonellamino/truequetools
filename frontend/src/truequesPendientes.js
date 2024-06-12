@@ -224,6 +224,7 @@ const TruequesPendientes = () => {
                                         //si no soy propietario y ya eligio el propietario la fecha
                                         trueque.fecha !== null ? (
                                             <div className="trueque-respuesta">
+                                                
                                                 {truequeMensajes[trueque.id] ? (
                                                     <p>{truequeMensajes[trueque.id]}</p>
 
