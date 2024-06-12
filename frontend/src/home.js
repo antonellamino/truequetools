@@ -26,8 +26,10 @@ const Home = () => {
     useEffect(() => {
         axios.get(`${backendUrl}/productos`)
             .then(response => {
-                setProductos(response.data.productos);
-                const userIds = response.data.productos.map(producto => producto.usuario_id);
+                // Excluir productos con estado = true
+                const productosValidos = response.data.productos.filter(producto => !producto.estado);
+                setProductos(productosValidos);
+                const userIds = productosValidos.map(producto => producto.usuario_id);
                 obtenerUsuarios(userIds);
             })
             .catch(error => {
@@ -36,13 +38,17 @@ const Home = () => {
     }, []);
 
     const actualizarProductosFiltrados = (productosFiltrados) => {
-        setProductosFiltrados(productosFiltrados);
+        // Excluir productos con estado = true
+        const productosValidosFiltrados = productosFiltrados.filter(producto => !producto.estado);
+        setProductosFiltrados(productosValidosFiltrados);
         setBusquedaHecha(true);
     };
+
     const obtenerCorreoUsuario = (usuarioId) => {
         const usuarioEncontrado = Object.values(usuarios).find(usuario => usuario.id === usuarioId);
         return usuarioEncontrado ? usuarioEncontrado.correo : '';
     };
+
     return (
         <Fragment>
             <Navbar actualizarProductosFiltrados={actualizarProductosFiltrados} />
@@ -51,10 +57,9 @@ const Home = () => {
                 Productos disponibles
             </h2>
             <div className='home-principal'>
-
                 {busquedaHecha && productosFiltrados.length === 0 && (
                     <div className="d-flex justify-content-center align-items-center" style={{ color: 'white', textAlign: 'center', width: '100%', background: '#2c3359', height: '80px', marginBottom: '80px' }}>
-                        <h3>No hay productos que coincidan con tu busqueda.</h3>
+                        <h3>No hay productos que coincidan con tu búsqueda.</h3>
                     </div>
                 )}
                 {productosFiltrados.length > 0 ? (
