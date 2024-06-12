@@ -886,14 +886,15 @@ app.post('/agregar-notificacion', async (req, res) => {
 
 app.post('/guardar-trueque',async (req,res) => {
     try{
-        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, fecha } = req.body;
+        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, fecha, id_sucursal } = req.body;
 
         const nuevoTrueque = await Trueque.forge({
             id_propietario,
             id_ofertante,
             id_producto_propietario,
             id_producto_ofertante,
-            fecha
+            fecha,
+            id_sucursal
         });
         
         console.log("aaasfa");
@@ -1001,10 +1002,6 @@ app.post('/elegir_horario', async (req, res) => {
         res.status(500).json({ error: 'Error al actualizar la fecha del trueque' });
     }
 });
-
-
-
-
 
 // iniciar servidor
 app.listen(PORT, () => {
