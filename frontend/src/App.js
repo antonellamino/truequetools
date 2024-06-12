@@ -14,7 +14,6 @@ import EmpleadoDashboard from './empleadoDashboard';
 import AltaEmpleado from './formularioRegistroEmpleado';
 import ListaEmpleados from './listaEmpleados';
 import AltaSucursal from './formularioSucursal';
-import ProtectedRoute from './protectedRoute';
 import FormularioRegistroEmpleado from './formularioRegistroEmpleado';
 import Publicacion from './publicacion';
 import ListaSucursales from './listaSucursales';
@@ -51,7 +50,7 @@ function App() {
             <Route path='/listaSucursales' element={ <ListaSucursales /> } />
             <Route path='/ConfirmarTrueque/:id' element={ <ConfirmarTrueque /> } />
             <Route path='/ventas' element={  <Ventas /> }/>
-            <Route path="/registrarVenta" element={<FormularioVenta/>} />
+            <Route path="/altaVenta" element={<FormularioVenta/>} />
             <Route path="/notificaciones/:id" element={<Notificaciones />} /> 
             <Route path="/opciones/:sucursalId/:productoId/:usuarioId/:categoriaId/:propietarioId" element={<Opciones />} />
             <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />

@@ -221,23 +221,22 @@ app.post('/publicarProducto', upload.array('foto',1), async (req, res) => {
 //solo admin
 app.post('/agregar-sucursal', async (req, res) => {
     try {
-
         const { nombre, direccion, telefono } = req.body;
-
+        const sucursalExistente = await Sucursal.where({ nombre }).fetch();
+        if (sucursalExistente) {
+            return res.status(400).json({ error: 'El nombre de la sucursal ya existe' });
+        }
         const nuevaSucursal = await Sucursal.forge({
             nombre,
             direccion,
             telefono
-        })
-        await nuevaSucursal.save();
-
+        }).save();
         res.status(201).json({ mensaje: 'Sucursal creada exitosamente', sucursal: nuevaSucursal });
     } catch (error) {
-        console.error('error al registrar la sucursal:', error);
-        res.status(500).json({ error: 'no se pudo registrar la sucursal' });
+        console.error('Error al registrar la sucursal:', error);
+        res.status(500).json({ error: 'No se pudo registrar la sucursal' });
     }
 });
-
 
 
 app.get('/usuarios', async (req, res) => {
@@ -405,24 +404,13 @@ app.post('/registrar-empleado', async (req, res) => {
 
 
 
-//endpooint a usar cuando el admin quiera obtener la lista de empleados
-app.get('/empleados', async (req, res) => {
-    try {
-        const usuarios = await Empleado.fetchAll();
-        res.json({ usuarios });
-    } catch (error) {
-        console.error('error al obtener los empleados:', error);
-        res.status(500).json({ error: 'ocurrio un error al obtener los empleados' });
-    }
-})
-
-
 //INICIO DE SESION COMO EMPLEADO
 app.post('/iniciar-sesion-empleado', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
 
     try {
-        const empleado = await Empleado.where({ nombre: nombre_usuario }).fetch();
+        const empleado = await Empleado.where({ nombre_usuario }).fetch({ require: false });
+
         if (!empleado) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
@@ -649,7 +637,8 @@ app.post('/registrar-empleado', async (req, res) => {
 //endpooint a usar cuando el admin quiera obtener la lista de empleados
 app.get('/empleados', async (req, res) => {
     try {
-        const usuarios = await Empleado.fetchAll();
+        console.log("entra a empleados");
+        const usuarios = await Empleado.where({rol_id: 2}).fetchAll();
         res.json({ usuarios });
     } catch (error) {
         console.error('error al obtener los empleados:', error);
@@ -922,6 +911,7 @@ app.get('/mis_trueques', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener los trueques' });
     }
 });
+
 app.post('/elegir_horario', async (req, res) => {
     try {
         const { idTrueque, fecha } = req.body;
@@ -980,9 +970,18 @@ app.post('/confirmar_trueque', async (req, res) => {
 
         const estado = "completado";
         trueque.set({ estado });
-
         await trueque.save();
 
+        const productoPropietario = await Producto.where({ id: trueque.id_producto_propietario }).fetch();
+        const productoOfertante = await Producto.where({ id: trueque.id_producto_ofertante }).fetch();
+        
+        const estadoProducto = "true";
+
+        productoPropietario.set({ estadoProducto });
+        productoOfertante.set({ estadoProducto });
+
+        await productoPropietario.save();
+        await productoOfertante.save();
         res.status(200).json({ message: 'Trueque confirmado exitosamente', trueque });
     } catch (error) {
         console.error('Error al confirmar el trueque:', error);

@@ -44,6 +44,7 @@ return (
             <Navbar />
             <div className="container mt-5">
                 <h2 className="mb-4" style={{ color: 'white' }}>Alta Sucursal</h2>
+                {mensajeError && <div className="alert alert-danger">{mensajeError}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="nombre">Nombre</label>
@@ -63,39 +64,30 @@ return (
                             type="text"
                             className="form-control"
                             id="direccion"
-                            placeholder="ingresa la direccion"
+                            placeholder="Ingresa la dirección"
                             value={direccion}
                             onChange={(e) => setDireccion(e.target.value)}
                             required
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="telefono">Telefono</label>
+                        <label htmlFor="telefono">Teléfono</label>
                         <input
                             type="text"
                             className="form-control"
                             id="telefono"
-                            placeholder="ingresa el telefono"
+                            placeholder="Ingresa el teléfono"
                             value={telefono}
                             onChange={(e) => setTelefono(e.target.value)}
                             required
                         />
                     </div>
-                    {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
-                    {mensajeError && <div className="alert alert-danger mt-2">{mensajeError}</div>}
                     <button type="submit" className="btn btn-primary">Crear sucursal</button>
+                    {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
                 </form>
             </div>
         </Fragment>
     );
-
-
-
-
-
-
-
-
 }
 
 export default AltaSucursal;

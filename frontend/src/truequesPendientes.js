@@ -16,10 +16,39 @@ const TruequesPendientes = () => {
     const [trueques, setTrueques] = useState([]);
     const [selectedDates, setSelectedDates] = useState({});
     const [horarioConfirmado, setHorarioConfirmado] = useState({});
+    const [truequeMensajes, setTruequeMensajes] = useState({});
+    const [errorMensaje, setErrorMensaje] = useState({});
+
 
     useEffect(() => {
         obtenerTrueques(userId);
+        //me guardo los mensajes, en caso de ya haberlos "instanciado", no me da la posibilidad de volver a hacerlo, logrando guardar el "estado"
+        cargarMensajesDesdeLocalStorage();
+        cargarHorariosDesdeLocalStorage();
     }, [userId]);
+
+    const cargarMensajesDesdeLocalStorage = () => {
+        const mensajesGuardados = localStorage.getItem('truequeMensajes');
+        if (mensajesGuardados) {
+            setTruequeMensajes(JSON.parse(mensajesGuardados));
+        }
+    };
+
+    const guardarMensajesEnLocalStorage = (mensajes) => {
+        localStorage.setItem('truequeMensajes', JSON.stringify(mensajes));
+    };
+
+    const cargarHorariosDesdeLocalStorage = () => {
+        const horariosGuardados = localStorage.getItem('horarioConfirmado');
+        if (horariosGuardados) {
+            setHorarioConfirmado(JSON.parse(horariosGuardados));
+        }
+    };
+
+    const guardarHorariosEnLocalStorage = (horarios) => {
+        localStorage.setItem('horarioConfirmado', JSON.stringify(horarios));
+    };
+
 
     const obtenerTrueques = (userId) => {
         axios.get(`${backendUrl}/mis_trueques`, { params: { usuario_id: userId } })
@@ -36,26 +65,71 @@ const TruequesPendientes = () => {
             ...prevState,
             [trueque.id]: date
         }));
+        //si hay mensaje,erro es null
+        setErrorMensaje(prevState => ({
+            ...prevState,
+            [trueque.id]: null
+        }));
     };
 
+
+    
+   
     const confirmarFecha = (trueque) => {
+        const selectedDate = selectedDates[trueque.id];
+        if (!selectedDate) {
+            setErrorMensaje(prevState => ({
+                ...prevState,
+                [trueque.id]: 'Por favor, selecciona una fecha y hora antes de confirmar.'
+            }));
+            return;
+        }
+        
         const formattedDate = selectedDates[trueque.id].toISOString().slice(0, 19).replace('T', ' ');
         axios.post(`${backendUrl}/elegir_horario`, { fecha: formattedDate, idTrueque: trueque.id })
             .then(response => {
-                setHorarioConfirmado(prevState => ({
-                    ...prevState,
+                const nuevosHorarios = {
+                    ...horarioConfirmado,
                     [trueque.id]: true
-                }));
+                };
+                setHorarioConfirmado(nuevosHorarios);
+                guardarHorariosEnLocalStorage(nuevosHorarios);
+               
             })
             .catch(error => {
                 console.error('Error al enviar la fecha seleccionada:', error);
             });
     };
 
+
+
+    //el propietario lograra ver la respuesta del
+    const actualizarTrueque = (truequeId, estado) => {
+        setTrueques(prevState =>
+            prevState.map(trueque =>
+                trueque.id === truequeId ? { ...trueque, estado } : trueque
+            )
+        );
+    };
+
+
+
+
     const aceptarTrueque = (trueque) => {
         axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
             .then(response => {
                 console.log("se acepto el trueque");
+                //cambie aca
+                const nuevosMensajes = {
+                    ...truequeMensajes,
+                    [trueque.id]: 'Trueque aceptado'
+                };
+                setTruequeMensajes(nuevosMensajes);
+                guardarMensajesEnLocalStorage(nuevosMensajes);
+                actualizarTrueque(trueque.id, response.data.estado);
+           
+                //aa
+
                 obtenerTrueques(userId); // Actualiza la lista de trueques después de aceptar
             })
             .catch(error => {
@@ -67,6 +141,17 @@ const TruequesPendientes = () => {
         axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id })
             .then(response => {
                 console.log("se rechazo");
+                //aa
+                const nuevosMensajes = {
+                    ...truequeMensajes,
+                    [trueque.id]: 'Trueque cancelado'
+                };
+                setTruequeMensajes(nuevosMensajes);
+                guardarMensajesEnLocalStorage(nuevosMensajes);
+                actualizarTrueque(trueque.id, response.data.estado);
+           
+                //aaa
+
                 obtenerTrueques(userId); // Actualiza la lista de trueques después de rechazar
             })
             .catch(error => {
@@ -100,9 +185,9 @@ const TruequesPendientes = () => {
                                 <div className="trueque-actions">
                                     {trueque.propietario.id === userId ? (
                                         <div className="trueque-fecha-hora">
-                                            <h3>Selecciona Fecha y Hora</h3>
-                                            {!horarioConfirmado[trueque.id] ? (
+                                            {!horarioConfirmado[trueque.id] && trueque.estado !== 'espera' ? (
                                                 <div>
+                                                    <h3>Selecciona Fecha y Hora</h3>
                                                     <DatePicker
                                                         selected={selectedDates[trueque.id]}
                                                         onChange={(date) => handleDateChange(date, trueque)}
@@ -116,21 +201,45 @@ const TruequesPendientes = () => {
                                                         className="date-picker"
                                                     />
                                                     <button className="confirm-button" onClick={() => confirmarFecha(trueque)}>Confirmar Fecha y Hora</button>
+                                                    {errorMensaje[trueque.id] && <p className="error-message">{errorMensaje[trueque.id]}</p>}
+                                               
                                                 </div>
-                                            ) : (
-                                                <p>Horario confirmado, esperando respuesta.</p>
+                                            ) : (  
+                                                trueque.estado === 'espera' && horarioConfirmado[trueque.id] && truequeMensajes[trueque.id] === 'Trueque aceptado' ? (
+                                                    <p>Trueque confirmado por ambas partes.</p>
+                                                ) : (
+                                                    trueque.estado === 'espera' && horarioConfirmado[trueque.id] && truequeMensajes[trueque.id] === 'Trueque cancelado' ? (
+                                                        <p>Trueque rechazado por ofertante.</p>
+                                                    ) : (  
+                                                        !truequeMensajes[trueque.id]  ? (
+                                                            <p>Horario confirmado, esperando respuesta.</p>
+                                                        ) : null
+                                                    )
+                                                )
                                             )}
                                         </div>
                                     ) : (
-                                        trueque.fecha != null ? (
+                                        //si no soy propietario y ya eligio el propietario la fecha
+                                        trueque.fecha !== null ? (
                                             <div className="trueque-respuesta">
-                                                <button className="accept-button" onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
-                                                <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
+                                                
+                                                {truequeMensajes[trueque.id] ? (
+                                                    <p>{truequeMensajes[trueque.id]}</p>
+
+                                                ) : (
+                                                    <div>
+                                                        <button className="accept-button" onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
+                                                        <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : (
+                                            trueque.estado !== 'espera' ? (
                                             <p>Esperando confirmación de fecha</p>
+                                            ) : null
                                         )
                                     )}
+                                    
                                 </div>
                             </li>
                         ))}
