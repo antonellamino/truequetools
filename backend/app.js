@@ -119,6 +119,7 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
     }
 });
 
+
 const multer = require('multer');
 const upload = multer();
 app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
@@ -146,9 +147,11 @@ app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
             imagen_1: imagenesBase64[0], // Spread operator para agregar las imágenes al objeto
             imagen_2: imagenesBase64[1],
             imagen_3: imagenesBase64[2],
-            imagen_4: imagenesBase64[3]
+            imagen_4: imagenesBase64[3],
+            estado: false
         });
-        console.log(nuevoProducto);
+       
+
         await nuevoProducto.save();
 
         return res.status(201).json({ mensaje: 'Producto creado exitosamente' });
@@ -158,63 +161,7 @@ app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
     }
 });
 
-/* EL QUE HABIA HECHO YO
-//endpoint para publicar producto
-const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
-app.post('/publicarProducto', upload.array('foto',1), async (req, res) => {
-    try {
-        const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
-        //console.log(req.files[0]);
-        const imagenes = req.files;
 
-        
-        //const imagen = req.files [0];
-        //const imagen2 = req.files[1];
-        
-
-        //console.log(req.body.foto);
-        //console.log(imagen);
-        
-        let imagenesBase64 = null;
-        if( imagenes && imagenes.length > 0){
-            imagenesBase64 = imagenes.map( img => img.buffer.toString('base64'));
-        }
-        
-        /* if (imagen) {
-            imagenBase64 = imagen.buffer.toString('base64');
-            
-            console.log(imagenBase64);
-        }
-        //ESTO ESTABA COMENTADO
-
-        const nuevoProducto = await Producto.forge({
-            nombre,
-            descripcion,
-            sucursal_elegida,
-            categoria_id,
-            usuario_id,
-            imagen: imagenesBase64 // Guardar fotos en la base de datos como base64
-        })
-
-        await nuevoProducto.save();
-
-        res.status(201).json({ mensaje: 'Producto creado exitosamente'});
-    } catch (error) {
-        // respuesta si hay error
-        console.error('error al registrar el producto:', error);
-        res.status(500).json({ error: 'no se pudo registrar el producto' });
-    }
-});
-*/
-
-
-// Endpoint para cerrar sesión
-// app.post('/logout', (req, res) => {
-
-//     res.status(200).json({ mensaje : 'Sesion cerrada' });
-//     console.log(req.session);
-// });
 
 
 
@@ -308,6 +255,8 @@ app.get('/productos-usuario', async (req, res) => {
         res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
     }
 });
+
+
 
 
 

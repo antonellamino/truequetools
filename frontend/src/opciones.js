@@ -51,6 +51,7 @@ const Opciones = () => {
             id_ofertante : usuarioId,
             id_producto_propietario : productoId,
             id_producto_ofertante : producto.id,
+            id_sucursal : propietarioId.sucursal_preferencia
             //fecha : null
         };
     
