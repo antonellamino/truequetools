@@ -19,7 +19,7 @@ const TruequesPendientes = () => {
     const [horarioConfirmado, setHorarioConfirmado] = useState({});
     const [truequeMensajes, setTruequeMensajes] = useState({});
     const [errorMensaje, setErrorMensaje] = useState({});
-
+     //aaaa
 
     useEffect(() => {
         obtenerTrueques(userId);
