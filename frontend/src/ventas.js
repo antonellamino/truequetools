@@ -9,6 +9,7 @@ const Ventas = () => {
     const { isAuthenticated } = useAuth();
     const [ventas, setVentas] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -23,17 +24,15 @@ const Ventas = () => {
                 })
                 .catch(error => {
                     console.error('Error al obtener las ventas:', error);
+                    setError('Error al obtener las ventas');
                     setLoading(false);
                 });
         }
     }, [isAuthenticated]);
 
-
-
     if (!isAuthenticated) {
         return <p>No tienes permiso para ver esta página. Por favor, inicia sesión.</p>;
     }
-
 
     return (
         <Fragment>
@@ -41,6 +40,8 @@ const Ventas = () => {
             <div className="container">
                 {loading ? (
                     <p>Cargando ventas...</p>
+                ) : error ? (
+                    <p>{error}</p>
                 ) : (
                     <div>
                         <h2 className="text-white">Ventas</h2>
@@ -66,7 +67,7 @@ const Ventas = () => {
                                 </tbody>
                             </table>
                         ) : (
-                            <p>No hay ventas disponibles.</p>
+                            <p>No hay ventas registradas.</p>
                         )}
                     </div>
                 )}

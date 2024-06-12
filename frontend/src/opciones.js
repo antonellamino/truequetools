@@ -8,9 +8,11 @@ import Navbar from './navbar';
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const Opciones = () => {
-    const { productoId, usuarioId, categoriaId, propietarioId } = useParams();
+    const { sucursalId, productoId, usuarioId, categoriaId, propietarioId } = useParams();
     const [productos, setProductos] = useState([]);
     const [mensaje, setMensaje] = useState('');
+
+    console.log(sucursalId);
 
     useEffect(() => {
         console.log("mi usuario para traer los productos es", usuarioId);
@@ -35,7 +37,7 @@ const Opciones = () => {
             id_usuario : propietarioId,
             mensaje : `Nuevo interés en el producto: ${productoId}`,
             leido : false,
-            link : `/truequesPendientes`
+            link : `/truequesPendientes/${propietarioId}`
         }
 
         axios.post(`${backendUrl}/enviar-notificacion`, notificacion)
@@ -45,13 +47,13 @@ const Opciones = () => {
         .catch(error => {
             console.error('Error al enviar la notificación:', error);
         });
-
+        console.log(sucursalId);
         const datosTrueque = {
             id_propietario : propietarioId,
             id_ofertante : usuarioId,
             id_producto_propietario : productoId,
             id_producto_ofertante : producto.id,
-            fecha : new Date().toISOString().slice(0, 10)
+            id_sucursal : sucursalId
         };
     
         axios.post(`${backendUrl}/guardar-trueque`, datosTrueque)
@@ -85,7 +87,7 @@ const Opciones = () => {
                         {producto.seleccionado ? (
                             <p>{mensaje}</p>
                         ) : (
-                            <button className="btn btn-primary" onClick={() => seleccionar(producto)}>Seleccionar</button>
+                            <button className="boton_seleccionar" onClick={() => seleccionar(producto)}>Seleccionar</button>
                         )}
                     </div>
                 ))}
@@ -93,4 +95,5 @@ const Opciones = () => {
         </Fragment>
     );
 };
+
 export default Opciones;

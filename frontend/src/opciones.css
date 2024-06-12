@@ -1,31 +1,41 @@
 .trueque-options-container {
+    max-width: 1000px; /* Ajustar el ancho máximo según sea necesario */
+    margin: 0 auto;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    padding: 20px;
 }
 
+/* Estilos para cada opción de trueque */
 .trueque-option {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
     background-color: #fff;
-    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
+    width: 100%; /* Hacer que el recuadro ocupe todo el ancho disponible */
 }
 
 .trueque-option:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Estilos para la imagen del producto */
 .trueque-option img {
+    max-width: 100px;
+    max-height: 100px;
+    margin-right: 20px;
     width: 150px;
     height: auto;
-    margin-right: 20px;
     border-radius: 8px;
     object-fit: cover;
 }
 
+/* Estilos para el título del producto */
 .trueque-option-content {
     display: flex;
     flex-direction: column;
@@ -34,30 +44,44 @@
 
 .trueque-option h5 {
     margin: 0;
-    font-size: 1.8rem; /* Ajustar el tamaño de fuente según sea necesario */
+    font-size: 1.8rem;
     color: #333;
-    text-align: left; /* Alinear el texto a la izquierda */
-    margin-bottom: 10px; /* Agregar un pequeño margen inferior */
+    text-align: left;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
+/* Estilos para el mensaje de éxito */
 .trueque-option p {
-    font-size: 1.5rem; /* Ajustar el tamaño de fuente según sea necesario */
-    margin-left: auto; /* Mover el elemento a la derecha */
+    margin: 0;
+    font-size: 16px;
+    color: green;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    margin-left: auto;
 }
 
+/* Estilos para el botón de selección */
 .trueque-option button {
-    width: 50%; /* Ajustar al 50% del contenedor */
     background-color: #007bff;
     color: #fff;
     border: none;
-    padding: 5px 10px; /* Reducido el padding para hacer el botón más pequeño */
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-left: auto; /* Alinea el botón a la derecha */
+    margin-left: auto;
     font-size: 1.2rem;
 }
 
 .trueque-option button:hover {
     background-color: #0056b3;
+}
+
+/* Estilos para el botón de selección cuando está deshabilitado */
+.trueque-option button[disabled] {
+    background-color: #ccc;
+    cursor: not-allowed;
 }

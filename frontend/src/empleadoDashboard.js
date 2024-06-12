@@ -8,12 +8,8 @@ const EmpleadoDashboard = () => {
     const navigate = useNavigate();
 
     const handleAltaVenta = () => {
-        navigate('/altaVenta');
+        navigate('/formularioVenta');
     };
-
-    const handleConfirmarTrueque = () => {
-        navigate('/confirmarTrueque');
-    }
 
     const handleTruequesPendientes = () => {
         navigate('/listaSucursales');
@@ -33,8 +29,7 @@ const EmpleadoDashboard = () => {
                             <div className="card-body">
                                 <div className="d-grid gap-2">
                                     <button className="btn btn-primary mb-3" onClick={handleAltaVenta}>Registrar venta</button>
-                                    <button className="btn btn-primary mb-3" onClick={handleConfirmarTrueque}>Confirmar trueque</button>
-                                    <button className="btn btn-primary mb-3" onClick={handleTruequesPendientes}>Lista de trueques pendientes</button>
+                                    <button className="btn btn-primary mb-3" onClick={handleTruequesPendientes}>Trueques pendientes por sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleVentasRegistradas}>Ventas registradas</button>
                                 </div>
                             </div>

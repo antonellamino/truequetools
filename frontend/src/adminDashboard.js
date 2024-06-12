@@ -7,12 +7,6 @@ const AdminDashboard = () => {
     const { isAuthenticated, rol } = useAuth();
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     if (!isAuthenticated || rol !== 1) {
-    //         navigate('/iniciarSesionEmpleado');
-    //     }
-    // }, [isAuthenticated, rol, navigate]);
-
     const handleAltaEmpleado = () => {
         navigate('/altaEmpleado');
     };
@@ -44,10 +38,9 @@ const AdminDashboard = () => {
                                 <div className="d-grid gap-2">
                                     <button className="btn btn-primary mb-3" onClick={handleAltaEmpleado}>Dar de alta empleado</button>
                                     <button className="btn btn-primary mb-3" onClick={handleListaEmpleados}>Lista empleados</button>
-                                    <button className="btn btn-primary mb-3">Lista de trueques pendientes</button>
                                     <button className="btn btn-primary mb-3" onClick={handleVentas}>Ventas registradas</button>
                                     <button className="btn btn-primary mb-3" onClick={handleAltaSucursal}>Dar de alta sucursal</button>
-                                    <button className="btn btn-primary mb-3" onClick={handleListaSucursales}>Lista de sucursales</button>
+                                    <button className="btn btn-primary mb-3" onClick={handleListaSucursales}>Trueques pendientes por sucursal</button>
                                 </div>
                             </div>
                         </div>

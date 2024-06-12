@@ -21,24 +21,44 @@
 
 .notification-button {
     position: relative;
-}
-
-.notification-count {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background-color: red;
-    color: white;
-    border-radius: 50%;
-    padding: 4px;
-    font-size: 0.8rem;
-    width: 20px;
-    height: 20px;
+    margin-right: 10px; /* Agrega un margen derecho para separar de la barra de búsqueda */
+    padding: 0; /* Elimina el relleno del botón para que sea más compacto */
+    border: none; /* Elimina el borde del botón para que sea más compacto */
+    background: none; /* Elimina el fondo del botón para que sea más compacto */
+    width: 40px; /* Ajusta el ancho del botón */
+    height: 30px; /* Ajusta la altura del botón */
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
+.notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px;
+    font-size: 0.8rem;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .navbar-custom .nav-item:hover .nav-link {
     color: white !important; /* Cambia el color del texto al pasar el cursor */
     transition: color 0.3s ease; /* Agrega una transición suave */
+}
+
+.search-form {
+    flex-grow: 1; /* Permite que la barra de búsqueda crezca para llenar el espacio disponible */
+    max-width: 500px; /* Establece un ancho máximo para la barra de búsqueda */
+}
+
+.search-form input {
+    width: 100%; /* Asegura que el campo de búsqueda ocupe todo el espacio disponible */
+    min-width: 200px; /* Establece un ancho mínimo para la barra de búsqueda */
 }

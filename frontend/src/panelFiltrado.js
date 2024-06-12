@@ -50,7 +50,7 @@ const PanelFiltrado = ({ actualizarProductosFiltrados }) => {
     };
 
     return (
-        <div className="card" style={{ backgroundColor: '#0a96a6' }}>
+        <div className="card rounded-0" style={{ backgroundColor: '#0a96a6' }}>
             <div className="card-header">
                 <h5 className="card-title">Filtrar</h5>
             </div>

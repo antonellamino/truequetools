@@ -8,19 +8,18 @@ import './navbar.css';
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const Navbar = ({ actualizarProductosFiltrados }) => {
-    const { userId,isAuthenticated, logout, rol } = useAuth();
+    const { userId, isAuthenticated, logout, rol } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [unreadNotifications, setUnreadNotifications] = useState(0); //Número de notificaciones no leídas, puedes cambiar este valor dinámicamente
+    const [unreadNotifications, setUnreadNotifications] = useState(0);
 
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         if (isAuthenticated) {
-            // Realiza la solicitud HTTP para obtener la cantidad de notificaciones no leídas
             axios.get(`${backendUrl}/notificaciones/no-leidas`, { params: { userId } })
                 .then(response => {
-                    const count = response.data.count; // Obtiene la cantidad de notificaciones no leídas
+                    const count = response.data.count;
                     setUnreadNotifications(count);
                 })
                 .catch(error => {
@@ -29,13 +28,12 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
         }
     }, [userId, isAuthenticated]);
 
-
     const handleCerrarSesion = () => {
         logout();
     }
 
     const handleNotificationClick = () => {
-        navigate(`/notificaciones/${userId}`); // Redirige a la página de notificaciones
+        navigate(`/notificaciones/${userId}`);
     }
 
     const handleTruequeClick = () => {
@@ -44,7 +42,6 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
 
     const isHomePage = location.pathname === '/';
     const homeButtonStyle = isHomePage ? {} : { color: '#ccc' };
-
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -61,8 +58,6 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
             <Header />
             <nav className="navbar navbar-expand-lg navbar-dark navbar-custom">
                 <div className="container-fluid">
-
-
                     <div className="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
                         <ul className="navbar-nav">
                             <li className="nav-item">
@@ -88,9 +83,9 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     <NavLink className="nav-link" to="/clienteDashboard" activeClassName="active">Ver mis productos</NavLink>
                                 </li>
                             )}
-                            {isAuthenticated && rol === 3 &&(
+                            {isAuthenticated && rol === 3 && (
                                 <li className="nav-item">
-                                <button className="nav-link btn" onClick={handleTruequeClick}> Trueques Pendientes </button>
+                                    <button className="nav-link btn" onClick={handleTruequeClick}>Trueques Pendientes</button>
                                 </li>
                             )}
                             {isAuthenticated ? (
@@ -103,20 +98,20 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                 </li>
                             )}
                         </ul>
-                        {isAuthenticated && (
-                            <div className="d-flex align-items-center">
+                        <div className="d-flex align-items-center">
+                            {isAuthenticated && (
                                 <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
                                     <i className="fas fa-bell bell-icon"></i>
                                     {unreadNotifications > 0 && (
                                         <span className="notification-count">{unreadNotifications}</span>
                                     )}
                                 </button>
-                            </div>
-                        )}
-                        <form className="d-flex" onSubmit={handleSearch}>
-                            <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                            <button className="btn btn-outline-light" type="submit">Buscar</button>
-                        </form>
+                            )}
+                            <form className="d-flex search-form" onSubmit={handleSearch}>
+                                <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                                <button className="btn btn-outline-light" type="submit">Buscar</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </nav>

@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useContext } from 'react';
+import React, { Fragment, useState } from 'react';
 import axios from 'axios'; 
 import Navbar from './navbar';
 import { useNavigate } from 'react-router-dom';
@@ -17,10 +17,6 @@ const LoginEmpleado = () => {
             setnombre_usuarioError('Por favor ingresa un nombre de usuario');
             return false;
         }
-        // if (nombre_usuario.length !== 8) {
-        //     setnombre_usuarioError('El nombre_usuario debe tener exactamente 8 caracteres');
-        //     return false;
-        // }
         setnombre_usuarioError('');
         return true;
     };
@@ -42,8 +38,10 @@ const LoginEmpleado = () => {
         const isPasswordValid = validatePassword();
 
         if (isnombre_usuarioValid && isPasswordValid) {
+            console.log(isnombre_usuarioValid, isPasswordValid);
             try {
                 const response = await axios.post(`${backendUrl}/iniciar-sesion-empleado`, { nombre_usuario: nombre_usuario, contrasena: password });
+                console.log(nombre_usuario, password);
                 
                 const rol = response.data.rol;
                 const token = response.data.token;

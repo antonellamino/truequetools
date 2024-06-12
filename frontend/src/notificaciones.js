@@ -45,8 +45,8 @@ const Notificaciones = () => {
                             className={`list-group-item ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}
                         >
                             {notificacion.link ? (
-                                <NavLink to={notificacion.link || '#'}>
-                                    <button 
+                                <NavLink to={notificacion.link || '#'} className="notification-link">
+                                    <button
                                         className={`notification-button ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}
                                     >
                                         {notificacion.mensaje}
