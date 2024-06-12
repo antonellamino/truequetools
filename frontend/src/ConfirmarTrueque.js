@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import Navbar from './navbar';
+import './ConfirmarTrueque.css'; // Importa el archivo de estilos
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -44,27 +46,37 @@ const ConfirmarTrueque = () => {
 
     return (
         <div>
-            <h2>Trueques</h2>
-            {error && <p>{error}</p>}
-            {trueques.length > 0 ? (
-                <ul>
-                    {trueques.map(trueque => (
-                        <li key={trueque.id}>
-                            <p>Fecha: {new Date(trueque.fecha).toLocaleDateString()}</p>
-                            <p>Propietario: {trueque.propietario.nombre}</p> {/* Muestra el nombre del propietario */}
-                            <p>Ofertante: {trueque.ofertante.nombre}</p> {/* Muestra el nombre del ofertante */}
-                            <img src={trueque.productoPropietario.imagen_1 ? `data:image/jpeg;base64,${trueque.productoPropietario.imagen_1}` : './logo_2.svg'} alt="Producto Propietario" />
-                            <img src={trueque.productoOfertante.imagen_1 ? `data:image/jpeg;base64,${trueque.productoOfertante.imagen_1}` : './logo_2.svg'} alt="Producto Ofertante" />
-                            {!trueque.confirmado && (
-                                <button onClick={() => confirmar(trueque.id)}>Confirmar</button>
-                            )}
-                            {trueque.confirmado && <p>Se ha aceptado el trueque correctamente</p>} {/* Mostrar mensaje si el trueque está confirmado */}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>No hay trueques disponibles.</p>
-            )}
+            <Navbar />
+            <div className="container">
+                <h2>Trueques Pendientes</h2>
+                {error && <p className="error">{error}</p>}
+                {trueques.length > 0 ? (
+                    <ul className="trueque-list">
+                        {trueques.map(trueque => (
+                            <li key={trueque.id} className="trueque-item">
+                                <div className="image-container">
+                                    <img src={trueque.productoPropietario.imagen_1 ? `data:image/jpeg;base64,${trueque.productoPropietario.imagen_1}` : './logo_2.svg'} alt="Producto Propietario" />
+                                </div>
+                                <div className="action-container">
+                                <p><strong>Trueque entre {trueque.propietario.nombre} y {trueque.ofertante.nombre}</strong></p>
+                                    <img src="/Flecha_008.png" alt="Intercambio" className="middle-image" /> {/* Ícono de intercambio */}
+                                    <div>
+                                        {!trueque.confirmado && (
+                                            <button onClick={() => confirmar(trueque.id)}>Aceptar</button>
+                                        )}
+                                        {trueque.confirmado && <p className="confirmation-message">Se ha aceptado el trueque correctamente</p>} {/* Mostrar mensaje si el trueque está confirmado */}
+                                    </div>
+                                </div>
+                                <div className="image-container">
+                                    <img src={trueque.productoOfertante.imagen_1 ? `data:image/jpeg;base64,${trueque.productoOfertante.imagen_1}` : './logo_2.svg'} alt="Producto Ofertante" />
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No hay trueques disponibles.</p>
+                )}
+            </div>
         </div>
     );
 };
