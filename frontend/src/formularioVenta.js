@@ -99,7 +99,7 @@ const FormularioVenta = () => {
                     </div>
                     {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
                     {mensajeError && <div className="alert alert-danger mt-2">{mensajeError}</div>}
-                    <button type="submit" className="btn btn-primary">Registrar venta</button>
+                    <button type="submit" className="btn btn-primary">Crear venta</button>
                 </form>
             </div>
         </Fragment>

@@ -71,14 +71,12 @@ const PublicarProductoForm = () => {
         formData.append('sucursal_elegida', sucursalPreferencia);
         formData.append('categoria_id', categoriaData.categoriaSeleccionada);
         formData.append('usuario_id', userId);
-
+        //formData.append('estado',false);
 
         for (let i = 0; i < fotos.length; i++) {
             formData.append('foto', fotos[i]);
             console.log(fotos[i]);
         }
-
-        
 
         axios.post(`${backendUrl}/publicarProducto`, formData)
             .then(response => {
