@@ -422,7 +422,8 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
 
     try {
-        const empleado = await Empleado.where({ nombre: nombre_usuario }).fetch();
+        const empleado = await Empleado.where({ nombre_usuario }).fetch({ require: false });
+
         if (!empleado) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
@@ -944,6 +945,7 @@ app.get('/mis_trueques', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener los trueques' });
     }
 });
+
 app.post('/elegir_horario', async (req, res) => {
     try {
         const { idTrueque, fecha } = req.body;
