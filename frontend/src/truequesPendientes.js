@@ -16,7 +16,7 @@ const TruequesPendientes = () => {
     const [trueques, setTrueques] = useState([]);
     const [error, setError] = useState(null);
     const [selectedDates, setSelectedDates] = useState({});
-    const [horarioConfirmado, setHorarioConfirmado] = useState({}); 
+    const [horarioConfirmado, setHorarioConfirmado] = useState({});
 
     useEffect(() => {
         obtenerTrueques(userId);
@@ -57,7 +57,8 @@ const TruequesPendientes = () => {
     const aceptarTrueque = (trueque) => {
         axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
             .then(response => {
-                obtenerTrueques(userId);
+                console.log("se acepto el trueque");
+                obtenerTrueques(userId); // Actualiza la lista de trueques después de aceptar
             })
             .catch(error => {
                 console.error('Error al aceptar el trueque:', error);
@@ -67,7 +68,8 @@ const TruequesPendientes = () => {
     const rechazarTrueque = (trueque) => {
         axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id })
             .then(response => {
-                obtenerTrueques(userId);
+                console.log("se rechazo");
+                obtenerTrueques(userId); // Actualiza la lista de trueques después de rechazar
             })
             .catch(error => {
                 console.error('Error al rechazar el trueque:', error);
@@ -90,6 +92,9 @@ const TruequesPendientes = () => {
                                     <img src={trueque.imagenPropietario ? `data:image/jpeg;base64,${trueque.imagenPropietario}` : '/logo_2.svg'}
                                          alt="Imagen del producto propietario"
                                          className="trueque-image"/>
+                                    <img src="/Flecha_008.png"
+                                         alt="Flecha"
+                                         className="trueque-flecha"/>
                                     <img src={trueque.imagenOfertante ? `data:image/jpeg;base64,${trueque.imagenOfertante}` : '/logo_2.svg'}
                                          alt="Imagen del producto ofertante"
                                          className="trueque-image"/>
