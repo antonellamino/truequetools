@@ -16,7 +16,7 @@ const TruequesPendientes = () => {
     const [trueques, setTrueques] = useState([]);
     const [error, setError] = useState(null);
     const [selectedDates, setSelectedDates] = useState({});
-    const [horarioConfirmado, setHorarioConfirmado] = useState({}); 
+    const [horarioConfirmado, setHorarioConfirmado] = useState({});
 
     useEffect(() => {
         obtenerTrueques(userId);
@@ -90,6 +90,9 @@ const TruequesPendientes = () => {
                                     <img src={trueque.imagenPropietario ? `data:image/jpeg;base64,${trueque.imagenPropietario}` : '/logo_2.svg'}
                                          alt="Imagen del producto propietario"
                                          className="trueque-image"/>
+                                    <img src="/Flecha_008.png"
+                                         alt="Flecha"
+                                         className="trueque-flecha"/>
                                     <img src={trueque.imagenOfertante ? `data:image/jpeg;base64,${trueque.imagenOfertante}` : '/logo_2.svg'}
                                          alt="Imagen del producto ofertante"
                                          className="trueque-image"/>
