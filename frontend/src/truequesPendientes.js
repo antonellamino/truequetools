@@ -57,7 +57,8 @@ const TruequesPendientes = () => {
     const aceptarTrueque = (trueque) => {
         axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
             .then(response => {
-                obtenerTrueques(userId);
+                console.log("se acepto el trueque");
+                obtenerTrueques(userId); // Actualiza la lista de trueques después de aceptar
             })
             .catch(error => {
                 console.error('Error al aceptar el trueque:', error);
@@ -67,7 +68,8 @@ const TruequesPendientes = () => {
     const rechazarTrueque = (trueque) => {
         axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id })
             .then(response => {
-                obtenerTrueques(userId);
+                console.log("se rechazo");
+                obtenerTrueques(userId); // Actualiza la lista de trueques después de rechazar
             })
             .catch(error => {
                 console.error('Error al rechazar el trueque:', error);

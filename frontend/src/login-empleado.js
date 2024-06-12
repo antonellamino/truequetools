@@ -17,10 +17,6 @@ const LoginEmpleado = () => {
             setnombre_usuarioError('Por favor ingresa un nombre de usuario');
             return false;
         }
-        // if (nombre_usuario.length !== 8) {
-        //     setnombre_usuarioError('El nombre_usuario debe tener exactamente 8 caracteres');
-        //     return false;
-        // }
         setnombre_usuarioError('');
         return true;
     };
