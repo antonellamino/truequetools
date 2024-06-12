@@ -592,28 +592,6 @@ app.post('/agregar-respuesta', async (req, res) => {//ok
     }
 });
 
-/*
-app.get('/productos-truequear', async (req, res) => {
-    try {
-
-        const { productoId, usuarioId, categoriaId } = req.query;
-
-        console.log(productoId);
-        console.log("me llego el usuario", usuarioId);
-
-        const productos = await Producto.query((p) => {
-            p.where('productos.usuario_id', usuarioId)
-                .join('categorias', 'productos.categoria_id', 'categorias.id');
-        }).fetchAll();
-
-        res.json({ productos });
-    }
-    catch (error) {
-        console.error('error al obtener los productos:', error);
-        res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
-    }
-});
-*/
 
 //filtro para sucursal y categoria, devuelve por uno por otro o por los dos o asi deberia funcionar
 app.get('/productos-filtrados', async (req, res) => {
