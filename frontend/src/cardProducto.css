@@ -34,15 +34,18 @@
     flex-direction: column; /* Dirección de los elementos flexibles */ 
     justify-content: space-between; /* Distribuir el espacio verticalmente */
 }
+
 .card-title {
     font-size: 1.2rem;
     font-weight: bold;
     margin-bottom: 0.5rem; /* Reducir el margen inferior */
-    max-height: 1.2rem; /* Altura máxima para una línea de texto */
+    max-height: 2rem; /* Aumentar la altura máxima para una línea de texto */
+    line-height: 1.5rem; /* Ajustar la altura de la línea */
     overflow: hidden; /* Oculta el contenido desbordado */
     text-overflow: ellipsis; /* Agrega puntos suspensivos al final del texto desbordado */
     white-space: nowrap; /* Evita que el texto se divida en varias líneas */
 }
+
 
 .card-text {
 
