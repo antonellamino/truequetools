@@ -371,7 +371,8 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
 
     try {
-        const empleado = await Empleado.where({ nombre: nombre_usuario }).fetch();
+        const empleado = await Empleado.where({ nombre_usuario }).fetch({ require: false });
+
         if (!empleado) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
@@ -541,7 +542,7 @@ app.post('/agregar-respuesta', async (req, res) => {//ok
     }
 });
 
-
+/*
 app.get('/productos-truequear', async (req, res) => {
     try {
 
@@ -562,7 +563,7 @@ app.get('/productos-truequear', async (req, res) => {
         res.status(500).json({ error: 'ocurrio un error al obtener los productos' });
     }
 });
-
+*/
 
 //filtro para sucursal y categoria, devuelve por uno por otro o por los dos o asi deberia funcionar
 app.get('/productos-filtrados', async (req, res) => {
@@ -732,14 +733,24 @@ app.post('/agregar-respuesta', async (req, res) => {
     }
 });
 
-app.get('/productos-truequear', async (req, res) => {
+app.get('/productos_truequear', async (req, res) => {
     try {
-        const { usuarioId, categoriaId } = req.query;
+        const { productoId, usuarioId, categoriaId } = req.query;
 
         const productos = await Producto.query(p => {
             p.where('usuario_id', usuarioId)
              .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
              .join('categorias', 'productos.categoria_id', 'categorias.id')
+             .whereNotIn('productos.id', function() {
+                 this.select('id_producto_propietario')
+                     .from('trueque')
+                     .where('id_producto_ofertante', productoId)
+                     .union(function() {
+                         this.select('id_producto_ofertante')
+                             .from('trueque')
+                             .where('id_producto_propietario', productoId);
+                     });
+             })
              .select('productos.*', 'categorias.nombre as nombre_categoria');
         }).fetchAll();
 
@@ -749,7 +760,6 @@ app.get('/productos-truequear', async (req, res) => {
         res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
     }
 });
-
 
 // Endpoint para obtener notificaciones
 app.get('/notificaciones', async (req, res) => {
@@ -884,6 +894,7 @@ app.get('/mis_trueques', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener los trueques' });
     }
 });
+
 app.post('/elegir_horario', async (req, res) => {
     try {
         const { idTrueque, fecha } = req.body;

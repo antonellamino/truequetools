@@ -69,6 +69,11 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     <NavLink className="nav-link" to="/adminDashboard" activeClassName="active">Panel de control</NavLink>
                                 </li>
                             )}
+                            {isAuthenticated && rol === 2 && (
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/empleadoDashboard" activeClassName="active">Panel de control</NavLink>
+                                </li>
+                            )}
                             {!isAuthenticated && (
                                 <li className="nav-item">
                                     <NavLink className="nav-link" to="/registro" activeClassName="active">Regístrate</NavLink>
