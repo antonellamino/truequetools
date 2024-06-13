@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react';
-import { AuthContext } from './AuthContext';
+import { useAuth } from './AuthContext'
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import es from 'date-fns/locale/es';
@@ -9,12 +9,14 @@ import Footer from './footer';
 import Navbar from './navbar';
 import './truequesPendientes.css'; // Importamos el archivo CSS
 
+
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
+
 const TruequesPendientes = () => {
-    const { userId } = useContext(AuthContext);
+    const { userId } = useAuth();
     const [trueques, setTrueques] = useState([]);
-    const [error, setError] = useState(null);
+    const [setMensaje, mensaje] = useState(null);
     const [selectedDates, setSelectedDates] = useState({});
     const [horarioConfirmado, setHorarioConfirmado] = useState({});
     const [truequeMensajes, setTruequeMensajes] = useState({});
@@ -22,34 +24,8 @@ const TruequesPendientes = () => {
 
 
     useEffect(() => {
-        obtenerTrueques(userId);
-        //me guardo los mensajes, en caso de ya haberlos "instanciado", no me da la posibilidad de volver a hacerlo, logrando guardar el "estado"
-        cargarMensajesDesdeLocalStorage();
-        cargarHorariosDesdeLocalStorage();
+        obtenerTrueques(userId); 
     }, [userId]);
-
-    const cargarMensajesDesdeLocalStorage = () => {
-        const mensajesGuardados = localStorage.getItem('truequeMensajes');
-        if (mensajesGuardados) {
-            setTruequeMensajes(JSON.parse(mensajesGuardados));
-        }
-    };
-
-    const guardarMensajesEnLocalStorage = (mensajes) => {
-        localStorage.setItem('truequeMensajes', JSON.stringify(mensajes));
-    };
-
-    const cargarHorariosDesdeLocalStorage = () => {
-        const horariosGuardados = localStorage.getItem('horarioConfirmado');
-        if (horariosGuardados) {
-            setHorarioConfirmado(JSON.parse(horariosGuardados));
-        }
-    };
-
-    const guardarHorariosEnLocalStorage = (horarios) => {
-        localStorage.setItem('horarioConfirmado', JSON.stringify(horarios));
-    };
-
 
     const obtenerTrueques = (userId) => {
         axios.get(`${backendUrl}/mis_trueques`, { params: { usuario_id: userId } })
@@ -58,7 +34,6 @@ const TruequesPendientes = () => {
             })
             .catch(error => {
                 console.error('Error al obtener los trueques pendientes:', error);
-                setError('Error al obtener los trueques pendientes');
             });
     };
 
@@ -67,15 +42,11 @@ const TruequesPendientes = () => {
             ...prevState,
             [trueque.id]: date
         }));
-        //si hay mensaje,erro es null
         setErrorMensaje(prevState => ({
             ...prevState,
             [trueque.id]: null
         }));
     };
-
-
-    
    
     const confirmarFecha = (trueque) => {
         const selectedDate = selectedDates[trueque.id];
@@ -95,7 +66,6 @@ const TruequesPendientes = () => {
                     [trueque.id]: true
                 };
                 setHorarioConfirmado(nuevosHorarios);
-                guardarHorariosEnLocalStorage(nuevosHorarios);
                
             })
             .catch(error => {
@@ -103,9 +73,6 @@ const TruequesPendientes = () => {
             });
     };
 
-
-
-    //el propietario lograra ver la respuesta del
     const actualizarTrueque = (truequeId, estado) => {
         setTrueques(prevState =>
             prevState.map(trueque =>
@@ -113,9 +80,6 @@ const TruequesPendientes = () => {
             )
         );
     };
-
-
-
 
     const aceptarTrueque = (trueque) => {
         axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
@@ -127,12 +91,8 @@ const TruequesPendientes = () => {
                     [trueque.id]: 'Trueque aceptado'
                 };
                 setTruequeMensajes(nuevosMensajes);
-                guardarMensajesEnLocalStorage(nuevosMensajes);
                 actualizarTrueque(trueque.id, response.data.estado);
-           
-                //aa
-
-                obtenerTrueques(userId); // Actualiza la lista de trueques después de aceptar
+                obtenerTrueques(userId); 
             })
             .catch(error => {
                 console.error('Error al aceptar el trueque:', error);
@@ -149,11 +109,7 @@ const TruequesPendientes = () => {
                     [trueque.id]: 'Trueque cancelado'
                 };
                 setTruequeMensajes(nuevosMensajes);
-                guardarMensajesEnLocalStorage(nuevosMensajes);
                 actualizarTrueque(trueque.id, response.data.estado);
-           
-                //aaa
-
                 obtenerTrueques(userId); // Actualiza la lista de trueques después de rechazar
             })
             .catch(error => {
@@ -164,8 +120,10 @@ const TruequesPendientes = () => {
     return (
         <Fragment>
             <Navbar />
+            {userId != null ? (
             <div className="trueques-pendientes-container">
                 <h2 className="header">Trueques Pendientes</h2>
+
                 {trueques.length > 0 ? (
                     <ul className="trueques-list">
                         {trueques.map((trueque) => (
@@ -174,20 +132,26 @@ const TruequesPendientes = () => {
                                     Trueque entre {trueque.propietario.nombre} y {trueque.ofertante.nombre}
                                 </div>
                                 <div className="trueque-images">
-                                    <img src={trueque.imagenPropietario ? `data:image/jpeg;base64,${trueque.imagenPropietario}` : '/logo_2.svg'}
-                                         alt="Imagen del producto propietario"
-                                         className="trueque-image"/>
-                                    <img src="/Flecha_008.png"
-                                         alt="Flecha"
-                                         className="trueque-flecha"/>
-                                    <img src={trueque.imagenOfertante ? `data:image/jpeg;base64,${trueque.imagenOfertante}` : '/logo_2.svg'}
-                                         alt="Imagen del producto ofertante"
-                                         className="trueque-image"/>
+                                    <img
+                                        src={trueque.imagenPropietario ? `data:image/jpeg;base64,${trueque.imagenPropietario}` : '/logo_2.svg'}
+                                        alt="Imagen del producto propietario"
+                                        className="trueque-image"
+                                    />
+                                    <img
+                                        src="/Flecha_008.png"
+                                        alt="Flecha"
+                                        className="trueque-flecha"
+                                    />
+                                    <img
+                                        src={trueque.imagenOfertante ? `data:image/jpeg;base64,${trueque.imagenOfertante}` : '/logo_2.svg'}
+                                        alt="Imagen del producto ofertante"
+                                        className="trueque-image"
+                                    />
                                 </div>
                                 <div className="trueque-actions">
                                     {trueque.propietario.id === userId ? (
                                         <div className="trueque-fecha-hora">
-                                            {!horarioConfirmado[trueque.id] && trueque.estado !== 'espera' ? (
+                                            {trueque.fecha === null ? (
                                                 <div>
                                                     <h3>Selecciona Fecha y Hora</h3>
                                                     <DatePicker
@@ -204,44 +168,32 @@ const TruequesPendientes = () => {
                                                     />
                                                     <button className="confirm-button" onClick={() => confirmarFecha(trueque)}>Confirmar Fecha y Hora</button>
                                                     {errorMensaje[trueque.id] && <p className="error-message">{errorMensaje[trueque.id]}</p>}
-                                               
                                                 </div>
-                                            ) : (  
-                                                trueque.estado === 'espera' && horarioConfirmado[trueque.id] && truequeMensajes[trueque.id] === 'Trueque aceptado' ? (
-                                                    <p>Trueque confirmado por ambas partes.</p>
-                                                ) : (
-                                                    trueque.estado === 'espera' && horarioConfirmado[trueque.id] && truequeMensajes[trueque.id] === 'Trueque cancelado' ? (
-                                                        <p>Trueque rechazado por ofertante.</p>
-                                                    ) : (  
-                                                        !truequeMensajes[trueque.id]  ? (
-                                                            <p>Horario confirmado, esperando respuesta.</p>
-                                                        ) : null
-                                                    )
-                                                )
+                                            ) : (
+                                                <div>
+                                                    {trueque.estado === "esperando_confirmacion" ? (
+                                                        <p>Esperando confirmación de horario</p>
+                                                    ) : trueque.estado === "cancelado" ? (
+                                                        <p>Trueque cancelado</p>
+                                                    ) : (
+                                                        <p>Trueque aprobado</p>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                     ) : (
-                                        //si no soy propietario y ya eligio el propietario la fecha
-                                        trueque.fecha !== null ? (
-                                            <div className="trueque-respuesta">
-                                                
-                                                {truequeMensajes[trueque.id] ? (
-                                                    <p>{truequeMensajes[trueque.id]}</p>
-
-                                                ) : (
-                                                    <div>
-                                                        <button className="accept-button" onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
-                                                        <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            trueque.estado !== 'espera' ? (
-                                            <p>Esperando confirmación de fecha</p>
-                                            ) : null
-                                        )
+                                        <div className="trueque-respuesta">
+                                            {trueque.fecha === null ? (
+                                                <p>Esperando fecha</p>
+                                            ) : (
+                                                <div>
+                                                    <button className="accept-button" onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
+                                                    <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
+                                                    <p>{mensaje}</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     )}
-                                    
                                 </div>
                             </li>
                         ))}
@@ -250,6 +202,7 @@ const TruequesPendientes = () => {
                     <p>No tienes trueques pendientes.</p>
                 )}
             </div>
+            ) : (<p>cargando...</p>)}
             <Footer />
         </Fragment>
     );
