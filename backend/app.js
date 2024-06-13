@@ -948,7 +948,8 @@ app.post('/elegir_horario', async (req, res) => {
 
         // Guardar la fecha y hora en el modelo de Trueque
         trueque.set('fecha', fechaHora);
-        trueque.set('estado', "esperando_confirmacion");
+        const estado = 'esperando_confirmacion';
+        trueque.set('estado', estado);
 
         // Guardar los cambios en la base de datos
         await trueque.save();

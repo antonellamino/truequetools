@@ -71,6 +71,7 @@ const TruequesPendientes = () => {
                     [trueque.id]: true
                 };
                 setHorarioConfirmado(nuevosHorarios);
+                window.location.reload();
             })
             .catch(error => {
                 console.error('Error al enviar la fecha y hora seleccionadas:', error);
@@ -164,7 +165,7 @@ const TruequesPendientes = () => {
                                 <div className="trueque-actions">
                                     {trueque.id_propietario == idUsuario ? (
                                         <div className="trueque-fecha-hora">
-                                            {trueque.fecha === null && trueque.estado ? (
+                                            {trueque.fecha === null && trueque.estado && !horarioConfirmado[trueque.id] ? (
                                                 <div>
                                                     <h3>Selecciona Fecha y Hora</h3>
                                                     <DatePicker
