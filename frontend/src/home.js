@@ -27,7 +27,8 @@ const Home = () => {
         axios.get(`${backendUrl}/productos`)
             .then(response => {
                 setProductos(response.data.productos);
-                const userIds = response.data.productos.map(producto => producto.usuario_id);
+                const productosValidos = response.data.productos.filter(producto => !producto.estado);
+                setProductos(productosValidos);
                 obtenerUsuarios(userIds);
             })
             .catch(error => {

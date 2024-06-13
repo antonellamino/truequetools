@@ -34,7 +34,8 @@ const ClienteDashboard = () => {
                 params: { usuarioId: userId }
             })
                 .then(response => {
-                    setProductos(response.data.productos);
+                    const productosValidos = response.data.productos.filter(producto => !producto.estado);
+                    setProductos(productosValidos);
                     console.log(response.data.productos);
                 })
                 .catch(error => {
