@@ -890,8 +890,8 @@ app.post('/guardar-trueque',async (req,res) => {
             id_ofertante,
             id_producto_propietario,
             id_producto_ofertante,
-            fecha,
-            id_sucursal
+            id_sucursal,
+            fecha
         });
 
         console.log("aaasfa");
@@ -934,27 +934,21 @@ app.get('/mis_trueques', async (req, res) => {
     }
 });
 
+const { format } = require('date-fns');
+const { es } = require('date-fns/locale');
+
 app.post('/elegir_horario', async (req, res) => {
     try {
         const { fechaHora, idTrueque } = req.body;
 
-        // Comprobar que la fecha/hora y el ID del trueque han sido proporcionados
-        if (!fechaHora || !idTrueque) {
-            return res.status(400).json({ error: 'Fecha/hora e ID de trueque son requeridos' });
-        }
-
-        // Buscar el trueque por ID
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
 
         if (!trueque) {
             return res.status(404).json({ error: 'Trueque no encontrado' });
         }
 
-        // Convertir la cadena de fecha/hora ISO 8601 a un objeto Date
-        const fechaHoraFormateada = new Date(fechaHora);
-
         // Guardar la fecha y hora en el modelo de Trueque
-        trueque.set('fecha', fechaHoraFormateada); // Aquí se guarda la fecha y hora completa
+        trueque.set('fecha', fechaHora);
         trueque.set('estado', "esperando_confirmacion");
 
         // Guardar los cambios en la base de datos
@@ -966,6 +960,7 @@ app.post('/elegir_horario', async (req, res) => {
         res.status(500).json({ error: 'Error al actualizar la fecha y hora del trueque' });
     }
 });
+
 
 app.post('/rechazar_trueque',async (req, res) => {
     try{

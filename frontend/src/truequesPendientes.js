@@ -58,14 +58,12 @@ const TruequesPendientes = () => {
             }));
             return;
         }
-    
+        
+        const formattedDate = selectedDate.toISOString().slice(0, 19).replace('T', ' ');
         // Formatear la fecha y hora seleccionada en formato ISO 8601
-        const formattedDateTime = selectedDate.toISOString();
-    
-        console.log("fecha y hora formateada", formattedDateTime);
     
         // Enviar la fecha y hora formateada al backend
-        axios.post(`${backendUrl}/elegir_horario`, { fechaHora: formattedDateTime, idTrueque: trueque.id })
+        axios.post(`${backendUrl}/elegir_horario`, { fechaHora:  formattedDate, idTrueque: trueque.id })
             .then(response => {
                 // Manejar la respuesta del backend según sea necesario
                 const nuevosHorarios = {
@@ -123,8 +121,15 @@ const TruequesPendientes = () => {
             });
     };
 
-    const formatDate = (date) => {
-        return format(new Date(date), 'dd MMMM yyyy HH:mm', { locale: es });
+    const formatDate = (dateString) => {
+        // Convertir la cadena de fecha a un objeto Date
+        const date = new Date(dateString);
+    
+        // Restar 3 horas al tiempo en milisegundos para ajustar a GMT-3
+        date.setHours(date.getHours() - 3);
+    
+        // Formatear la fecha y hora en el formato deseado
+        return format(date, 'dd MMMM yyyy HH:mm', { locale: es });
     };
 
     return (
