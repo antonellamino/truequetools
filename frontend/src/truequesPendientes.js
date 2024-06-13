@@ -37,7 +37,18 @@ const TruequesPendientes = () => {
             });
     };
 
-    const handleDateChange = (date, trueque) => {
+    const handleDateChange = (date, trueque) => {   
+        console.log("LA FECHA Q GUARDA ES");
+
+        console.log("VALOR DE FECHAAAAAAAAAAAAAAAAAAAAAAAA");
+        console.log(date);
+
+        if (date) {
+            console.log("Fecha seleccionada: ", date.toString());
+        } else {
+            console.log("Fecha no seleccionada correctamente.");
+        }
+
         setSelectedDates(prevState => ({
             ...prevState,
             [trueque.id]: date
@@ -60,6 +71,7 @@ const TruequesPendientes = () => {
         }
         
         const formattedDate = selectedDate.toISOString().slice(0, 19).replace('T', ' ');
+        window.location.reload();
         // Formatear la fecha y hora seleccionada en formato ISO 8601
     
         // Enviar la fecha y hora formateada al backend
@@ -70,6 +82,10 @@ const TruequesPendientes = () => {
                     ...horarioConfirmado,
                     [trueque.id]: true
                 };
+                
+                console.log("nuevo horario ");
+                console.log(nuevosHorarios);
+
                 setHorarioConfirmado(nuevosHorarios);
             })
             .catch(error => {
@@ -123,13 +139,25 @@ const TruequesPendientes = () => {
 
     const formatDate = (dateString) => {
         // Convertir la cadena de fecha a un objeto Date
+
+        //ACA YA LLEGA NULL !!!
+        console.log("AL FOMRAR ME LLEGA ESTO");
+        console.log(dateString);
+        
+        
         const date = new Date(dateString);
+
+
+        console.log("FORMATEADO QUEDA ASI");
+        console.log(date);
     
         // Restar 3 horas al tiempo en milisegundos para ajustar a GMT-3
         date.setHours(date.getHours() - 3);
     
         // Formatear la fecha y hora en el formato deseado
         return format(date, 'dd MMMM yyyy HH:mm', { locale: es });
+
+
     };
 
     return (
@@ -164,11 +192,12 @@ const TruequesPendientes = () => {
                                 <div className="trueque-actions">
                                     {trueque.id_propietario == idUsuario ? (
                                         <div className="trueque-fecha-hora">
-                                            {trueque.fecha === null && trueque.estado ? (
+                                            {trueque.fecha === null && trueque.estado && !horarioConfirmado[trueque.id] ? (
                                                 <div>
                                                     <h3>Selecciona Fecha y Hora</h3>
                                                     <DatePicker
                                                         selected={selectedDates[trueque.id]}
+                                                        
                                                         onChange={(date) => handleDateChange(date, trueque)}
                                                         showTimeSelect
                                                         minTime={setHours(setMinutes(new Date(), 0), 8)}

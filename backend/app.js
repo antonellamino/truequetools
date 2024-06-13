@@ -840,19 +840,26 @@ app.get('/mis_trueques', async (req, res) => {
 app.post('/elegir_horario', async (req, res) => {
     try {
         const { fechaHora, idTrueque } = req.body;
+        console.log("AL ELEGIR HORARIO ME LLEGA");
+        console.log(fechaHora);
 
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
+
 
         if (!trueque) {
             return res.status(404).json({ error: 'Trueque no encontrado' });
         }
 
+
+        const dateObject = new Date(fechaHora);
         // Guardar la fecha y hora en el modelo de Trueque
-        trueque.set('fecha', fechaHora);
+        trueque.set('fecha', dateObject);
         trueque.set('estado', "esperando_confirmacion");
 
         // Guardar los cambios en la base de datos
         await trueque.save();
+        console.log("LO QUE QUEDO EN EL TRUEQUE");
+        console.log(trueque.get('fecha'));
 
         res.status(200).json({ message: 'Fecha y hora del trueque actualizadas correctamente', trueque: trueque });
     } catch (error) {

@@ -12,7 +12,7 @@ const Home = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [productosFiltrados, setProductosFiltrados] = useState([]);
     const [busquedaHecha, setBusquedaHecha] = useState(false);
-
+    
     const obtenerUsuarios = (userIds) => {
         axios.post(`${backendUrl}/usuarios`, { userIds })
             .then(response => {
@@ -29,6 +29,7 @@ const Home = () => {
                 setProductos(response.data.productos);
                 const productosValidos = response.data.productos.filter(producto => !producto.estado);
                 setProductos(productosValidos);
+                const userIds = productosValidos.map(producto => producto.usuario_id);
                 obtenerUsuarios(userIds);
             })
             .catch(error => {
