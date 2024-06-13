@@ -87,6 +87,7 @@ const TruequesPendientes = () => {
                 console.log(nuevosHorarios);
 
                 setHorarioConfirmado(nuevosHorarios);
+                window.location.reload();
             })
             .catch(error => {
                 console.error('Error al enviar la fecha y hora seleccionadas:', error);

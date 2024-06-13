@@ -19,9 +19,6 @@ const AdminDashboard = () => {
         navigate('/formularioSucursal');
     }
 
-    const handleListaSucursales = () => {
-        navigate('/listaSucursales');
-    }
 
     const handleVentas = () => {
         navigate('/ventas');
@@ -40,7 +37,6 @@ const AdminDashboard = () => {
                                     <button className="btn btn-primary mb-3" onClick={handleListaEmpleados}>Lista empleados</button>
                                     <button className="btn btn-primary mb-3" onClick={handleVentas}>Ventas registradas</button>
                                     <button className="btn btn-primary mb-3" onClick={handleAltaSucursal}>Dar de alta sucursal</button>
-                                    <button className="btn btn-primary mb-3" onClick={handleListaSucursales}>Trueques pendientes por sucursal</button>
                                 </div>
                             </div>
                         </div>

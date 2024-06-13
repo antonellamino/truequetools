@@ -64,7 +64,7 @@ const Home = () => {
                 )}
                 {productosFiltrados.length > 0 ? (
                     <div className="row">
-                        {productosFiltrados.map(producto => (
+                        {productosFiltrados.map(producto => ( 
                             <div key={producto.id} className="col-md-4 mb-3 justify-content-center">
                                 <CardProducto
                                     id={producto.id}
