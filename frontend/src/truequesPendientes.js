@@ -11,7 +11,6 @@ import { format } from 'date-fns';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
-
 const TruequesPendientes = () => {
     const [trueques, setTrueques] = useState([]);
     const [setMensaje, mensaje] = useState(null);
@@ -30,7 +29,6 @@ const TruequesPendientes = () => {
         axios.get(`${backendUrl}/mis_trueques`, { params: { usuario_id: idUsuario } })
             .then(response => {
                 setTrueques(response.data.trueques);
-                
             })
             .catch(error => {
                 console.error('Error al obtener los trueques pendientes:', error);
@@ -71,6 +69,8 @@ const TruequesPendientes = () => {
                     [trueque.id]: true
                 };
                 setHorarioConfirmado(nuevosHorarios);
+                // Recargar la página después de confirmar la fecha y hora
+                window.location.reload();
             })
             .catch(error => {
                 console.error('Error al enviar la fecha y hora seleccionadas:', error);
@@ -89,7 +89,6 @@ const TruequesPendientes = () => {
         axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
             .then(response => {
                 console.log("se acepto el trueque");
-                //cambie aca
                 const nuevosMensajes = {
                     ...truequeMensajes,
                     [trueque.id]: 'Trueque aceptado'
@@ -107,7 +106,6 @@ const TruequesPendientes = () => {
         axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id })
             .then(response => {
                 console.log("se rechazo");
-                //aa
                 const nuevosMensajes = {
                     ...truequeMensajes,
                     [trueque.id]: 'Trueque cancelado'
@@ -164,7 +162,7 @@ const TruequesPendientes = () => {
                                 <div className="trueque-actions">
                                     {trueque.id_propietario == idUsuario ? (
                                         <div className="trueque-fecha-hora">
-                                            {trueque.fecha === null && trueque.estado ? (
+                                            {trueque.fecha === null && trueque.estado=="creado" ? (
                                                 <div>
                                                     <h3>Selecciona Fecha y Hora</h3>
                                                     <DatePicker
