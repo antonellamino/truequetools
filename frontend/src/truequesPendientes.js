@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react';
-import { useAuth } from './AuthContext'
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import es from 'date-fns/locale/es';
@@ -8,29 +7,30 @@ import { setHours, setMinutes } from 'date-fns';
 import Footer from './footer';
 import Navbar from './navbar';
 import './truequesPendientes.css'; // Importamos el archivo CSS
-
+import { format } from 'date-fns';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 
 const TruequesPendientes = () => {
-    const { userId } = useAuth();
     const [trueques, setTrueques] = useState([]);
     const [setMensaje, mensaje] = useState(null);
     const [selectedDates, setSelectedDates] = useState({});
     const [horarioConfirmado, setHorarioConfirmado] = useState({});
     const [truequeMensajes, setTruequeMensajes] = useState({});
     const [errorMensaje, setErrorMensaje] = useState({});
-
+    
+    const idUsuario = localStorage.getItem('userId');
 
     useEffect(() => {
-        obtenerTrueques(userId); 
-    }, [userId]);
+        obtenerTrueques(idUsuario); 
+    }, [idUsuario]);
 
-    const obtenerTrueques = (userId) => {
-        axios.get(`${backendUrl}/mis_trueques`, { params: { usuario_id: userId } })
+    const obtenerTrueques = (idUsuario) => {
+        axios.get(`${backendUrl}/mis_trueques`, { params: { usuario_id: idUsuario } })
             .then(response => {
                 setTrueques(response.data.trueques);
+                
             })
             .catch(error => {
                 console.error('Error al obtener los trueques pendientes:', error);
@@ -50,6 +50,7 @@ const TruequesPendientes = () => {
    
     const confirmarFecha = (trueque) => {
         const selectedDate = selectedDates[trueque.id];
+    
         if (!selectedDate) {
             setErrorMensaje(prevState => ({
                 ...prevState,
@@ -57,19 +58,24 @@ const TruequesPendientes = () => {
             }));
             return;
         }
-        
-        const formattedDate = selectedDates[trueque.id].toISOString().slice(0, 19).replace('T', ' ');
-        axios.post(`${backendUrl}/elegir_horario`, { fecha: formattedDate, idTrueque: trueque.id })
+    
+        // Formatear la fecha y hora seleccionada en formato ISO 8601
+        const formattedDateTime = selectedDate.toISOString();
+    
+        console.log("fecha y hora formateada", formattedDateTime);
+    
+        // Enviar la fecha y hora formateada al backend
+        axios.post(`${backendUrl}/elegir_horario`, { fechaHora: formattedDateTime, idTrueque: trueque.id })
             .then(response => {
+                // Manejar la respuesta del backend según sea necesario
                 const nuevosHorarios = {
                     ...horarioConfirmado,
                     [trueque.id]: true
                 };
                 setHorarioConfirmado(nuevosHorarios);
-               
             })
             .catch(error => {
-                console.error('Error al enviar la fecha seleccionada:', error);
+                console.error('Error al enviar la fecha y hora seleccionadas:', error);
             });
     };
 
@@ -92,7 +98,7 @@ const TruequesPendientes = () => {
                 };
                 setTruequeMensajes(nuevosMensajes);
                 actualizarTrueque(trueque.id, response.data.estado);
-                obtenerTrueques(userId); 
+                obtenerTrueques(idUsuario); 
             })
             .catch(error => {
                 console.error('Error al aceptar el trueque:', error);
@@ -110,20 +116,22 @@ const TruequesPendientes = () => {
                 };
                 setTruequeMensajes(nuevosMensajes);
                 actualizarTrueque(trueque.id, response.data.estado);
-                obtenerTrueques(userId); // Actualiza la lista de trueques después de rechazar
+                obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de rechazar
             })
             .catch(error => {
                 console.error('Error al rechazar el trueque:', error);
             });
     };
 
+    const formatDate = (date) => {
+        return format(new Date(date), 'dd MMMM yyyy HH:mm', { locale: es });
+    };
+
     return (
         <Fragment>
             <Navbar />
-            {userId != null ? (
             <div className="trueques-pendientes-container">
                 <h2 className="header">Trueques Pendientes</h2>
-
                 {trueques.length > 0 ? (
                     <ul className="trueques-list">
                         {trueques.map((trueque) => (
@@ -149,9 +157,9 @@ const TruequesPendientes = () => {
                                     />
                                 </div>
                                 <div className="trueque-actions">
-                                    {trueque.propietario.id === userId ? (
+                                    {trueque.id_propietario == idUsuario ? (
                                         <div className="trueque-fecha-hora">
-                                            {trueque.fecha === null ? (
+                                            {trueque.fecha === null && trueque.estado ? (
                                                 <div>
                                                     <h3>Selecciona Fecha y Hora</h3>
                                                     <DatePicker
@@ -171,12 +179,12 @@ const TruequesPendientes = () => {
                                                 </div>
                                             ) : (
                                                 <div>
-                                                    {trueque.estado === "esperando_confirmacion" ? (
+                                                    {trueque.estado === 'esperando_confirmacion' ? (
                                                         <p>Esperando confirmación de horario</p>
-                                                    ) : trueque.estado === "cancelado" ? (
+                                                    ) : trueque.estado === 'cancelado' ? (
                                                         <p>Trueque cancelado</p>
                                                     ) : (
-                                                        <p>Trueque aprobado</p>
+                                                        <p>Trueque aprobado para el día {formatDate(trueque.fecha)}</p>
                                                     )}
                                                 </div>
                                             )}
@@ -187,9 +195,21 @@ const TruequesPendientes = () => {
                                                 <p>Esperando fecha</p>
                                             ) : (
                                                 <div>
-                                                    <button className="accept-button" onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
-                                                    <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
-                                                    <p>{mensaje}</p>
+                                                    {trueque.estado === "esperando_confirmacion" ? (
+                                                        <div>
+                                                            <button className="accept-button" onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
+                                                            <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
+                                                            <p>{mensaje}</p>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            {trueque.estado === 'cancelado' ? (
+                                                                <p>Trueque cancelado</p>
+                                                            ) : (
+                                                                <p>Trueque aprobado para el día {formatDate(trueque.fecha)}</p>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -202,7 +222,6 @@ const TruequesPendientes = () => {
                     <p>No tienes trueques pendientes.</p>
                 )}
             </div>
-            ) : (<p>cargando...</p>)}
             <Footer />
         </Fragment>
     );
