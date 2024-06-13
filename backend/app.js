@@ -920,6 +920,7 @@ app.post('/elegir_horario', async (req, res) => {
             return res.status(404).json({ error: 'Trueque no encontrado' });
         }
         trueque.set('fecha', fecha);
+        trueque.set('estado', "esperando_confirmacion");
         await trueque.save();
         res.status(200).json({ message: 'Fecha del trueque actualizada correctamente', trueque: trueque });
     } catch (error) {
