@@ -936,18 +936,34 @@ app.get('/mis_trueques', async (req, res) => {
 
 app.post('/elegir_horario', async (req, res) => {
     try {
-        const { idTrueque, fecha } = req.body;
+        const { fechaHora, idTrueque } = req.body;
+
+        // Comprobar que la fecha/hora y el ID del trueque han sido proporcionados
+        if (!fechaHora || !idTrueque) {
+            return res.status(400).json({ error: 'Fecha/hora e ID de trueque son requeridos' });
+        }
+
+        // Buscar el trueque por ID
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
+
         if (!trueque) {
             return res.status(404).json({ error: 'Trueque no encontrado' });
         }
-        trueque.set('fecha', fecha);
+
+        // Convertir la cadena de fecha/hora ISO 8601 a un objeto Date
+        const fechaHoraFormateada = new Date(fechaHora);
+
+        // Guardar la fecha y hora en el modelo de Trueque
+        trueque.set('fecha', fechaHoraFormateada); // Aquí se guarda la fecha y hora completa
         trueque.set('estado', "esperando_confirmacion");
+
+        // Guardar los cambios en la base de datos
         await trueque.save();
-        res.status(200).json({ message: 'Fecha del trueque actualizada correctamente', trueque: trueque });
+
+        res.status(200).json({ message: 'Fecha y hora del trueque actualizadas correctamente', trueque: trueque });
     } catch (error) {
-        console.error('Error al actualizar la fecha del trueque:', error);
-        res.status(500).json({ error: 'Error al actualizar la fecha del trueque' });
+        console.error('Error al actualizar la fecha y hora del trueque:', error);
+        res.status(500).json({ error: 'Error al actualizar la fecha y hora del trueque' });
     }
 });
 
@@ -956,7 +972,7 @@ app.post('/rechazar_trueque',async (req, res) => {
         const { idTrueque } = req.body;
 
         const trueque = await Trueque.where({ id : idTrueque }).fetch();
-        const estado = "rechazado";
+        const estado = "cancelado";
         trueque.set({ estado });
 
         await trueque.save();
@@ -974,7 +990,7 @@ app.post('/aceptar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
-        const estado = "espera";
+        const estado = "confirmado";
         trueque.set({ estado });
 
         await trueque.save();
