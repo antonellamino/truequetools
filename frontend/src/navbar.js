@@ -51,8 +51,18 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
     const handleSearch = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.get(`${backendUrl}/productos-filtrados`, { params: { nombre: searchQuery } });
-            actualizarProductosFiltrados(response.data.productos);
+            await axios.get(`${backendUrl}/productos-filtrados`, { params: { nombre: searchQuery } })
+                .then(response => {
+                    console.log("Productos encontrados:", response.data.productos); // Verifica los productos devueltos por el servidor
+                    const productosValidos = response.data.productos.filter(producto => !producto.estado);
+                    
+                    console.log("Productos válidos:", productosValidos); // Verifica los productos válidos después del filtrado
+                    
+                    actualizarProductosFiltrados(productosValidos); // Actualiza el estado local de los productos filtrados
+                })
+                .catch(error => {
+                    console.error('Error al buscar productos:', error);
+                });
         } catch (error) {
             console.error('Error al buscar productos:', error);
         }

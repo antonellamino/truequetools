@@ -10,7 +10,6 @@ const ConfirmarTrueque = () => {
     const { id } = useParams();
     const [trueques, setTrueques] = useState([]);
     const [error, setError] = useState(null);
-    const [truequeAceptado, setTruequeAceptado] = useState(false); // Nuevo estado
 
     useEffect(() => {
         const fetchTrueques = async () => {
@@ -31,8 +30,7 @@ const ConfirmarTrueque = () => {
             const response = await axios.post(`${backendUrl}/confirmar_trueque`, { idTrueque });
             console.log('Trueque confirmado:', response.data);
 
-            // Actualiza el estado para marcar el trueque como confirmado y mostrar el mensaje
-            setTruequeAceptado(true);
+            // Actualizar el estado local para marcar el trueque como confirmado
             setTrueques(prevTrueques =>
                 prevTrueques.map(trueque =>
                     trueque.id === idTrueque ? { ...trueque, confirmado: true } : trueque
@@ -47,28 +45,36 @@ const ConfirmarTrueque = () => {
     return (
         <div>
             <Navbar />
-            <div className="container">
-                <h2>Trueques Pendientes</h2>
+            <div className="trueques-pendientes-container">
+                <div className="header">
+                    <h2>Trueques Pendientes</h2>
+                </div>
                 {error && <p className="error">{error}</p>}
                 {trueques.length > 0 ? (
-                    <ul className="trueque-list">
+                    <ul className="trueques-list">
                         {trueques.map(trueque => (
                             <li key={trueque.id} className="trueque-item">
-                                <div className="image-container">
-                                    <img src={trueque.productoPropietario.imagen_1 ? `data:image/jpeg;base64,${trueque.productoPropietario.imagen_1}` : './logo_2.svg'} alt="Producto Propietario" />
+                                <div className="trueque-header">
+                                    <p>Trueque entre {trueque.propietario.nombre} y {trueque.ofertante.nombre}</p>
                                 </div>
-                                <div className="action-container">
-                                <p><strong>Trueque entre {trueque.propietario.nombre} y {trueque.ofertante.nombre}</strong></p>
-                                    <img src="/Flecha_008.png" alt="Intercambio" className="middle-image" /> {/* Ícono de intercambio */}
-                                    <div>
-                                        {!trueque.confirmado && (
-                                            <button onClick={() => confirmar(trueque.id)}>Aceptar</button>
-                                        )}
-                                        {trueque.confirmado && <p className="confirmation-message">Se ha aceptado el trueque correctamente</p>} {/* Mostrar mensaje si el trueque está confirmado */}
-                                    </div>
+                                <div className="trueque-images">
+                                    <img
+                                        src={trueque.productoPropietario.imagen_1 ? `data:image/jpeg;base64,${trueque.productoPropietario.imagen_1}` : '/logo_2.svg'}
+                                        alt="Producto Propietario"
+                                        className="trueque-image"
+                                    />
+                                    <img src="/Flecha_008.png" alt="Intercambio" className="trueque-flecha" />
+                                    <img
+                                        src={trueque.productoOfertante.imagen_1 ? `data:image/jpeg;base64,${trueque.productoOfertante.imagen_1}` : '/logo_2.svg'}
+                                        alt="Producto Ofertante"
+                                        className="trueque-image"
+                                    />
                                 </div>
-                                <div className="image-container">
-                                    <img src={trueque.productoOfertante.imagen_1 ? `data:image/jpeg;base64,${trueque.productoOfertante.imagen_1}` : './logo_2.svg'} alt="Producto Ofertante" />
+                                <div className="trueque-actions">
+                                    {!trueque.confirmado && (
+                                        <button className="confirm-button" onClick={() => confirmar(trueque.id)}>Aceptar</button>
+                                    )}
+                                    {trueque.confirmado && <p className="confirmation-message">Se ha aceptado el trueque correctamente</p>}
                                 </div>
                             </li>
                         ))}
