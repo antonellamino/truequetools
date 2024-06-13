@@ -26,10 +26,9 @@ const Home = () => {
     useEffect(() => {
         axios.get(`${backendUrl}/productos`)
             .then(response => {
-                // Excluir productos con estado = true
+                setProductos(response.data.productos);
                 const productosValidos = response.data.productos.filter(producto => !producto.estado);
                 setProductos(productosValidos);
-                const userIds = productosValidos.map(producto => producto.usuario_id);
                 obtenerUsuarios(userIds);
             })
             .catch(error => {
