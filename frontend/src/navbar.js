@@ -113,10 +113,14 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     )}
                                 </button>
                             )}
-                            <form className="d-flex search-form" onSubmit={handleSearch}>
-                                <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                                <button className="btn btn-outline-light" type="submit">Buscar</button>
-                            </form>
+                            
+                            {isHomePage && (
+                                <form className="d-flex search-form" onSubmit={handleSearch}>
+                                    <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                                    <button className="btn btn-outline-light" type="submit">Buscar</button>
+                                </form>
+                            )}
+                            
                         </div>
                     </div>
                 </div>

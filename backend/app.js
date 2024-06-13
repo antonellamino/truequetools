@@ -147,14 +147,16 @@ app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
             imagen_1: imagenesBase64[0], // Spread operator para agregar las imágenes al objeto
             imagen_2: imagenesBase64[1],
             imagen_3: imagenesBase64[2],
-            imagen_4: imagenesBase64[3],
-            estado: false
+            imagen_4: imagenesBase64[3]
+            
         });
        
+        console.log("datos", nuevoProducto);
 
         await nuevoProducto.save();
 
         return res.status(201).json({ mensaje: 'Producto creado exitosamente' });
+        
     } catch (error) {
         console.error('Error al registrar el producto:', error);
         return res.status(500).json({ error: 'No se pudo registrar el producto' });
@@ -353,12 +355,13 @@ app.post('/registrar-empleado', async (req, res) => {
 
 
 
-//INICIO DE SESION COMO EMPLEADO
+//INICIO DE SESION COMO EMPLEADO a
 app.post('/iniciar-sesion-empleado', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
 
     try {
-        const empleado = await Empleado.where({ nombre: nombre_usuario }).fetch();
+        const empleado = await Empleado.where({ nombre_usuario }).fetch({ require: false });
+
         if (!empleado) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
@@ -390,8 +393,6 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
-
-
 
 
 
@@ -594,33 +595,7 @@ app.get('/empleados', async (req, res) => {
     }
 })
 
-//INICIO DE SESION COMO EMPLEADO
-app.post('/iniciar-sesion-empleado', async (req, res) => {
-    const login = { nombre, contrasena } = req.body;
 
-    try {
-        const empleado = await Empleado.where({ nombre }).fetch();
-
-        if (!empleado) {
-            return res.status(404).json({ error: 'empleado no encontrado' });
-        }
-
-        const token = jwt.sign({
-            id: empleado.get('id'),
-            rol_id: empleado.get('rol_id')
-        }, 'secreto', { expiresIn: '1h' });
-
-        const userId = empleado.get('id');
-        const rol = empleado.get('rol_id');
-        console.log(rol);
-
-        return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token, userId, rol });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-});
 
 app.get('/datos-producto', async (req, res) => {
     const id = req.query.id;
