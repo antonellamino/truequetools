@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { setHours, setMinutes } from 'date-fns';
 import Footer from './footer';
 import Navbar from './navbar';
-import './truequesPendientes.css'; // Importamos el archivo CSS
+import './truequesPendientes.css';
 import { format } from 'date-fns';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -38,17 +38,6 @@ const TruequesPendientes = () => {
     };
 
     const handleDateChange = (date, trueque) => {   
-        console.log("LA FECHA Q GUARDA ES");
-
-        console.log("VALOR DE FECHAAAAAAAAAAAAAAAAAAAAAAAA");
-        console.log(date);
-
-        if (date) {
-            console.log("Fecha seleccionada: ", date.toString());
-        } else {
-            console.log("Fecha no seleccionada correctamente.");
-        }
-
         setSelectedDates(prevState => ({
             ...prevState,
             [trueque.id]: date
@@ -72,9 +61,7 @@ const TruequesPendientes = () => {
         
         const formattedDate = selectedDate.toISOString().slice(0, 19).replace('T', ' ');
         window.location.reload();
-        // Formatear la fecha y hora seleccionada en formato ISO 8601
-    
-        // Enviar la fecha y hora formateada al backend
+     
         axios.post(`${backendUrl}/elegir_horario`, { fechaHora:  formattedDate, idTrueque: trueque.id })
             .then(response => {
                 // Manejar la respuesta del backend según sea necesario
@@ -87,6 +74,7 @@ const TruequesPendientes = () => {
                 console.log(nuevosHorarios);
 
                 setHorarioConfirmado(nuevosHorarios);
+                setMensaje(formattedDate);
                 window.location.reload();
             })
             .catch(error => {
@@ -123,8 +111,6 @@ const TruequesPendientes = () => {
     const rechazarTrueque = (trueque) => {
         axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id })
             .then(response => {
-                console.log("se rechazo");
-                //aa
                 const nuevosMensajes = {
                     ...truequeMensajes,
                     [trueque.id]: 'Trueque cancelado'
@@ -138,27 +124,27 @@ const TruequesPendientes = () => {
             });
     };
 
+    const cancelarTrueque = (trueque) => {
+        axios.post(`${backendUrl}/cancelar_trueque`, { idTrueque: trueque.id })
+            .then(response => {
+                const nuevosMensajes = {
+                    ...truequeMensajes,
+                    [trueque.id]: 'Trueque cancelado'
+                };
+                setTruequeMensajes(nuevosMensajes);
+                actualizarTrueque(trueque.id, response.data.estado);
+                obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de cancelar
+            })
+            .catch(error => {
+                console.error('Error al cancelar el trueque:', error.response.data);
+            });
+    };
+    
+
     const formatDate = (dateString) => {
-        // Convertir la cadena de fecha a un objeto Date
-
-        //ACA YA LLEGA NULL !!!
-        console.log("AL FOMRAR ME LLEGA ESTO");
-        console.log(dateString);
-        
-        
         const date = new Date(dateString);
-
-
-        console.log("FORMATEADO QUEDA ASI");
-        console.log(date);
-    
-        // Restar 3 horas al tiempo en milisegundos para ajustar a GMT-3
         date.setHours(date.getHours() - 3);
-    
-        // Formatear la fecha y hora en el formato deseado
         return format(date, 'dd MMMM yyyy HH:mm', { locale: es });
-
-
     };
 
     return (
@@ -193,12 +179,11 @@ const TruequesPendientes = () => {
                                 <div className="trueque-actions">
                                     {trueque.id_propietario == idUsuario ? (
                                         <div className="trueque-fecha-hora">
-                                            {trueque.fecha === null && trueque.estado && !horarioConfirmado[trueque.id] ? (
+                                            {trueque.fecha === null && trueque.estado !== 'cancelado' && !horarioConfirmado[trueque.id] ? (
                                                 <div>
                                                     <h3>Selecciona Fecha y Hora</h3>
                                                     <DatePicker
                                                         selected={selectedDates[trueque.id]}
-                                                        
                                                         onChange={(date) => handleDateChange(date, trueque)}
                                                         showTimeSelect
                                                         minTime={setHours(setMinutes(new Date(), 0), 8)}
@@ -210,23 +195,30 @@ const TruequesPendientes = () => {
                                                         className="date-picker"
                                                     />
                                                     <button className="confirm-button" onClick={() => confirmarFecha(trueque)}>Confirmar Fecha y Hora</button>
+                                                    <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
                                                     {errorMensaje[trueque.id] && <p className="error-message">{errorMensaje[trueque.id]}</p>}
                                                 </div>
                                             ) : (
                                                 <div>
-                                                    {trueque.estado === 'esperando_confirmacion' ? (
+                                                    {trueque.estado === 'completado' ? (
+                                                        <p>Trueque completado</p>
+                                                    ) : trueque.estado === 'esperando_confirmacion' ? (
                                                         <p>Esperando confirmación de horario</p>
                                                     ) : trueque.estado === 'cancelado' ? (
                                                         <p>Trueque cancelado</p>
                                                     ) : (
-                                                        <p>Trueque aprobado para el día {formatDate(trueque.fecha)}</p>
+                                                        <div>
+                                                            <p>Trueque aprobado para el día {formatDate(trueque.fecha)}</p>
+                                                            <button onClick={() => cancelarTrueque(trueque)}>Cancelar Trueque</button>
+                                                            {errorMensaje[trueque.id] && <p className="error-message">{errorMensaje[trueque.id]}</p>}
+                                                        </div>
                                                     )}
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
                                         <div className="trueque-respuesta">
-                                            {trueque.fecha === null ? (
+                                            {trueque.fecha === null && trueque.estado !== 'cancelado' ? (
                                                 <p>Esperando fecha</p>
                                             ) : (
                                                 <div>
@@ -234,16 +226,24 @@ const TruequesPendientes = () => {
                                                         <div>
                                                             <button className="accept-button" onClick={() => aceptarTrueque(trueque)}>Aceptar</button>
                                                             <button className="reject-button" onClick={() => rechazarTrueque(trueque)}>Rechazar</button>
-                                                            <p>{mensaje}</p>
+                                                            <p>Horario propuesto para el día {formatDate(trueque.fecha)}</p>
                                                         </div>
                                                     ) : (
                                                         <div>
-                                                            {trueque.estado === 'cancelado' ? (
-                                                                <p>Trueque cancelado</p>
-                                                            ) : (
-                                                                <p>Trueque aprobado para el día {formatDate(trueque.fecha)}</p>
-                                                            )}
+                                                        {trueque.estado === 'completado' ? (
+                                                            <p>Trueque completado</p>
+                                                        ) : trueque.estado === 'esperando_confirmacion' ? (
+                                                            <p>Esperando confirmación de horario</p>
+                                                        ) : trueque.estado === 'cancelado' ? (
+                                                            <p>Trueque cancelado</p>
+                                                        ) : (
+                                                        <div>
+                                                            <p>Trueque aprobado para el día {formatDate(trueque.fecha)}</p>
+                                                            <button onClick={() => cancelarTrueque(trueque)}>Cancelar Trueque</button>
+                                                            {errorMensaje[trueque.id] && <p className="error-message">{errorMensaje[trueque.id]}</p>}
                                                         </div>
+                                                    )}
+                                                </div>
                                                     )}
                                                 </div>
                                             )}

@@ -82,6 +82,9 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                             <li className="nav-item">
                                 <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/" style={homeButtonStyle}>Inicio</NavLink>
                             </li>
+                            <li className="nav-item">
+                                <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/infoSucursal" style={homeButtonStyle}>Lista de sucursales</NavLink>
+                            </li>
                             {isAuthenticated && rol === 1 && (
                                 <li className="nav-item">
                                     <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/adminDashboard">Panel de control</NavLink>
@@ -109,7 +112,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                             )}
                             {isAuthenticated && rol === 3 && (
                                 <li className="nav-item">
-                                    <button className="nav-link btn" onClick={handleTruequeClick}>Trueques Pendientes</button>
+                                    <button className="nav-link btn" onClick={handleTruequeClick}>Mis trueques</button>
                                 </li>
                             )}
                             {isAuthenticated ? (

@@ -114,6 +114,17 @@ const Publicacion = () => {
         navigate(`/opciones/${parametros}`);
     };
 
+    const eliminarComentario = (comentarioId) => {
+        axios.post(`${backendUrl}/eliminar-comentario`, { id_comentario: comentarioId })
+            .then(response => {
+                obtenerComentarios(id);
+            })
+            .catch(error => {
+                console.error('Error al eliminar el comentario:', error);
+            });
+    };
+
+
     useEffect(() => {
         if (errorMensaje) {
             const timer = setTimeout(() => {
@@ -166,7 +177,10 @@ const Publicacion = () => {
                                 {comentario.respuesta != null ? (
                                     <p>{comentario.respuesta}</p>
                                 ) : (
-                                    <p>No hay respuesta.</p>
+                                    <div>
+                                        <p>No hay respuesta.</p>
+                                        {!esCreador && isAuthenticated && (<button onClick={() => eliminarComentario(comentario.id)}>Eliminar Comentario</button>)}
+                                    </div>
                                 )}
                                 { (esCreador) && (comentario.respuesta == null) &&(
                                     <form onSubmit={(e) => {

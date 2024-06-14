@@ -957,6 +957,55 @@ app.get('/trueques_Sucursal', async (req, res) => {
     }
 });
 
+// ------------------------DEMO 3---------------------------------
+
+app.post('/cancelar_trueque', async (req, res) => {
+    try {
+        const { idTrueque } = req.body;
+
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
+
+        if (!trueque) {
+            return res.status(404).json({ error: 'Trueque no encontrado' });
+        }
+
+        const fechaTrueque = new Date(trueque.get('fecha'));
+        const fechaActual = new Date();
+        const diferenciaHoras = (fechaTrueque - fechaActual) / (1000 * 60 * 60);
+
+        console.log(`Fecha del Trueque: ${fechaTrueque}`);
+        console.log(`Fecha Actual: ${fechaActual}`);
+        console.log(`Diferencia en horas: ${diferenciaHoras}`);
+
+        if (diferenciaHoras < 24) {
+            return res.status(400).json({ error: 'No se puede cancelar el trueque con menos de 24 horas de antelación' });
+        }
+
+        trueque.set('estado', 'cancelado');
+        await trueque.save();
+
+        res.status(200).json({ message: 'Trueque cancelado con exito', estado: 'cancelado' });
+
+        // hablar con los chicos para modificar como se guarda la hora
+    } catch (error) {
+        console.error('Error al cancelar trueque:', error);
+        res.status(500).json({ error: 'Error al cancelar trueque' });
+    }
+});
+
+app.post('/eliminar-comentario', async (req, res) => {
+    try {
+        const { id_comentario } = req.body; // Asegúrate de usar el mismo nombre que en el frontend
+        const comentario = await Comentario.where({ id: id_comentario }).fetch();
+        await comentario.destroy();
+        res.status(200).json({ message: 'Comentario eliminado con éxito' });
+    } catch (error) {
+        console.error('Error al eliminar el comentario:', error);
+        res.status(500).json({ error: 'Error al eliminar el comentario' });
+    }
+});
+
+
 // iniciar servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
