@@ -17,12 +17,20 @@ const AdminDashboard = () => {
 
     const handleAltaSucursal = () => {
         navigate('/formularioSucursal');
-    }
-
+    };
 
     const handleVentas = () => {
         navigate('/ventas');
-    }
+    };
+
+    const handleTruequesExitosos = () => {
+        navigate('/truequesExitosos');
+    };
+
+    const handlePromedio = () => {
+        //navigate();
+        console.log("falta implementar jiji");
+    };
 
     return (
         <Fragment>
@@ -36,6 +44,8 @@ const AdminDashboard = () => {
                                     <button className="btn btn-primary mb-3" onClick={handleAltaEmpleado}>Dar de alta empleado</button>
                                     <button className="btn btn-primary mb-3" onClick={handleListaEmpleados}>Lista empleados</button>
                                     <button className="btn btn-primary mb-3" onClick={handleVentas}>Ventas registradas</button>
+                                    <button className="btn btn-primary mb-3" onClick={handlePromedio}>Promedio de ventas por sucursal</button>
+                                    <button className="btn btn-primary mb-3" onClick={handleTruequesExitosos}>Trueques exitosos por sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleAltaSucursal}>Dar de alta sucursal</button>
                                 </div>
                             </div>

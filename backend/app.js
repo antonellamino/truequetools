@@ -1005,6 +1005,24 @@ app.post('/eliminar-comentario', async (req, res) => {
     }
 });
 
+app.get('/cantidad-trueques', async (req, res) => {
+    try {
+        const { fechaInicio, fechaFin } = req.query;
+
+        const cantidadTrueques = await Trueque.query()
+            .where('estado', 'completado')
+            .whereBetween('fecha', [fechaInicio, fechaFin])
+            .groupBy('id_sucursal')
+            .select('id_sucursal')
+            .count('id as cantidad')
+        .fetchAll();
+        res.json({ cantidadTrueques });
+    } catch (error) {
+        console.error('Error al obtener la cantidad de trueques:', error);
+        res.status(500).json({ error: 'Error al obtener la cantidad de trueques' });
+    }
+});
+
 
 // iniciar servidor
 app.listen(PORT, () => {

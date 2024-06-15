@@ -15,15 +15,15 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const Publicacion = () => {
     const { id } = useParams();
-    const { userId, isAuthenticated, rol } = useContext(AuthContext);
+    const { isAuthenticated, rol } = useContext(AuthContext);
     const [producto, setProducto] = useState(null);
     const [comentarios, setComentarios] = useState([]);
     const [nuevoComentario, setNuevoComentario] = useState('');
     const [esCreador, setEsCreador] = useState(false);
     const [respuesta, setNuevaRespuesta] = useState('');
     const [errorMensaje, setErrorMensaje] = useState(''); // Nuevo estado para mensaje de error
-
     const navigate = useNavigate();
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
         obtenerProducto(id);
@@ -175,11 +175,14 @@ const Publicacion = () => {
                             <div key={comentario.id} className="comentario">
                                 <p>{comentario.comentario}</p>
                                 {comentario.respuesta != null ? (
-                                    <p>{comentario.respuesta}</p>
+                                    <div>
+                                        <p>{comentario.usuario.nombre}</p>
+                                        <p>{comentario.respuesta}</p>
+                                    </div>
                                 ) : (
                                     <div>
                                         <p>No hay respuesta.</p>
-                                        {!esCreador && isAuthenticated && (<button onClick={() => eliminarComentario(comentario.id)}>Eliminar Comentario</button>)}
+                                        {!esCreador && userId == comentario.id_usuario && (<button onClick={() => eliminarComentario(comentario.id)}>Eliminar Comentario</button>)}
                                     </div>
                                 )}
                                 { (esCreador) && (comentario.respuesta == null) &&(

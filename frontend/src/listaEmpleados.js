@@ -57,9 +57,6 @@ const ListaEmpleados = () => {
             </div>
         </div>
     </Fragment>
-    
-
-
     );
 }
 
