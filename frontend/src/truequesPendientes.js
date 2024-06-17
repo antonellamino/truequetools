@@ -56,11 +56,28 @@ const TruequesPendientes = () => {
             }));
             return;
         }
-        
-        const formattedDate = selectedDate.toISOString().slice(0, 19).replace('T', ' ');
+    
+        // Crear una copia del objeto Date para no modificar el original
+        const adjustedDate = new Date(selectedDate);
+        // Restar 3 horas
+        adjustedDate.setHours(adjustedDate.getHours() - 3);
+    
+
+        const fechaActual = new Date();
+
+        if (adjustedDate < fechaActual) {
+            setErrorMensaje(prevState => ({
+                ...prevState,
+                [trueque.id]: 'Ingrese una fecha y hora válida. No se puede seleccionar una fecha anterior a la actual.'
+            }));
+            return;
+        }
+
+        // Formatear la fecha ajustada a una cadena ISO 8601
+        const formattedDate = adjustedDate.toISOString().slice(0, 19).replace('T', ' ');
         window.location.reload();
-     
-        axios.post(`${backendUrl}/elegir_horario`, { fechaHora:  formattedDate, idTrueque: trueque.id })
+        // Enviar la fecha y hora formateada al backend
+        axios.post(`${backendUrl}/elegir_horario`, { fechaHora: formattedDate, idTrueque: trueque.id })
             .then(response => {
                 // Manejar la respuesta del backend según sea necesario
                 const nuevosHorarios = {
@@ -73,8 +90,6 @@ const TruequesPendientes = () => {
 
                 setHorarioConfirmado(nuevosHorarios);
                 setMensaje(formattedDate);
-                
-                // Recargar la página después de confirmar la fecha y hora
                 window.location.reload();
             })
             .catch(error => {
@@ -142,7 +157,6 @@ const TruequesPendientes = () => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        date.setHours(date.getHours() - 3);
         return format(date, 'dd MMMM yyyy HH:mm', { locale: es });
     };
 

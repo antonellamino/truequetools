@@ -678,7 +678,7 @@ app.get('/productos_truequear', async (req, res) => {
 
         const productos = await Producto.query(p => {
             p.where('usuario_id', usuarioId)
-             .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+             .andWhere('categoria_id', categoriaId) 
              .join('categorias', 'productos.categoria_id', 'categorias.id')
              .whereNotIn('productos.id', function() {
                  this.select('id_producto_propietario')
@@ -687,7 +687,8 @@ app.get('/productos_truequear', async (req, res) => {
                      .union(function() {
                          this.select('id_producto_ofertante')
                              .from('trueque')
-                             .where('id_producto_propietario', productoId);
+                             .where('id_producto_propietario', productoId)
+                             .andWhereNot('estado', 'like', '%cancelado%');
                      });
              })
              .select('productos.*', 'categorias.nombre as nombre_categoria');
@@ -959,6 +960,8 @@ app.get('/trueques_Sucursal', async (req, res) => {
 
 // ------------------------DEMO 3---------------------------------
 
+const { differenceInHours } = require('date-fns');
+
 app.post('/cancelar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
@@ -971,7 +974,8 @@ app.post('/cancelar_trueque', async (req, res) => {
 
         const fechaTrueque = new Date(trueque.get('fecha'));
         const fechaActual = new Date();
-        const diferenciaHoras = (fechaTrueque - fechaActual) / (1000 * 60 * 60);
+        
+        const diferenciaHoras = differenceInHours(fechaTrueque, fechaActual);
 
         console.log(`Fecha del Trueque: ${fechaTrueque}`);
         console.log(`Fecha Actual: ${fechaActual}`);
@@ -984,9 +988,8 @@ app.post('/cancelar_trueque', async (req, res) => {
         trueque.set('estado', 'cancelado');
         await trueque.save();
 
-        res.status(200).json({ message: 'Trueque cancelado con exito', estado: 'cancelado' });
+        res.status(200).json({ message: 'Trueque cancelado con éxito', estado: 'cancelado' });
 
-        // hablar con los chicos para modificar como se guarda la hora
     } catch (error) {
         console.error('Error al cancelar trueque:', error);
         res.status(500).json({ error: 'Error al cancelar trueque' });
