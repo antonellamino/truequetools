@@ -1,15 +1,9 @@
 import React, { Fragment, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
 import Navbar from './navbar';
 
 const EmpleadoDashboard = () => {
-    const { isAuthenticated, rol } = useAuth();
     const navigate = useNavigate();
-
-    const handleAltaVenta = () => {
-        navigate('/altaVenta');
-    };
 
     const handleTruequesPendientes = () => {
         navigate('/listaSucursales');
@@ -28,7 +22,6 @@ const EmpleadoDashboard = () => {
                         <div className="card">
                             <div className="card-body">
                                 <div className="d-grid gap-2">
-                                    <button className="btn btn-primary mb-3" onClick={handleAltaVenta}>Registrar venta</button>
                                     <button className="btn btn-primary mb-3" onClick={handleTruequesPendientes}>Trueques pendientes por sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleVentasRegistradas}>Ventas registradas</button>
                                 </div>

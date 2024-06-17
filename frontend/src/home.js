@@ -12,7 +12,7 @@ const Home = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [productosFiltrados, setProductosFiltrados] = useState([]);
     const [busquedaHecha, setBusquedaHecha] = useState(false);
-
+    
     const obtenerUsuarios = (userIds) => {
         axios.post(`${backendUrl}/usuarios`, { userIds })
             .then(response => {
@@ -26,7 +26,7 @@ const Home = () => {
     useEffect(() => {
         axios.get(`${backendUrl}/productos`)
             .then(response => {
-                // Excluir productos con estado = true
+                setProductos(response.data.productos);
                 const productosValidos = response.data.productos.filter(producto => !producto.estado);
                 setProductos(productosValidos);
                 const userIds = productosValidos.map(producto => producto.usuario_id);
@@ -64,7 +64,7 @@ const Home = () => {
                 )}
                 {productosFiltrados.length > 0 ? (
                     <div className="row">
-                        {productosFiltrados.map(producto => (
+                        {productosFiltrados.map(producto => ( 
                             <div key={producto.id} className="col-md-4 mb-3 justify-content-center">
                                 <CardProducto
                                     id={producto.id}

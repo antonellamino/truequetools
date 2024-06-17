@@ -6,19 +6,23 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const FormularioVenta = () => {
     const [articulo, setArticulo] = useState('');
-    const [fecha, setFecha] = useState('');
     const [valor, setValor] = useState('');
     const [email, setEmailUsuario] = useState('');
-
     const [mensaje, setMensaje] = useState('');
     const [mensajeError, setMensajeError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const fechaActual = new Date();
+        const year = fechaActual.getFullYear();
+        const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0'); // Meses en JavaScript van de 0 a 11
+        const day = fechaActual.getDate().toString().padStart(2, '0');
+        const fechaVenta = `${year}-${month}-${day}`; // Formato YYYY-MM-DD
+
         const datosFormulario = {
             articulo: articulo,
-            fecha_venta: fecha,
+            fecha_venta: fechaVenta,
             valor: valor,
             email_usuario: email
         };
@@ -28,7 +32,6 @@ const FormularioVenta = () => {
             setMensaje(response.data.message || 'Venta registrada exitosamente');
             setMensajeError('');
             setArticulo('');
-            setFecha('');
             setValor('');
             setEmailUsuario('');
         } catch (error) {
@@ -58,18 +61,6 @@ const FormularioVenta = () => {
                             placeholder="Ingresa el artículo"
                             value={articulo}
                             onChange={(e) => setArticulo(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="fecha">Fecha</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            id="fecha_venta"
-                            placeholder="Ingresa la fecha"
-                            value={fecha}
-                            onChange={(e) => setFecha(e.target.value)}
                             required
                         />
                     </div>

@@ -119,6 +119,7 @@ app.post('/iniciar-sesion-cliente', async (req, res) => {
     }
 });
 
+
 const multer = require('multer');
 const upload = multer();
 app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
@@ -147,74 +148,22 @@ app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
             imagen_2: imagenesBase64[1],
             imagen_3: imagenesBase64[2],
             imagen_4: imagenesBase64[3]
+            
         });
-        console.log(nuevoProducto);
+       
+        console.log("datos", nuevoProducto);
+
         await nuevoProducto.save();
 
         return res.status(201).json({ mensaje: 'Producto creado exitosamente' });
+        
     } catch (error) {
         console.error('Error al registrar el producto:', error);
         return res.status(500).json({ error: 'No se pudo registrar el producto' });
     }
 });
 
-/* EL QUE HABIA HECHO YO
-//endpoint para publicar producto
-const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
-app.post('/publicarProducto', upload.array('foto',1), async (req, res) => {
-    try {
-        const { nombre, descripcion, sucursal_elegida, categoria_id, usuario_id } = req.body;
-        //console.log(req.files[0]);
-        const imagenes = req.files;
 
-        
-        //const imagen = req.files [0];
-        //const imagen2 = req.files[1];
-        
-
-        //console.log(req.body.foto);
-        //console.log(imagen);
-        
-        let imagenesBase64 = null;
-        if( imagenes && imagenes.length > 0){
-            imagenesBase64 = imagenes.map( img => img.buffer.toString('base64'));
-        }
-        
-        /* if (imagen) {
-            imagenBase64 = imagen.buffer.toString('base64');
-            
-            console.log(imagenBase64);
-        }
-        //ESTO ESTABA COMENTADO
-
-        const nuevoProducto = await Producto.forge({
-            nombre,
-            descripcion,
-            sucursal_elegida,
-            categoria_id,
-            usuario_id,
-            imagen: imagenesBase64 // Guardar fotos en la base de datos como base64
-        })
-
-        await nuevoProducto.save();
-
-        res.status(201).json({ mensaje: 'Producto creado exitosamente'});
-    } catch (error) {
-        // respuesta si hay error
-        console.error('error al registrar el producto:', error);
-        res.status(500).json({ error: 'no se pudo registrar el producto' });
-    }
-});
-*/
-
-
-// Endpoint para cerrar sesión
-// app.post('/logout', (req, res) => {
-
-//     res.status(200).json({ mensaje : 'Sesion cerrada' });
-//     console.log(req.session);
-// });
 
 
 
@@ -312,6 +261,8 @@ app.get('/productos-usuario', async (req, res) => {
 
 
 
+
+
 //prueba
 // Importar Bookshelf y el modelo de usuario
 // Endpoint para obtener información de usuarios por ids, devuelve el correo, con el id
@@ -353,7 +304,7 @@ app.get('/productos-filtrados', async (req, res) => {
     try {
         const { sucursal_elegida, categoria_id, nombre } = req.query;
 
-        const query = Producto.forge();
+        const query = Producto.forge().where('estado', false); // Agrega la condición de estado aquí
 
         if (sucursal_elegida) {
             query.where('sucursal_elegida', sucursal_elegida);
@@ -372,7 +323,6 @@ app.get('/productos-filtrados', async (req, res) => {
         res.status(500).json({ error: 'Error fetching products' });
     }
 });
-
 
 
 
@@ -404,7 +354,7 @@ app.post('/registrar-empleado', async (req, res) => {
 
 
 
-//INICIO DE SESION COMO EMPLEADO
+//INICIO DE SESION COMO EMPLEADO a
 app.post('/iniciar-sesion-empleado', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
 
@@ -442,8 +392,6 @@ app.post('/iniciar-sesion-empleado', async (req, res) => {
         res.status(500).send('Error interno del servidor');
     }
 });
-
-
 
 
 
@@ -646,33 +594,7 @@ app.get('/empleados', async (req, res) => {
     }
 })
 
-//INICIO DE SESION COMO EMPLEADO
-app.post('/iniciar-sesion-empleado', async (req, res) => {
-    const login = { nombre, contrasena } = req.body;
 
-    try {
-        const empleado = await Empleado.where({ nombre }).fetch();
-
-        if (!empleado) {
-            return res.status(404).json({ error: 'empleado no encontrado' });
-        }
-
-        const token = jwt.sign({
-            id: empleado.get('id'),
-            rol_id: empleado.get('rol_id')
-        }, 'secreto', { expiresIn: '1h' });
-
-        const userId = empleado.get('id');
-        const rol = empleado.get('rol_id');
-        console.log(rol);
-
-        return res.status(200).json({ mensaje: 'Inicio de sesión exitoso', token, userId, rol });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-});
 
 app.get('/datos-producto', async (req, res) => {
     const id = req.query.id;
@@ -777,6 +699,8 @@ app.get('/productos_truequear', async (req, res) => {
         res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
     }
 });
+
+
 
 // Endpoint para obtener notificaciones
 app.get('/notificaciones', async (req, res) => {
@@ -912,25 +836,30 @@ app.get('/mis_trueques', async (req, res) => {
     }
 });
 
-const { format } = require('date-fns');
-const { es } = require('date-fns/locale');
-
 app.post('/elegir_horario', async (req, res) => {
     try {
         const { fechaHora, idTrueque } = req.body;
+        console.log("AL ELEGIR HORARIO ME LLEGA");
+        console.log(fechaHora);
 
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
+
 
         if (!trueque) {
             return res.status(404).json({ error: 'Trueque no encontrado' });
         }
 
+
+        const dateObject = new Date(fechaHora);
         // Guardar la fecha y hora en el modelo de Trueque
         trueque.set('fecha', fechaHora);
-        trueque.set('estado', "esperando_confirmacion");
+        const estado = 'esperando_confirmacion';
+        trueque.set('estado', estado);
 
         // Guardar los cambios en la base de datos
         await trueque.save();
+        console.log("LO QUE QUEDO EN EL TRUEQUE");
+        console.log(trueque.get('fecha'));
 
         res.status(200).json({ message: 'Fecha y hora del trueque actualizadas correctamente', trueque: trueque });
     } catch (error) {
@@ -979,21 +908,30 @@ app.post('/confirmar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
+        console.log(trueque);
 
-        const estado = "completado";
+        if (!trueque) {
+            return res.status(404).json({ error: 'Trueque no encontrado' });
+        }
+
+        const propietarioID = trueque.get('id_producto_propietario'); 
+        const ofertanteID = trueque.get('id_producto_ofertante'); 
+        
+        const productoPropietario = await Producto.where({ id: propietarioID }).fetch();
+        const productoOfertante = await Producto.where({ id: ofertanteID }).fetch();
+
+        estado = "completado";
         trueque.set({ estado });
         await trueque.save();
 
-        const productoPropietario = await Producto.where({ id: trueque.id_producto_propietario }).fetch();
-        const productoOfertante = await Producto.where({ id: trueque.id_producto_ofertante }).fetch();
+        estado = true;
         
-        const estadoProducto = "true";
-
-        productoPropietario.set({ estadoProducto });
-        productoOfertante.set({ estadoProducto });
+        productoPropietario.set({ estado });
+        productoOfertante.set({ estado });
 
         await productoPropietario.save();
         await productoOfertante.save();
+        
         res.status(200).json({ message: 'Trueque confirmado exitosamente', trueque });
     } catch (error) {
         console.error('Error al confirmar el trueque:', error);
@@ -1009,7 +947,7 @@ app.get('/trueques_Sucursal', async (req, res) => {
             return res.status(400).json({ error: 'El idSucursal es requerido' });
         }
 
-        const trueques = await Trueque.where({ id_sucursal: idSucursal, estado: 'espera' })
+        const trueques = await Trueque.where({ id_sucursal: idSucursal, estado: 'confirmado' })
             .fetchAll({ withRelated: ['productoPropietario', 'productoOfertante', 'propietario', 'ofertante'] });
 
         res.json({ trueques });
@@ -1018,6 +956,73 @@ app.get('/trueques_Sucursal', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener trueques' });
     }
 });
+
+// ------------------------DEMO 3---------------------------------
+
+app.post('/cancelar_trueque', async (req, res) => {
+    try {
+        const { idTrueque } = req.body;
+
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
+
+        if (!trueque) {
+            return res.status(404).json({ error: 'Trueque no encontrado' });
+        }
+
+        const fechaTrueque = new Date(trueque.get('fecha'));
+        const fechaActual = new Date();
+        const diferenciaHoras = (fechaTrueque - fechaActual) / (1000 * 60 * 60);
+
+        console.log(`Fecha del Trueque: ${fechaTrueque}`);
+        console.log(`Fecha Actual: ${fechaActual}`);
+        console.log(`Diferencia en horas: ${diferenciaHoras}`);
+
+        if (diferenciaHoras < 24) {
+            return res.status(400).json({ error: 'No se puede cancelar el trueque con menos de 24 horas de antelación' });
+        }
+
+        trueque.set('estado', 'cancelado');
+        await trueque.save();
+
+        res.status(200).json({ message: 'Trueque cancelado con exito', estado: 'cancelado' });
+
+        // hablar con los chicos para modificar como se guarda la hora
+    } catch (error) {
+        console.error('Error al cancelar trueque:', error);
+        res.status(500).json({ error: 'Error al cancelar trueque' });
+    }
+});
+
+app.post('/eliminar-comentario', async (req, res) => {
+    try {
+        const { id_comentario } = req.body; // Asegúrate de usar el mismo nombre que en el frontend
+        const comentario = await Comentario.where({ id: id_comentario }).fetch();
+        await comentario.destroy();
+        res.status(200).json({ message: 'Comentario eliminado con éxito' });
+    } catch (error) {
+        console.error('Error al eliminar el comentario:', error);
+        res.status(500).json({ error: 'Error al eliminar el comentario' });
+    }
+});
+
+app.get('/cantidad-trueques', async (req, res) => {
+    try {
+        const { fechaInicio, fechaFin } = req.query;
+
+        const cantidadTrueques = await Trueque.query()
+            .where('estado', 'completado')
+            .whereBetween('fecha', [fechaInicio, fechaFin])
+            .join('Sucursales', 'Trueque.id_sucursal', 'Sucursales.id')
+            .groupBy('id_sucursal', 'Sucursales.nombre')
+            .select('id_sucursal', 'Sucursales.nombre as nombre_sucursal')
+            .count('Trueque.id as cantidad');
+        res.json(cantidadTrueques);
+    } catch (error) {
+        console.error('Error al obtener la cantidad de trueques:', error);
+        res.status(500).json({ error: 'Error al obtener la cantidad de trueques' });
+    }
+});
+
 
 // iniciar servidor
 app.listen(PORT, () => {
