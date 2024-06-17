@@ -1012,11 +1012,11 @@ app.get('/cantidad-trueques', async (req, res) => {
         const cantidadTrueques = await Trueque.query()
             .where('estado', 'completado')
             .whereBetween('fecha', [fechaInicio, fechaFin])
-            .groupBy('id_sucursal')
-            .select('id_sucursal')
-            .count('id as cantidad')
-        .fetchAll();
-        res.json({ cantidadTrueques });
+            .join('Sucursales', 'Trueque.id_sucursal', 'Sucursales.id')
+            .groupBy('id_sucursal', 'Sucursales.nombre')
+            .select('id_sucursal', 'Sucursales.nombre as nombre_sucursal')
+            .count('Trueque.id as cantidad');
+        res.json(cantidadTrueques);
     } catch (error) {
         console.error('Error al obtener la cantidad de trueques:', error);
         res.status(500).json({ error: 'Error al obtener la cantidad de trueques' });
