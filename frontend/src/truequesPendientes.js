@@ -11,7 +11,6 @@ import { format } from 'date-fns';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
-
 const TruequesPendientes = () => {
     const [trueques, setTrueques] = useState([]);
     const [setMensaje, mensaje] = useState(null);
@@ -30,7 +29,6 @@ const TruequesPendientes = () => {
         axios.get(`${backendUrl}/mis_trueques`, { params: { usuario_id: idUsuario } })
             .then(response => {
                 setTrueques(response.data.trueques);
-                
             })
             .catch(error => {
                 console.error('Error al obtener los trueques pendientes:', error);
@@ -75,6 +73,8 @@ const TruequesPendientes = () => {
 
                 setHorarioConfirmado(nuevosHorarios);
                 setMensaje(formattedDate);
+                
+                // Recargar la página después de confirmar la fecha y hora
                 window.location.reload();
             })
             .catch(error => {
@@ -94,7 +94,6 @@ const TruequesPendientes = () => {
         axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
             .then(response => {
                 console.log("se acepto el trueque");
-                //cambie aca
                 const nuevosMensajes = {
                     ...truequeMensajes,
                     [trueque.id]: 'Trueque aceptado'
