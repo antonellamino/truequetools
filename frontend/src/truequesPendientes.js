@@ -62,6 +62,17 @@ const TruequesPendientes = () => {
         // Restar 3 horas
         adjustedDate.setHours(adjustedDate.getHours() - 3);
     
+
+        const fechaActual = new Date();
+
+        if (adjustedDate < fechaActual) {
+            setErrorMensaje(prevState => ({
+                ...prevState,
+                [trueque.id]: 'Ingrese una fecha y hora válida. No se puede seleccionar una fecha anterior a la actual.'
+            }));
+            return;
+        }
+
         // Formatear la fecha ajustada a una cadena ISO 8601
         const formattedDate = adjustedDate.toISOString().slice(0, 19).replace('T', ' ');
         window.location.reload();
