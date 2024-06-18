@@ -67,9 +67,28 @@ const Publicacion = () => {
             id_usuario: userId,
             comentario: nuevoComentario
         })
-        .then(response => {
+        .then(async response => {
+           
             setNuevoComentario('');
-            obtenerComentarios(id);
+            
+          
+            try {
+   
+                const notificacion = {
+                    id_usuario: producto.usuario_id, // Aquí obtienes directamente el ID del usuario propietario del producto
+                    mensaje: `Han comentado tu producto ${producto.nombre}`,
+                    leido: false,
+                    link: `/publicacion/${id}`
+                };
+                
+                // Enviar la notificación al usuario propietario del producto
+                await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+                
+                // Luego puedes hacer lo que sea necesario después de enviar la notificación
+                obtenerComentarios(id); // Esto obtiene los comentarios nuevamente después de agregar uno nuevo
+            } catch (error) {
+                console.error('Error al obtener datos del producto o enviar la notificación:', error);
+            }
         })
         .catch(error => {
             console.error('Error al agregar el comentario:', error);
@@ -84,7 +103,7 @@ const Publicacion = () => {
         slidesToScroll: 1
     };
 
-    const handleResponderComentario = async (comentarioId, respuesta) => {
+    const handleResponderComentario = async (usuarioId,comentarioId, respuesta) => {
         try {
             const respuestaTruncada = respuesta.substring(0, 50); // Limitar a 50 caracteres
             
@@ -100,11 +119,10 @@ const Publicacion = () => {
             obtenerComentarios(id);
             
             // Obtener el propietario del comentario
-            const respondido = await obtenerPropietarioComentario(comentarioId);
     
             // Crear la notificación
             const notificacion = {
-                id_usuario: respondido,
+                id_usuario: usuarioId,
                 mensaje: `Respondieron tu comentario en el producto ${producto.nombre}`,
                 leido: false,
                 link: `/publicacion/${id}`
@@ -118,24 +136,6 @@ const Publicacion = () => {
             console.error('Error:', error);
         }
     };
-    
-    async function obtenerPropietarioComentario(comentarioId) {
-        try {
-            console.log(`Buscando comentario ${comentarioId}`);
-            
-            const response = await axios.get(`${backendUrl}/propietario-de-comentario`, {
-                params: {
-                    comentarioId: comentarioId 
-                }
-            });
-            
-            console.log(`El propietario es ${response.data.respondido}`);
-            return response.data.respondido;
-        } catch (error) {
-            console.error('Error al obtener el propietario del comentario:', error);
-            throw error;  // Propagar el error para manejarlo posteriormente
-        }
-    }
 
     const enviarDatos = (producto) => {
         const data = {
@@ -223,7 +223,7 @@ const Publicacion = () => {
                                         e.preventDefault();
                                         const respuesta = e.target.elements.respuesta.value.trim(); // Eliminar espacios en blanco al principio y al final
                                         if (respuesta !== "") { // Validar que la respuesta no esté vacía
-                                            handleResponderComentario(comentario.id, respuesta.substring(0, 50)); // Limitar a 50 caracteres
+                                            handleResponderComentario(comentario.id_usuario,comentario.id, respuesta.substring(0, 50)); // Limitar a 50 caracteres
                                             setErrorMensaje(''); // Limpiar mensaje de error
                                             e.target.reset(); // Limpiar el formulario de respuesta después del envío
                                         } else {
