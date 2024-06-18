@@ -497,6 +497,24 @@ app.get('/comentarios', async (req, res) => { //ok
 });
 
 
+app.get('/propietario-de-comentario', async (req, res) => {
+    try {
+        const { comentarioId } = req.query;
+
+        // Consulta para obtener el propietario del comentario
+        const comentario = await Comentario.where({ id: comentarioId }).fetch();
+
+        if (!comentario) {
+            return res.status(404).json({ error: 'El comentario no fue encontrado' });
+        }
+       
+        res.json({ respondido: comentario.get('id_usuario') }); // Devuelve el id_usuario del comentario
+    } catch (error) {
+        console.error('Error al obtener el propietario del comentario:', error);
+        res.status(500).json({ error: 'Ocurrió un error al obtener el propietario del comentario' });
+    }
+});
+
 
 app.post('/agregar-comentario', async (req, res) => { //ok
     const { id_producto, id_usuario, comentario } = req.body;

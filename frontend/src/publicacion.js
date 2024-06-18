@@ -84,22 +84,58 @@ const Publicacion = () => {
         slidesToScroll: 1
     };
 
-    const handleResponderComentario = (comentarioId, respuesta) => {
-        const respuestaTruncada = respuesta.substring(0, 50); // Limitar a 50 caracteres
-        axios.post(`${backendUrl}/agregar-respuesta`, {
-            id_comentario: comentarioId,
-            id_usuario: userId,
-            respuesta: respuestaTruncada
-        })
-        .then(response => {
+    const handleResponderComentario = async (comentarioId, respuesta) => {
+        try {
+            const respuestaTruncada = respuesta.substring(0, 50); // Limitar a 50 caracteres
+            
+            // Agregar respuesta al comentario
+            await axios.post(`${backendUrl}/agregar-respuesta`, {
+                id_comentario: comentarioId,
+                id_usuario: userId,
+                respuesta: respuestaTruncada
+            });
+            
             console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuestaTruncada}`);
             setNuevaRespuesta('');
             obtenerComentarios(id);
-        })
-        .catch(error => {
-            console.error('Error al agregar la respuesta:', error);
-        });
+            
+            // Obtener el propietario del comentario
+            const respondido = await obtenerPropietarioComentario(comentarioId);
+    
+            // Crear la notificación
+            const notificacion = {
+                id_usuario: respondido,
+                mensaje: `Respondieron tu comentario en el producto ${producto.nombre}`,
+                leido: false,
+                link: `/publicacion/${id}`
+            };
+    
+            // Enviar la notificación
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+            
+            console.log('Notificación enviada correctamente');
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+    
+    async function obtenerPropietarioComentario(comentarioId) {
+        try {
+            console.log(`Buscando comentario ${comentarioId}`);
+            
+            const response = await axios.get(`${backendUrl}/propietario-de-comentario`, {
+                params: {
+                    comentarioId: comentarioId 
+                }
+            });
+            
+            console.log(`El propietario es ${response.data.respondido}`);
+            return response.data.respondido;
+        } catch (error) {
+            console.error('Error al obtener el propietario del comentario:', error);
+            throw error;  // Propagar el error para manejarlo posteriormente
+        }
+    }
 
     const enviarDatos = (producto) => {
         const data = {
@@ -158,8 +194,6 @@ const Publicacion = () => {
                         )}
                         <p>Descripción</p>
                         <p>{producto.descripcion}</p>
-                        <p>Usuario</p>
-                        <p>{producto.nombre_usuario}</p>
                         <p>Categoría</p>
                         <p>{producto.nombre_categoria}</p>
                         <p>Sucursal</p> 
@@ -176,7 +210,6 @@ const Publicacion = () => {
                                 <p>{comentario.comentario}</p>
                                 {comentario.respuesta != null ? (
                                     <div>
-                                        <p>{comentario.usuario.nombre}</p>
                                         <p>{comentario.respuesta}</p>
                                     </div>
                                 ) : (
