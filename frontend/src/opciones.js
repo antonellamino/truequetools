@@ -60,7 +60,7 @@ const Opciones = () => {
 
         const notificacion = {
             id_usuario : propietarioId,
-            mensaje : `Nuevo interés en el producto: ${productoId}`,
+            mensaje : `Nueva solicitud de trueque para tu producto: ${productoId}`,
             leido : false,
             link : `/truequesPendientes/${propietarioId}`
         }
