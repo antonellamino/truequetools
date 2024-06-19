@@ -33,20 +33,7 @@ const Opciones = () => {
     const seleccionar = (producto) => {
         setMensaje('Trueque solicitado, esperando confirmación de horario');
 
-        const notificacion = {
-            id_usuario : propietarioId,
-            mensaje : `Nuevo interés en el producto: ${productoId}`,
-            leido : false,
-            link : `/truequesPendientes/${propietarioId}`
-        }
-
-        axios.post(`${backendUrl}/enviar-notificacion`, notificacion)
-        .then(response => {
-            console.log('Notificación enviada correctamente');
-        })
-        .catch(error => {
-            console.error('Error al enviar la notificación:', error);
-        });
+        
         console.log(sucursalId);
         const datosTrueque = {
             id_propietario : propietarioId,
@@ -69,6 +56,21 @@ const Opciones = () => {
         })
         .catch(error => {
             console.error('Error al guardar el trueque:', error);
+        });
+
+        const notificacion = {
+            id_usuario : propietarioId,
+            mensaje : `Nueva solicitud de trueque para tu producto: ${productoId}`,
+            leido : false,
+            link : `/truequesPendientes/${propietarioId}`
+        }
+
+        axios.post(`${backendUrl}/enviar-notificacion`, notificacion)
+        .then(response => {
+            console.log('Notificación enviada correctamente');
+        })
+        .catch(error => {
+            console.error('Error al enviar la notificación:', error);
         });
     };
 

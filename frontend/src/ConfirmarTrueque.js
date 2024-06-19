@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Navbar from './navbar';
 import './ConfirmarTrueque.css'; // Importa el archivo de estilos
+import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -10,6 +11,7 @@ const ConfirmarTrueque = () => {
     const { id } = useParams();
     const [trueques, setTrueques] = useState([]);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTrueques = async () => {
@@ -42,6 +44,14 @@ const ConfirmarTrueque = () => {
         }
     };
 
+    const rechazar = async (idTrueque) => {
+        console.log("trueque rechazado");
+    };
+
+    const registrarVenta = async () => {
+        navigate('/altaVenta');
+    };
+
     return (
         <div>
             <Navbar />
@@ -72,9 +82,13 @@ const ConfirmarTrueque = () => {
                                 </div>
                                 <div className="trueque-actions">
                                     {!trueque.confirmado && (
-                                        <button className="confirm-button" onClick={() => confirmar(trueque.id)}>Aceptar</button>
+                                        <div>
+                                            <button className="confirm-button" onClick={() => confirmar(trueque.id)}>Aceptar</button>
+                                            <button className="decline-button" onClick={() => rechazar(trueque.id)}>Rechazar</button>
+                                        </div>
                                     )}
                                     {trueque.confirmado && <p className="confirmation-message">Se ha aceptado el trueque correctamente</p>}
+                                    {trueque.confirmado && <button onClick={() => registrarVenta()}>Registrar Venta</button>}
                                 </div>
                             </li>
                         ))}

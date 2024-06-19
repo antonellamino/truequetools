@@ -6,10 +6,8 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const FormularioVenta = () => {
     const [articulo, setArticulo] = useState('');
-    const [fecha, setFecha] = useState('');
     const [valor, setValor] = useState('');
     const [email, setEmailUsuario] = useState('');
-
     const [mensaje, setMensaje] = useState('');
     const [mensajeError, setMensajeError] = useState('');
     const [articuloError, setArticuloError] = useState('');
@@ -65,35 +63,32 @@ const FormularioVenta = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const isArticuloValid = validateArticulo();
-        const isFechaValid = validateFecha();
-        const isValorValid = validateValor();
-        const isEmailValid = validateEmail();
+        const fechaActual = new Date();
+        const year = fechaActual.getFullYear();
+        const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0'); // Meses en JavaScript van de 0 a 11
+        const day = fechaActual.getDate().toString().padStart(2, '0');
+        const fechaVenta = `${year}-${month}-${day}`; // Formato YYYY-MM-DD
 
-        if (isArticuloValid && isFechaValid && isValorValid && isEmailValid) {
-            const datosFormulario = {
-                articulo: articulo,
-                fecha_venta: fecha,
-                valor: valor,
-                email_usuario: email
-            };
+        const datosFormulario = {
+            articulo: articulo,
+            fecha_venta: fechaVenta,
+            valor: valor,
+            email_usuario: email
+        };
 
-            try {
-                const response = await axios.post(`${backendUrl}/agregar-venta`, datosFormulario);
-                setMensaje(response.data.message || 'Venta registrada exitosamente');
-                setMensajeError('');
-                setArticulo('');
-                setFecha('');
-                setValor('');
-                setEmailUsuario('');
-            } catch (error) {
-                console.error('Error al registrar los datos:', error);
-                if (error.response && error.response.data && error.response.data.error) {
-                    setMensajeError(error.response.data.error);
-                } else {
-                    setMensajeError('Error al registrar los datos');
-                }
-                setMensaje('');
+        try {
+            const response = await axios.post(`${backendUrl}/agregar-venta`, datosFormulario);
+            setMensaje(response.data.message || 'Venta registrada exitosamente');
+            setMensajeError('');
+            setArticulo('');
+            setValor('');
+            setEmailUsuario('');
+        } catch (error) {
+            console.error('Error al registrar los datos:', error);
+            if (error.response && error.response.data && error.response.data.error) {
+                setMensajeError(error.response.data.error);
+            } else {
+                setMensajeError('Error al registrar los datos');
             }
         }
     };
@@ -116,19 +111,6 @@ const FormularioVenta = () => {
                             
                         />
                         {articuloError && <div className="alert alert-danger mt-2">{articuloError}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="fecha">Fecha</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            id="fecha_venta"
-                            placeholder="Ingresa la fecha"
-                            value={fecha}
-                            onChange={(e) => setFecha(e.target.value)}
-                            
-                        />
-                        {fechaError && <div className="alert alert-danger mt-2">{fechaError}</div>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="valor">Precio</label>

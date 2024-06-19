@@ -502,8 +502,6 @@ app.get('/comentarios', async (req, res) => { //ok
 
 });
 
-
-
 app.post('/agregar-comentario', async (req, res) => { //ok
     const { id_producto, id_usuario, comentario } = req.body;
     try {
@@ -684,8 +682,7 @@ app.get('/productos_truequear', async (req, res) => {
 
         const productos = await Producto.query(p => {
             p.where('usuario_id', usuarioId)
-             .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
-             .andWhere('estado', false) // Excluye productos con estado = true
+             .andWhere('categoria_id', categoriaId) 
              .join('categorias', 'productos.categoria_id', 'categorias.id')
              .whereNotIn('productos.id', function() {
                  this.select('id_producto_propietario')
@@ -694,7 +691,8 @@ app.get('/productos_truequear', async (req, res) => {
                      .union(function() {
                          this.select('id_producto_ofertante')
                              .from('trueque')
-                             .where('id_producto_propietario', productoId);
+                             .where('id_producto_propietario', productoId)
+                             .andWhereNot('estado', 'like', '%cancelado%');
                      });
              })
              .select('productos.*', 'categorias.nombre as nombre_categoria');
@@ -963,6 +961,75 @@ app.get('/trueques_Sucursal', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener trueques' });
     }
 });
+
+// ------------------------DEMO 3---------------------------------
+
+const { differenceInHours } = require('date-fns');
+
+app.post('/cancelar_trueque', async (req, res) => {
+    try {
+        const { idTrueque } = req.body;
+
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
+
+        if (!trueque) {
+            return res.status(404).json({ error: 'Trueque no encontrado' });
+        }
+
+        const fechaTrueque = new Date(trueque.get('fecha'));
+        const fechaActual = new Date();
+        
+        const diferenciaHoras = differenceInHours(fechaTrueque, fechaActual);
+
+        console.log(`Fecha del Trueque: ${fechaTrueque}`);
+        console.log(`Fecha Actual: ${fechaActual}`);
+        console.log(`Diferencia en horas: ${diferenciaHoras}`);
+
+        if (diferenciaHoras < 24) {
+            return res.status(400).json({ error: 'No se puede cancelar el trueque con menos de 24 horas de antelación' });
+        }
+
+        trueque.set('estado', 'cancelado');
+        await trueque.save();
+
+        res.status(200).json({ message: 'Trueque cancelado con éxito', estado: 'cancelado' });
+
+    } catch (error) {
+        console.error('Error al cancelar trueque:', error);
+        res.status(500).json({ error: 'Error al cancelar trueque' });
+    }
+});
+
+app.post('/eliminar-comentario', async (req, res) => {
+    try {
+        const { id_comentario } = req.body; // Asegúrate de usar el mismo nombre que en el frontend
+        const comentario = await Comentario.where({ id: id_comentario }).fetch();
+        await comentario.destroy();
+        res.status(200).json({ message: 'Comentario eliminado con éxito' });
+    } catch (error) {
+        console.error('Error al eliminar el comentario:', error);
+        res.status(500).json({ error: 'Error al eliminar el comentario' });
+    }
+});
+
+app.get('/cantidad-trueques', async (req, res) => {
+    try {
+        const { fechaInicio, fechaFin } = req.query;
+
+        const cantidadTrueques = await Trueque.query()
+            .where('estado', 'completado')
+            .whereBetween('fecha', [fechaInicio, fechaFin])
+            .join('Sucursales', 'Trueque.id_sucursal', 'Sucursales.id')
+            .groupBy('id_sucursal', 'Sucursales.nombre')
+            .select('id_sucursal', 'Sucursales.nombre as nombre_sucursal')
+            .count('Trueque.id as cantidad');
+        res.json(cantidadTrueques);
+    } catch (error) {
+        console.error('Error al obtener la cantidad de trueques:', error);
+        res.status(500).json({ error: 'Error al obtener la cantidad de trueques' });
+    }
+});
+
 
 // iniciar servidor
 app.listen(PORT, () => {

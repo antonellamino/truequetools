@@ -23,6 +23,8 @@ import Opciones from './opciones';
 import FormularioVenta from './formularioVenta';
 import TruequesPendientes from './truequesPendientes';
 import ConfirmarTrueque from './ConfirmarTrueque';
+import InfoSucursal from './infoSucursal';
+import TruequesExitosos from './truequesExitosos';
 
 function App() {
   return (
@@ -54,6 +56,8 @@ function App() {
             <Route path="/notificaciones/:id" element={<Notificaciones />} /> 
             <Route path="/opciones/:sucursalId/:productoId/:usuarioId/:categoriaId/:propietarioId" element={<Opciones />} />
             <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
+            <Route path="/infoSucursal" element={<InfoSucursal/>} />
+            <Route path="/truequesExitosos" element={<TruequesExitosos/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
