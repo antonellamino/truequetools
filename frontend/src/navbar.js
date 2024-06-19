@@ -122,7 +122,9 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                 </li>
                             )}
                         </ul>
+                        
                         <div className="d-flex align-items-center">
+                            {/*}
                             {isAuthenticated && (
                                 <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
                                     <i className="fas fa-bell bell-icon"></i>
@@ -131,6 +133,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     )}
                                 </button>
                             )}
+                                */}
                             
                             {isHomePage && (
                                 <form className="d-flex search-form" onSubmit={handleSearch}>
