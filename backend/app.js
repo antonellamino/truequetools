@@ -554,30 +554,30 @@ app.get('/productos-filtrados', async (req, res) => {
 
 
 // endpoint para registrar un usuario empleado, solo admin
-app.post('/registrar-empleado', async (req, res) => {
-    try {
-        const { nombre, contrasena } = req.body;
+// app.post('/registrar-empleado', async (req, res) => {
+//     try {
+//         const { nombre, contrasena } = req.body;
 
-        // verificar si ya existe un usuario con el mismo nombre de usuario
-        const existingusuario = await Empleado.where({ nombre }).fetch();
-        if (existingusuario) {
-            return res.status(400).send(`El usuario con dni ${nombre} ya existe`);
-        }
+//         // verificar si ya existe un usuario con el mismo nombre de usuario
+//         const existingusuario = await Empleado.where({ nombre }).fetch();
+//         if (existingusuario) {
+//             return res.status(400).send(`El usuario con dni ${nombre} ya existe`);
+//         }
 
-        // crear un nuevo usuario con el rol de empleado
-        const newusuario = await Empleado.forge({
-            nombre,
-            contrasena,
-            rol_id: 2
-        });
-        newusuario.save();
+//         // crear un nuevo usuario con el rol de empleado
+//         const newusuario = await Empleado.forge({
+//             nombre,
+//             contrasena,
+//             rol_id: 2
+//         });
+//         newusuario.save();
 
-        res.status(201).send('Empleado registrado exitosamente');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error interno del servidor');
-    }
-});
+//         res.status(201).send('Empleado registrado exitosamente');
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send('Error interno del servidor');
+//     }
+// });
 
 
 
@@ -834,9 +834,6 @@ app.get('/mis_trueques', async (req, res) => {
             withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante']
         });
 
-        console.log("aaa");
-        console.log(trueques.imagenPropietario);
-        console.log(trueques.imagenOfertante);
 
         res.json({ trueques });
 
@@ -1032,6 +1029,83 @@ app.get('/cantidad-trueques', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener la cantidad de trueques' });
     }
 });
+
+
+
+
+// -------------------------------------------------------------- ///  ------------------------------------------------------
+
+app.post('/eliminar-empleado', async (req, res) => {
+    try {
+        const { empleadoId } = req.body;
+
+        if (!empleadoId) {
+            return res.status(400).json({ error: 'el id del empleado es requerido' });
+        }
+
+        const empleado = await Empleado.where({ id: empleadoId }).fetch({ require: false });
+        await empleado.destroy();
+        res.status(200).json({ message: 'Empleado eliminado.' });
+
+    } catch (error) {
+        console.error('Error al eliminar el empleado:', error);
+        res.status(500).json({ error: 'Error al eliminar el empleado.' });
+    }
+});
+
+
+app.get('/obtener-empleado/:empleadoId', async (req, res) => {
+    try {
+        const empleadoId = req.params.empleadoId;
+
+        if (!empleadoId) {
+            return res.status(400).json({ error: 'El ID del empleado es requerido.' });
+        }
+
+        const empleado = await Empleado.where({ id: empleadoId }).fetch({ require: false });
+
+        if (!empleado) {
+            return res.status(404).json({ error: 'Empleado no encontrado.' });
+        }
+
+        res.status(200).json({ message: 'Empleado encontrado.', empleado });
+    } catch (error) {
+        console.error('Error al obtener el empleado:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
+app.put('/editar-empleado', async (req, res) => {
+    try {
+        const { empleadoId, datosFormulario } = req.body;
+
+        if (!empleadoId || !datosFormulario) {
+            return res.status(400).json({ error: 'El id del empleado y los datos a actualizar son requeridos' });
+        }
+
+        await Empleado.where({ id: empleadoId }).save(datosFormulario, { method: 'update', patch: true });
+
+        res.status(200).json({ message: 'Empleado actualizado exitosamente.' });
+    } catch (error) {
+        console.error('Error al actualizar el empleado:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar el empleado.' });
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // iniciar servidor

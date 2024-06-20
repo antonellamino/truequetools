@@ -26,6 +26,7 @@ import ConfirmarTrueque from './ConfirmarTrueque';
 import InfoSucursal from './infoSucursal';
 import TruequesExitosos from './truequesExitosos';
 import ProtectedRoute from './protectedRoute';
+import EditarEmpleado from './editarEmpleado';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
             <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
             <Route path="/infoSucursal" element={<InfoSucursal/>} />
             <Route path="/truequesExitosos" element={<TruequesExitosos/>} />
+            <Route path="/editarEmpleado/:empleadoId" element={<EditarEmpleado/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
