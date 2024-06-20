@@ -7,6 +7,7 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const InfoSucursal = () => {
     const [sucursales, setSucursales] = useState([]);
+    const navigate = useNavigate();
     
     useEffect(() => {
         const fetchSucursales = async () => {
@@ -21,6 +22,24 @@ const InfoSucursal = () => {
         fetchSucursales();
     }, []);
 
+    const isAdmin = localStorage.getItem('rol') === '1';
+
+    const handleEditar = (id) => {
+        navigate(`/editarSucursal/${id}`);
+    };
+
+    const handleEliminar = async (id) => {
+        try {
+            const response = await axios.delete(`${backendUrl}/eliminar-sucursal/${id}`);
+            console.log(response.data);
+            setSucursales(sucursales.filter(sucursal => sucursal.id !== id));
+            alert('Sucursal eliminada exitosamente.');
+        } catch (error) {
+            console.error('Error al eliminar sucursal:', error);
+            alert('Hubo un error al eliminar la sucursal.');
+        }
+    };
+
     return (
         <Fragment>
             <Navbar />
@@ -32,7 +51,8 @@ const InfoSucursal = () => {
                             <tr>
                                 <th>Nombre</th>
                                 <th>Dirección</th>
-                                <th>Teléfono</th>
+                                <th>Telefono</th>
+                                {isAdmin && <th>Acciones</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -41,6 +61,12 @@ const InfoSucursal = () => {
                                     <td>{sucursal.nombre}</td>
                                     <td>{sucursal.direccion}</td>
                                     <td>{sucursal.telefono}</td>
+                                    {isAdmin && (
+                                        <td>
+                                            <button className="btn btn-info mr-2" onClick={() => handleEditar(sucursal.id)}>Editar</button>
+                                            <button className="btn btn-danger" onClick={() => handleEliminar(sucursal.id)}>Eliminar</button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

@@ -32,9 +32,6 @@ const AdminDashboard = () => {
         console.log("falta implementar jiji");
     };
 
-    const handleEliminarEmpleado = () => {
-        navigate('/eliminarEmpleado');
-    }
     
 
     return (
@@ -52,7 +49,6 @@ const AdminDashboard = () => {
                                     <button className="btn btn-primary mb-3" onClick={handlePromedio}>Promedio de ventas por sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleTruequesExitosos}>Trueques exitosos por sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleAltaSucursal}>Dar de alta sucursal</button>
-                                    <button className="btn btn-primary mb-3" onClick={handleEliminarEmpleado}>Eliminar empleado</button>
                                 </div>
                             </div>
                         </div>

@@ -1094,6 +1094,45 @@ app.put('/editar-empleado', async (req, res) => {
 });
 
 
+app.get('/obtener-sucursal/:sucursalId', async (req, res) => {
+    try {
+        const sucursalId = req.params.sucursalId;
+
+        if (!sucursalId) {
+            return res.status(400).json({ error: 'El id de la sucursal es requerido.' });
+        }
+
+        const sucursal = await Sucursal.where({ id: sucursalId }).fetch({ require: false });
+
+        if (!sucursal) {
+            return res.status(404).json({ error: 'sucursal no encontrada.' });
+        }
+
+        res.status(200).json({ message: 'sucursal encontrada.', sucursal });
+    } catch (error) {
+        console.error('Error al obtener la sucursal:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
+app.put('/editar-sucursal', async (req, res) => {
+    try {
+        const { sucursalId, datosFormulario } = req.body;
+
+        if (!sucursalId || !datosFormulario) {
+            return res.status(400).json({ error: 'El id de la sucursal y los datos a actualizar son requeridos' });
+        }
+
+        await Sucursal.where({ id: sucursalId }).save(datosFormulario, { method: 'update', patch: true });
+
+        res.status(200).json({ message: 'Sucursal actualizada exitosamente.' });
+    } catch (error) {
+        console.error('Error al actualizar la sucursal:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar la sucursal.' });
+    }
+});
+
 
 
 

@@ -27,6 +27,7 @@ import InfoSucursal from './infoSucursal';
 import TruequesExitosos from './truequesExitosos';
 import ProtectedRoute from './protectedRoute';
 import EditarEmpleado from './editarEmpleado';
+import EditarSucursal from './editarSucursal';
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
             <Route path="/infoSucursal" element={<InfoSucursal/>} />
             <Route path="/truequesExitosos" element={<TruequesExitosos/>} />
             <Route path="/editarEmpleado/:empleadoId" element={<EditarEmpleado/>} />
+            <Route path="/editarSucursal/:sucursalId" element={<EditarSucursal/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
