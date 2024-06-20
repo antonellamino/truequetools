@@ -15,15 +15,15 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const Publicacion = () => {
     const { id } = useParams();
-    const { userId, isAuthenticated, rol } = useContext(AuthContext);
-    //esto es lo que me ingresan
+    const { isAuthenticated, rol } = useContext(AuthContext);
     const [producto, setProducto] = useState(null);
     const [comentarios, setComentarios] = useState([]);
     const [nuevoComentario, setNuevoComentario] = useState('');
     const [esCreador, setEsCreador] = useState(false);
     const [respuesta, setNuevaRespuesta] = useState('');
-
-    const navigate = useNavigate(); // Se obtiene el hook useNavigate
+    const [errorMensaje, setErrorMensaje] = useState(''); // Nuevo estado para mensaje de error
+    const navigate = useNavigate();
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
         obtenerProducto(id);
@@ -112,7 +112,27 @@ const Publicacion = () => {
 
         const parametros = `${data.sucursalId}/${data.productoId}/${data.usuarioId}/${data.categoriaId}/${data.propietarioId}`;
         navigate(`/opciones/${parametros}`);
-    }
+    };
+
+    const eliminarComentario = (comentarioId) => {
+        axios.post(`${backendUrl}/eliminar-comentario`, { id_comentario: comentarioId })
+            .then(response => {
+                obtenerComentarios(id);
+            })
+            .catch(error => {
+                console.error('Error al eliminar el comentario:', error);
+            });
+    };
+
+
+    useEffect(() => {
+        if (errorMensaje) {
+            const timer = setTimeout(() => {
+                setErrorMensaje('');
+            }, 3000); // Desaparece después de 3 segundos
+            return () => clearTimeout(timer);
+        }
+    }, [errorMensaje]);
 
     return (
         <Fragment>
@@ -155,9 +175,15 @@ const Publicacion = () => {
                             <div key={comentario.id} className="comentario">
                                 <p>{comentario.comentario}</p>
                                 {comentario.respuesta != null ? (
-                                    <p>{comentario.respuesta}</p>
+                                    <div>
+                                        <p>{comentario.usuario.nombre}</p>
+                                        <p>{comentario.respuesta}</p>
+                                    </div>
                                 ) : (
-                                    <p>No hay respuesta.</p>
+                                    <div>
+                                        <p>No hay respuesta.</p>
+                                        {!esCreador && userId == comentario.id_usuario && (<button onClick={() => eliminarComentario(comentario.id)}>Eliminar Comentario</button>)}
+                                    </div>
                                 )}
                                 {(esCreador) && (comentario.respuesta == null) && (
                                     <form onSubmit={(e) => {
@@ -165,11 +191,15 @@ const Publicacion = () => {
                                         const respuesta = e.target.elements.respuesta.value.trim(); // Eliminar espacios en blanco al principio y al final
                                         if (respuesta !== "") { // Validar que la respuesta no esté vacía
                                             handleResponderComentario(comentario.id, respuesta.substring(0, 50)); // Limitar a 50 caracteres
+                                            setErrorMensaje(''); // Limpiar mensaje de error
                                             e.target.reset(); // Limpiar el formulario de respuesta después del envío
+                                        } else {
+                                            setErrorMensaje('No puedes enviar una respuesta vacía.');
                                         }
                                     }}>
                                         <input type="text" name="respuesta" placeholder="Responder..." />
                                         <button type="submit" className="btn btn-custom-short btn-custom-primary-short">Responder</button>
+                                        {errorMensaje && <p style={{ color: 'red' }}>{errorMensaje}</p>} {/* Mostrar mensaje de error */}
                                     </form>
                                 )}
                             </div>

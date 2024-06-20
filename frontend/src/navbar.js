@@ -12,7 +12,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [unreadNotifications, setUnreadNotifications] = useState(0);
-
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -21,10 +21,14 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                 .then(response => {
                     const count = response.data.count;
                     setUnreadNotifications(count);
+                    setIsLoading(false);
                 })
                 .catch(error => {
                     console.error('Error al obtener la cantidad de notificaciones no leídas:', error);
+                    setIsLoading(false);
                 });
+        } else {
+            setIsLoading(false);
         }
     }, [userId, isAuthenticated]);
 
@@ -46,12 +50,26 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
     const handleSearch = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.get(`${backendUrl}/productos-filtrados`, { params: { nombre: searchQuery } });
-            actualizarProductosFiltrados(response.data.productos);
+            await axios.get(`${backendUrl}/productos-filtrados`, { params: { nombre: searchQuery } })
+                .then(response => {
+                    console.log("Productos encontrados:", response.data.productos); // Verifica los productos devueltos por el servidor
+                    const productosValidos = response.data.productos.filter(producto => !producto.estado);
+                    
+                    console.log("Productos válidos:", productosValidos); // Verifica los productos válidos después del filtrado
+                    
+                    actualizarProductosFiltrados(productosValidos); // Actualiza el estado local de los productos filtrados
+                })
+                .catch(error => {
+                    console.error('Error al buscar productos:', error);
+                });
         } catch (error) {
             console.error('Error al buscar productos:', error);
         }
     };
+
+    if (isLoading) {
+        return null; // O puedes mostrar un componente de carga aquí
+    }
 
     return (
         <Fragment>
@@ -61,36 +79,39 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                     <div className="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <NavLink className="nav-link" exact to="/" activeClassName="active" style={homeButtonStyle}>Inicio</NavLink>
+                                <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/" style={homeButtonStyle}>Inicio</NavLink>
+                            </li>
+                            <li className="nav-item">
+                                <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/infoSucursal" style={homeButtonStyle}>Lista de sucursales</NavLink>
                             </li>
                             {isAuthenticated && rol === 1 && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/adminDashboard" activeClassName="active">Panel de control</NavLink>
+                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/adminDashboard">Panel de control</NavLink>
                                 </li>
                             )}
                             {isAuthenticated && rol === 2 && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/empleadoDashboard" activeClassName="active">Panel de control</NavLink>
+                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/empleadoDashboard">Panel de control</NavLink>
                                 </li>
                             )}
                             {!isAuthenticated && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/registro" activeClassName="active">Regístrate</NavLink>
+                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/registro">Regístrate</NavLink>
                                 </li>
                             )}
                             {isAuthenticated && rol === 3 && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/publicarProducto" activeClassName="active">Publicar producto</NavLink>
+                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/publicarProducto">Publicar producto</NavLink>
                                 </li>
                             )}
                             {isAuthenticated && rol === 3 && (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/clienteDashboard" activeClassName="active">Ver mis productos</NavLink>
+                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/productosCliente">Ver mis productos</NavLink>
                                 </li>
                             )}
                             {isAuthenticated && rol === 3 && (
                                 <li className="nav-item">
-                                    <button className="nav-link btn" onClick={handleTruequeClick}>Trueques Pendientes</button>
+                                    <button className="nav-link btn" onClick={handleTruequeClick}>Mis trueques</button>
                                 </li>
                             )}
                             {isAuthenticated ? (
@@ -99,7 +120,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                 </li>
                             ) : (
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/iniciarSesion" activeClassName="active">Iniciar sesión</NavLink>
+                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/iniciarSesion">Iniciar sesión</NavLink>
                                 </li>
                             )}
                         </ul>
@@ -112,10 +133,14 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     )}
                                 </button>
                             )}
-                            <form className="d-flex search-form" onSubmit={handleSearch}>
-                                <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                                <button className="btn btn-outline-light" type="submit">Buscar</button>
-                            </form>
+                            
+                            {isHomePage && (
+                                <form className="d-flex search-form" onSubmit={handleSearch}>
+                                    <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                                    <button className="btn btn-outline-light" type="submit">Buscar</button>
+                                </form>
+                            )}
+                            
                         </div>
                     </div>
                 </div>

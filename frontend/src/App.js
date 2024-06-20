@@ -23,6 +23,8 @@ import Opciones from './opciones';
 import FormularioVenta from './formularioVenta';
 import TruequesPendientes from './truequesPendientes';
 import ConfirmarTrueque from './ConfirmarTrueque';
+import InfoSucursal from './infoSucursal';
+import TruequesExitosos from './truequesExitosos';
 import ProtectedRoute from './protectedRoute';
 
 function App() {
@@ -56,8 +58,9 @@ function App() {
             <Route path="/altaVenta" element={<FormularioVenta/>} />
             <Route path="/notificaciones/:id" element={<Notificaciones />} /> 
             <Route path="/opciones/:sucursalId/:productoId/:usuarioId/:categoriaId/:propietarioId" element={<Opciones />} />
-            <Route path="/formularioVenta" element={<FormularioVenta/>} />
-          <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
+            <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
+            <Route path="/infoSucursal" element={<InfoSucursal/>} />
+            <Route path="/truequesExitosos" element={<TruequesExitosos/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

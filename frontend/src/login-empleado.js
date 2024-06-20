@@ -60,7 +60,7 @@ const LoginEmpleado = () => {
                 }
             } catch (error) {
                 if (error.response && error.response.status === 404) {
-                    setnombre_usuarioError('El nombre_usuario no existe');
+                    setnombre_usuarioError('El nombre de usuario no existe');
                 } else if (error.response && error.response.status === 401) {
                     setPasswordError('Contraseña incorrecta');
                 } else {
