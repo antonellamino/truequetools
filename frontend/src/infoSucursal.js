@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from './navbar';
+import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -28,17 +29,43 @@ const InfoSucursal = () => {
         navigate(`/editarSucursal/${id}`);
     };
 
+
     const handleEliminar = async (id) => {
-        try {
-            const response = await axios.delete(`${backendUrl}/eliminar-sucursal/${id}`);
-            console.log(response.data);
-            setSucursales(sucursales.filter(sucursal => sucursal.id !== id));
-            alert('Sucursal eliminada exitosamente.');
-        } catch (error) {
-            console.error('Error al eliminar sucursal:', error);
-            alert('Hubo un error al eliminar la sucursal.');
-        }
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'No podrás revertir esto.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    console.log('falta implementacion'); //falta implementar, despues lo sigo
+                    const response = await axios.post(`${backendUrl}/eliminar-sucursal`, { id : id });
+                    console.log(response.data);
+
+                    setSucursales(sucursales.filter(sucursal => sucursal.id !== id));
+                    Swal.fire(
+                        'Eliminado!',
+                        'La sucursal ha sido eliminada.',
+                        'success'
+                    );
+                } catch (error) {
+                    console.error('Error al eliminar la sucursal:', error);
+                    Swal.fire(
+                        'Error!',
+                        error.response && error.response.data ? error.response.data.error : 'Hubo un error al eliminar la sucursal.',
+                        'error'
+                    );
+                }
+            }
+        });
     };
+
+    
 
     return (
         <Fragment>

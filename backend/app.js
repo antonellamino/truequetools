@@ -671,40 +671,33 @@ app.post('/agregar-respuesta', async (req, res) => {
     }
 });
 
-// app.get('/productos_truequear', async (req, res) => {
-//     try {
-//         const { productoId, usuarioId, categoriaId } = req.query;
+app.get('/productos_truequear', async (req, res) => {
+    try {
+        const { productoId, usuarioId, categoriaId } = req.query;
 
-//         const productos = await Producto.query(p => {
-//             p.where('usuario_id', usuarioId)
-//              .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
-//              .join('categorias', 'productos.categoria_id', 'categorias.id')
-//              .whereNotIn('productos.id', function() {
-//                  this.select('id_producto_propietario')
-//                      .from('trueque')
-//                      .where('id_producto_ofertante', productoId)
-//                      .union(function() {
-//                          this.select('id_producto_ofertante')
-//                              .from('trueque')
-//                              .where('id_producto_propietario', productoId);
-//                      });
-//              })
-//              .select('productos.*', 'categorias.nombre as nombre_categoria');
-//         }).fetchAll();
+        const productos = await Producto.query(p => {
+            p.where('usuario_id', usuarioId)
+                .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+                .join('categorias', 'productos.categoria_id', 'categorias.id')
+                .whereNotIn('productos.id', function () {
+                    this.select('id_producto_propietario')
+                        .from('trueque')
+                        .where('id_producto_ofertante', productoId)
+                        .union(function () {
+                            this.select('id_producto_ofertante')
+                                .from('trueque')
+                                .where('id_producto_propietario', productoId);
+                        });
+                })
+                .select('productos.*', 'categorias.nombre as nombre_categoria');
+        }).fetchAll();
 
-//         const productos = await Producto.query(p => {
-//             p.where('usuario_id', usuarioId)
-//                 .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
-//                 .join('categorias', 'productos.categoria_id', 'categorias.id')
-//                 .select('productos.*', 'categorias.nombre as nombre_categoria');
-//         }).fetchAll();
-
-//         res.json({ productos });
-//     } catch (error) {
-//         console.error('Error al obtener los productos:', error);
-//         res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
-//     }
-// });
+        res.json({ productos });
+    } catch (error) {
+        console.error('Error al obtener los productos:', error);
+        res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
+    }
+});
 
 
 
@@ -876,11 +869,11 @@ app.post('/elegir_horario', async (req, res) => {
 });
 
 
-app.post('/rechazar_trueque',async (req, res) => {
-    try{
+app.post('/rechazar_trueque', async (req, res) => {
+    try {
         const { idTrueque } = req.body;
 
-        const trueque = await Trueque.where({ id : idTrueque }).fetch();
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
         const estado = "cancelado";
         trueque.set({ estado });
 
@@ -1134,6 +1127,65 @@ app.put('/editar-sucursal', async (req, res) => {
 });
 
 
+// app.post('/eliminar-sucursal', async (req, res) => {
+//     const { id_sucursal } = req.body;
+
+//     try {
+//         //se fija si la sucursal tiene trueques creados o en espera, implementar estado para trueque 'exitoso' o 'rechazado', los cuales no serian
+//         //trueques pendientes, por lo tanto se podria eliminar la sucursal
+//         const truequesPendientesOCreados = await Trueque.where({ id_sucursal: id_sucursal })
+//             .where('estado', 'in', ['espera', 'creado'])
+//             .fetch({ require: false });
+
+//         if (truequesPendientesOCreados) {
+//             return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques pendientes o creados.' });
+//         }
+//         await Sucursal.where({ id : id_sucursal })//aca iria la linea que define que se hace con la sucursal, a resolver luego
+//         res.status(200).json({ message: 'sucursal eliminada exitosamente.' });
+//     } catch (error) {
+//         console.error('Error al eliminar la sucursal:', error);
+//         res.status(500).json({ error: 'Error interno del servidor.' });
+//     }
+// });
+
+app.get('/obtener-cliente/:clienteId', async (req, res) => {
+    try {
+        const clienteId = req.params.clienteId;
+
+        if (!clienteId) {
+            return res.status(400).json({ error: 'El id del cliente es requerido.' });
+        }
+
+        const cliente = await Usuario.where({ id: clienteId }).fetch({ require: false });
+
+        if (!cliente) {
+            return res.status(404).json({ error: 'cliente no encontrado.' });
+        }
+
+        res.status(200).json({ message: 'cliente encontrado.', cliente });
+    } catch (error) {
+        console.error('Error al obtener el cliente:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
+app.put('/editar-cliente', async (req, res) => {
+    try {
+        const { clienteId, datosFormulario } = req.body;
+
+        if (!clienteId || !datosFormulario) {
+            return res.status(400).json({ error: 'El id de la sucursal y los datos a actualizar son requeridos' });
+        }
+
+        await Usuario.where({ id: clienteId }).save(datosFormulario, { method: 'update', patch: true });
+
+        res.status(200).json({ message: 'Cliente actualizado exitosamente.' });
+    } catch (error) {
+        console.error('Error al actualizar el cliente:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar el cliente.' });
+    }
+})
 
 
 

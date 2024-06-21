@@ -28,6 +28,7 @@ import TruequesExitosos from './truequesExitosos';
 import ProtectedRoute from './protectedRoute';
 import EditarEmpleado from './editarEmpleado';
 import EditarSucursal from './editarSucursal';
+import EditarPerfil from './editarPerfilCliente';
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
             <Route path="/truequesExitosos" element={<TruequesExitosos/>} />
             <Route path="/editarEmpleado/:empleadoId" element={<EditarEmpleado/>} />
             <Route path="/editarSucursal/:sucursalId" element={<EditarSucursal/>} />
+            <Route path="/editarPerfil" element={<EditarPerfil/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

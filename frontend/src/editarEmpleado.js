@@ -14,6 +14,7 @@ const EditarEmpleado = () => {
     const [nombre_usuario, setNombreUsuario] = useState('');
     const [contrasena, setContrasena] = useState('');
     const { empleadoId } = useParams();
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -60,7 +61,7 @@ const EditarEmpleado = () => {
                         empleadoId: empleadoId,
                         datosFormulario: datosFormulario
                     });
-    
+
                     Swal.fire(
                         'Guardado!',
                         'Los cambios han sido guardados exitosamente.',
@@ -73,7 +74,7 @@ const EditarEmpleado = () => {
                     console.error('Error al editar los datos:', error);
                     if (error.response && error.response.data && error.response.data.error) {
                     }
-    
+
                     Swal.fire(
                         'Error!',
                         'Hubo un error al guardar los cambios.',
@@ -127,17 +128,25 @@ const EditarEmpleado = () => {
                             required
                         />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="contrasena" className="font-weight-bold">Contraseña</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="contrasena"
-                            placeholder="Ingresa la contraseña"
-                            value={contrasena}
-                            onChange={(e) => setContrasena(e.target.value)}
-                            required
-                        />
+                    <div className="mb-3">
+                        <label htmlFor="contrasena" className="form-label">Contraseña</label>
+                        <div className="input-group">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                className="form-control"
+                                id="contrasena"
+                                value={contrasena}
+                                onChange={(e) => setContrasena(e.target.value)}
+                                required
+                            />
+                            <span
+                                className="input-group-text"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <i className={showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'}></i>
+                            </span>
+                        </div>
                     </div>
                     <button type="submit" className="btn btn-primary">Guardar cambios</button>
                 </form>

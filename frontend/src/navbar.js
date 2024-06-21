@@ -100,19 +100,20 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                 </li>
                             )}
                             {isAuthenticated && rol === 3 && (
-                                <li className="nav-item">
-                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/publicarProducto">Publicar producto</NavLink>
-                                </li>
-                            )}
-                            {isAuthenticated && rol === 3 && (
-                                <li className="nav-item">
-                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/productosCliente">Ver mis productos</NavLink>
-                                </li>
-                            )}
-                            {isAuthenticated && rol === 3 && (
-                                <li className="nav-item">
-                                    <button className="nav-link btn" onClick={handleTruequeClick}>Mis trueques</button>
-                                </li>
+                                <>
+                                    <li className="nav-item">
+                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/publicarProducto">Publicar producto</NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/productosCliente">Ver mis productos</NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <button className="nav-link btn" onClick={handleTruequeClick}>Mis trueques</button>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to={`/editarPerfil`}>Editar perfil</NavLink>
+                                    </li>
+                                </>
                             )}
                             {isAuthenticated ? (
                                 <li className="nav-item">
