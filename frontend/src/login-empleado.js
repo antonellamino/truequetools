@@ -38,8 +38,10 @@ const LoginEmpleado = () => {
         const isPasswordValid = validatePassword();
 
         if (isnombre_usuarioValid && isPasswordValid) {
+            console.log(isnombre_usuarioValid, isPasswordValid);
             try {
                 const response = await axios.post(`${backendUrl}/iniciar-sesion-empleado`, { nombre_usuario: nombre_usuario, contrasena: password });
+                console.log(nombre_usuario, password);
                 
                 const rol = response.data.rol;
                 const token = response.data.token;

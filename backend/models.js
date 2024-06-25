@@ -36,9 +36,6 @@ const Categoria = bookshelf.model('Categoria', {
     tableName: 'categorias'
 });
 
-const Comentario = bookshelf.model('Comentario', {
-    tableName: 'comentarios'
-});
 
 const Notificacion = bookshelf.model('Notificacion', {
     tableName: 'notificaciones',
@@ -66,7 +63,12 @@ const Trueque = bookshelf.model('Trueque', {
 })
 
 const Venta = bookshelf.model('Venta', {
-    tableName: 'ventas' })
+    tableName: 'ventas' 
+})
+
+const Comentario = bookshelf.model('Comentario', {
+    tableName: 'comentarios'
+});
 
 
 module.exports = {

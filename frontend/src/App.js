@@ -25,6 +25,10 @@ import TruequesPendientes from './truequesPendientes';
 import ConfirmarTrueque from './ConfirmarTrueque';
 import InfoSucursal from './infoSucursal';
 import TruequesExitosos from './truequesExitosos';
+import ProtectedRoute from './protectedRoute';
+import EditarEmpleado from './editarEmpleado';
+import EditarSucursal from './editarSucursal';
+import EditarPerfil from './editarPerfilCliente';
 
 function App() {
   return (
@@ -35,6 +39,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/iniciarSesion" element={<LoginCliente />} />
             <Route path="/registro" element={<FormularioRegistroCliente />} />
+            <Route path="/publicarProducto" element={<ProtectedRoute requiredRole={3}><PublicarProductoForm /></ProtectedRoute>}/>
+            <Route path="/clienteDashboard" element={ <ProtectedRoute requiredRole={3}><ClienteDashboard /></ProtectedRoute>} />
             <Route path="/publicarProducto" element={<PublicarProductoForm />} />
             <Route path="/productosCliente" element={ <ClienteDashboard />} />
             <Route path="/logout" element={<Logout />} />
@@ -58,6 +64,9 @@ function App() {
             <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
             <Route path="/infoSucursal" element={<InfoSucursal/>} />
             <Route path="/truequesExitosos" element={<TruequesExitosos/>} />
+            <Route path="/editarEmpleado/:empleadoId" element={<EditarEmpleado/>} />
+            <Route path="/editarSucursal/:sucursalId" element={<EditarSucursal/>} />
+            <Route path="/editarPerfil" element={<EditarPerfil/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

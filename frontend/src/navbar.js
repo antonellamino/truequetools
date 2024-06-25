@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment,useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import Header from './header';
 import { useAuth } from './AuthContext';
@@ -16,7 +16,6 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        console.log("rol del usuario", rol);
         if (isAuthenticated) {
             axios.get(`${backendUrl}/notificaciones/no-leidas`, { params: { userId } })
                 .then(response => {
@@ -101,19 +100,20 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                 </li>
                             )}
                             {isAuthenticated && rol === 3 && (
-                                <li className="nav-item">
-                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/publicarProducto">Publicar producto</NavLink>
-                                </li>
-                            )}
-                            {isAuthenticated && rol === 3 && (
-                                <li className="nav-item">
-                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/productosCliente">Ver mis productos</NavLink>
-                                </li>
-                            )}
-                            {isAuthenticated && rol === 3 && (
-                                <li className="nav-item">
-                                    <button className="nav-link btn" onClick={handleTruequeClick}>Mis trueques</button>
-                                </li>
+                                <>
+                                    <li className="nav-item">
+                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/publicarProducto">Publicar producto</NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/productosCliente">Ver mis productos</NavLink>
+                                    </li>
+                                    <li className="nav-item">
+                                        <button className="nav-link btn" onClick={handleTruequeClick}>Mis trueques</button>
+                                    </li>
+                                    <li className="nav-item">
+                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to={`/editarPerfil`}>Editar perfil</NavLink>
+                                    </li>
+                                </>
                             )}
                             {isAuthenticated ? (
                                 <li className="nav-item">

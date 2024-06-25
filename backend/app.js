@@ -4,7 +4,7 @@ const knex = require('knex');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
-const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion, Trueque, Venta} = require('./models');
+const { Usuario, Sucursal, Producto, Categoria, Empleado, Comentario, Notificacion, Trueque, Venta } = require('./models');
 
 
 // Configuración de Bookshelf
@@ -68,8 +68,6 @@ app.post('/registro-cliente', async (req, res) => {
 });
 
 
-
-
 // endpoint para iniciar sesion cliente
 // borrar los logs
 //no anda cuando el email es invalido pero la contrasena correcta
@@ -129,7 +127,6 @@ app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
 
         // Array para almacenar las imágenes en base64
         let imagenesBase64 = [];
-
         // Recorrer cada imagen y convertirla en base64
         for (let i = 0; i < imagenes.length; i++) {
             const imagenBase64 = imagenes[i].buffer.toString('base64');
@@ -148,15 +145,15 @@ app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
             imagen_2: imagenesBase64[1],
             imagen_3: imagenesBase64[2],
             imagen_4: imagenesBase64[3]
-            
+
         });
-       
+
         console.log("datos", nuevoProducto);
 
         await nuevoProducto.save();
 
         return res.status(201).json({ mensaje: 'Producto creado exitosamente' });
-        
+
     } catch (error) {
         console.error('Error al registrar el producto:', error);
         return res.status(500).json({ error: 'No se pudo registrar el producto' });
@@ -357,8 +354,10 @@ app.post('/registrar-empleado', async (req, res) => {
 //INICIO DE SESION COMO EMPLEADO a
 app.post('/iniciar-sesion-empleado', async (req, res) => {
     const { nombre_usuario, contrasena } = req.body;
+    console.log(nombre_usuario, contrasena);
 
     try {
+        // const empleado = await Empleado.where({ nombre_usuario: nombre_usuario }).fetch();
         const empleado = await Empleado.where({ nombre_usuario }).fetch({ require: false });
 
         if (!empleado) {
@@ -422,7 +421,7 @@ app.get('/ventas', async (req, res) => {
 })
 
 
-app.post('/agregar-venta', async(req, res) => {
+app.post('/agregar-venta', async (req, res) => {
     try {
         const { articulo, fecha_venta, valor, email_usuario } = req.body;
 
@@ -555,30 +554,30 @@ app.get('/productos-filtrados', async (req, res) => {
 
 
 // endpoint para registrar un usuario empleado, solo admin
-app.post('/registrar-empleado', async (req, res) => {
-    try {
-        const { nombre, contrasena } = req.body;
+// app.post('/registrar-empleado', async (req, res) => {
+//     try {
+//         const { nombre, contrasena } = req.body;
 
-        // verificar si ya existe un usuario con el mismo nombre de usuario
-        const existingusuario = await Empleado.where({ nombre }).fetch();
-        if (existingusuario) {
-            return res.status(400).send(`El usuario con dni ${nombre} ya existe`);
-        }
+//         // verificar si ya existe un usuario con el mismo nombre de usuario
+//         const existingusuario = await Empleado.where({ nombre }).fetch();
+//         if (existingusuario) {
+//             return res.status(400).send(`El usuario con dni ${nombre} ya existe`);
+//         }
 
-        // crear un nuevo usuario con el rol de empleado
-        const newusuario = await Empleado.forge({
-            nombre,
-            contrasena,
-            rol_id: 2
-        });
-        newusuario.save();
+//         // crear un nuevo usuario con el rol de empleado
+//         const newusuario = await Empleado.forge({
+//             nombre,
+//             contrasena,
+//             rol_id: 2
+//         });
+//         newusuario.save();
 
-        res.status(201).send('Empleado registrado exitosamente');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error interno del servidor');
-    }
-});
+//         res.status(201).send('Empleado registrado exitosamente');
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).send('Error interno del servidor');
+//     }
+// });
 
 
 
@@ -586,7 +585,7 @@ app.post('/registrar-empleado', async (req, res) => {
 app.get('/empleados', async (req, res) => {
     try {
         console.log("entra a empleados");
-        const usuarios = await Empleado.where({rol_id: 2}).fetchAll();
+        const usuarios = await Empleado.where({ rol_id: 2 }).fetchAll();
         res.json({ usuarios });
     } catch (error) {
         console.error('error al obtener los empleados:', error);
@@ -595,25 +594,24 @@ app.get('/empleados', async (req, res) => {
 })
 
 
-
 app.get('/datos-producto', async (req, res) => {
     const id = req.query.id;
     try {
         //CONSULTA A LA BD FILTRANDO LA TABLA PRODUCTOS POR ID RECIBIDO
         const producto = await Producto.query(qb => {
             qb.where('productos.id', id)
-              .join('sucursales', 'productos.sucursal_elegida', 'sucursales.id')
-              .join('categorias', 'productos.categoria_id', 'categorias.id')
-              .join('usuarios', 'productos.usuario_id', 'usuarios.id')
-              .select('productos.*', 
-                      'sucursales.nombre as nombre_sucursal', 
-                      'categorias.nombre as nombre_categoria',
-                      'usuarios.nombre as nombre_usuario',
-                      'productos.usuario_id'); 
+                .join('sucursales', 'productos.sucursal_elegida', 'sucursales.id')
+                .join('categorias', 'productos.categoria_id', 'categorias.id')
+                .join('usuarios', 'productos.usuario_id', 'usuarios.id')
+                .select('productos.*',
+                    'sucursales.nombre as nombre_sucursal',
+                    'categorias.nombre as nombre_categoria',
+                    'usuarios.nombre as nombre_usuario',
+                    'productos.usuario_id');
         }).fetch();
 
         if (producto) {
-            res.json(producto); 
+            res.json(producto);
         } else {
             res.status(404).json({ message: 'Producto no encontrado' });
         }
@@ -626,15 +624,15 @@ app.get('/datos-producto', async (req, res) => {
 app.get('/comentarios', async (req, res) => {
     const id = req.query.id;
     try {
-        const comentarios = await Comentario.query(c =>{
+        const comentarios = await Comentario.query(c => {
             c.where('comentarios.id_producto', id)
-            .join('usuarios', 'comentarios.id_usuario', 'usuarios.id')
-            .select('comentarios.*',
+                .join('usuarios', 'comentarios.id_usuario', 'usuarios.id')
+                .select('comentarios.*',
                     'usuarios.nombre as nombre_usuario');
         }).fetchAll();
-        if (comentarios){
+        if (comentarios) {
             res.json(comentarios);
-        }else{
+        } else {
             res.status(404).json({ message: 'comentarios no encontrados' });
         }
     } catch (error) {
@@ -645,7 +643,7 @@ app.get('/comentarios', async (req, res) => {
 });
 
 app.post('/agregar-comentario', async (req, res) => {
-    const { id_producto, id_usuario,  comentario } = req.body;
+    const { id_producto, id_usuario, comentario } = req.body;
     try {
         const nuevoComentario = await Comentario.forge({
             id_producto,
@@ -659,10 +657,11 @@ app.post('/agregar-comentario', async (req, res) => {
     }
 });
 
+
 app.post('/agregar-respuesta', async (req, res) => {
     const { id_comentario, respuesta } = req.body;
     try {
-        const comentario = await Comentario.where({ id: id_comentario }).fetch();   
+        const comentario = await Comentario.where({ id: id_comentario }).fetch();
         comentario.set({ respuesta });
         await comentario.save();
         res.status(201).json(comentario);
@@ -678,20 +677,19 @@ app.get('/productos_truequear', async (req, res) => {
 
         const productos = await Producto.query(p => {
             p.where('usuario_id', usuarioId)
-             .andWhere('categoria_id', categoriaId) 
-             .join('categorias', 'productos.categoria_id', 'categorias.id')
-             .whereNotIn('productos.id', function() {
-                 this.select('id_producto_propietario')
-                     .from('trueque')
-                     .where('id_producto_ofertante', productoId)
-                     .union(function() {
-                         this.select('id_producto_ofertante')
-                             .from('trueque')
-                             .where('id_producto_propietario', productoId)
-                             .andWhereNot('estado', 'like', '%cancelado%');
-                     });
-             })
-             .select('productos.*', 'categorias.nombre as nombre_categoria');
+                .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+                .join('categorias', 'productos.categoria_id', 'categorias.id')
+                .whereNotIn('productos.id', function () {
+                    this.select('id_producto_propietario')
+                        .from('trueque')
+                        .where('id_producto_ofertante', productoId)
+                        .union(function () {
+                            this.select('id_producto_ofertante')
+                                .from('trueque')
+                                .where('id_producto_propietario', productoId);
+                        });
+                })
+                .select('productos.*', 'categorias.nombre as nombre_categoria');
         }).fetchAll();
 
         res.json({ productos });
@@ -715,6 +713,7 @@ app.get('/notificaciones', async (req, res) => {
     }
 });
 
+
 // Endpoint para obtener la cantidad de notificaciones no leídas de un usuario
 app.get('/notificaciones/no-leidas', async (req, res) => {
     const idUsuario = req.query.userId;
@@ -733,27 +732,28 @@ app.post('/enviar-notificacion', async (req, res) => {
     try {
         const { id_usuario, mensaje, link } = req.body;
 
-        console.log( id_usuario );
-        console.log( mensaje );
-        console.log( link );
+        console.log(id_usuario);
+        console.log(mensaje);
+        console.log(link);
 
-    
+
         const nuevaNotificacion = await Notificacion.forge({
             id_usuario,
             mensaje,
             leido: false,  // Default es 'false' según tu esquem
             link
         });
-        
+
         nuevaNotificacion.save();
 
         res.status(201).json({ message: 'Notificación creada', notificacion: nuevaNotificacion });
-    
+
     } catch (error) {
         console.error('Error al crear la notificación:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
+
 
 app.put('/notificaciones/leer', (req, res) => {
     const { userId } = req.body;
@@ -767,6 +767,8 @@ app.put('/notificaciones/leer', (req, res) => {
         });
 });
 
+
+
 app.post('/agregar-notificacion', async (req, res) => {
     try {
         const { idUser, comentario, link } = req.body;
@@ -774,9 +776,9 @@ app.post('/agregar-notificacion', async (req, res) => {
             id_usuario: idUser,
             mensaje: comentario,
             link: link,
-            leido: false 
+            leido: false
         });
-        await nuevaNotificacion.save(); 
+        await nuevaNotificacion.save();
         res.status(200).json({ message: 'Se agregó la notificación' });
     } catch (error) {
         console.error('Error al agregar la notificación de comentario:', error);
@@ -784,9 +786,9 @@ app.post('/agregar-notificacion', async (req, res) => {
     }
 });
 
-app.post('/guardar-trueque',async (req,res) => {
-    try{
-        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, fecha, id_sucursal } = req.body;
+app.post('/guardar-trueque', async (req, res) => {
+    try {
+        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id_sucursal } = req.body;
 
         const nuevoTrueque = await Trueque.forge({
             id_propietario,
@@ -814,20 +816,17 @@ app.get('/mis_trueques', async (req, res) => {
         if (!usuario_id) {
             return res.status(400).json({ error: 'Usuario ID es requerido' });
         }
-        
+
         const trueques = await Trueque.query(qb => {
             qb.where('id_propietario', usuario_id)
-              .orWhere('id_ofertante', usuario_id)
-              .leftJoin('productos as propietario_productos', 'trueque.id_producto_propietario', 'propietario_productos.id')
-              .leftJoin('productos as ofertante_productos', 'trueque.id_producto_ofertante', 'ofertante_productos.id')
-              .select('trueque.*', 'propietario_productos.imagen_1 as imagenPropietario', 'ofertante_productos.imagen_1 as imagenOfertante');
+                .orWhere('id_ofertante', usuario_id)
+                .leftJoin('productos as propietario_productos', 'trueque.id_producto_propietario', 'propietario_productos.id')
+                .leftJoin('productos as ofertante_productos', 'trueque.id_producto_ofertante', 'ofertante_productos.id')
+                .select('trueque.*', 'propietario_productos.imagen_1 as imagenPropietario', 'ofertante_productos.imagen_1 as imagenOfertante');
         }).fetchAll({
-            withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante'] 
+            withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante']
         });
-        
-        console.log("aaa");
-        console.log(trueques.imagenPropietario);
-        console.log(trueques.imagenOfertante);
+
 
         res.json({ trueques });
 
@@ -870,20 +869,20 @@ app.post('/elegir_horario', async (req, res) => {
 });
 
 
-app.post('/rechazar_trueque',async (req, res) => {
-    try{
+app.post('/rechazar_trueque', async (req, res) => {
+    try {
         const { idTrueque } = req.body;
 
-        const trueque = await Trueque.where({ id : idTrueque }).fetch();
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
         const estado = "cancelado";
         trueque.set({ estado });
 
         await trueque.save();
 
         res.status(200).json({ message: 'Trueque rechazado con exito' });
-    
 
-    } catch(error) {
+
+    } catch (error) {
         console.error('Error al rechazar el trueque:', error); // Imprime en consola si hay un error.
         res.status(500).json({ message: 'Error del servidor' }); // Envía un mensaje de error con un código de estado 500 (Error Interno del Servidor).
     }
@@ -915,9 +914,9 @@ app.post('/confirmar_trueque', async (req, res) => {
             return res.status(404).json({ error: 'Trueque no encontrado' });
         }
 
-        const propietarioID = trueque.get('id_producto_propietario'); 
-        const ofertanteID = trueque.get('id_producto_ofertante'); 
-        
+        const propietarioID = trueque.get('id_producto_propietario');
+        const ofertanteID = trueque.get('id_producto_ofertante');
+
         const productoPropietario = await Producto.where({ id: propietarioID }).fetch();
         const productoOfertante = await Producto.where({ id: ofertanteID }).fetch();
 
@@ -926,13 +925,13 @@ app.post('/confirmar_trueque', async (req, res) => {
         await trueque.save();
 
         estado = true;
-        
+
         productoPropietario.set({ estado });
         productoOfertante.set({ estado });
 
         await productoPropietario.save();
         await productoOfertante.save();
-        
+
         res.status(200).json({ message: 'Trueque confirmado exitosamente', trueque });
     } catch (error) {
         console.error('Error al confirmar el trueque:', error);
@@ -1025,6 +1024,181 @@ app.get('/cantidad-trueques', async (req, res) => {
         res.status(500).json({ error: 'Error al obtener la cantidad de trueques' });
     }
 });
+
+
+
+
+// -------------------------------------------------------------- ///  ------------------------------------------------------
+
+app.post('/eliminar-empleado', async (req, res) => {
+    try {
+        const { empleadoId } = req.body;
+
+        if (!empleadoId) {
+            return res.status(400).json({ error: 'el id del empleado es requerido' });
+        }
+
+        const empleado = await Empleado.where({ id: empleadoId }).fetch({ require: false });
+        await empleado.destroy();
+        res.status(200).json({ message: 'Empleado eliminado.' });
+
+    } catch (error) {
+        console.error('Error al eliminar el empleado:', error);
+        res.status(500).json({ error: 'Error al eliminar el empleado.' });
+    }
+});
+
+
+app.get('/obtener-empleado/:empleadoId', async (req, res) => {
+    try {
+        const empleadoId = req.params.empleadoId;
+
+        if (!empleadoId) {
+            return res.status(400).json({ error: 'El ID del empleado es requerido.' });
+        }
+
+        const empleado = await Empleado.where({ id: empleadoId }).fetch({ require: false });
+
+        if (!empleado) {
+            return res.status(404).json({ error: 'Empleado no encontrado.' });
+        }
+
+        res.status(200).json({ message: 'Empleado encontrado.', empleado });
+    } catch (error) {
+        console.error('Error al obtener el empleado:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
+app.put('/editar-empleado', async (req, res) => {
+    try {
+        const { empleadoId, datosFormulario } = req.body;
+
+        if (!empleadoId || !datosFormulario) {
+            return res.status(400).json({ error: 'El id del empleado y los datos a actualizar son requeridos' });
+        }
+
+        await Empleado.where({ id: empleadoId }).save(datosFormulario, { method: 'update', patch: true });
+
+        res.status(200).json({ message: 'Empleado actualizado exitosamente.' });
+    } catch (error) {
+        console.error('Error al actualizar el empleado:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar el empleado.' });
+    }
+});
+
+
+app.get('/obtener-sucursal/:sucursalId', async (req, res) => {
+    try {
+        const sucursalId = req.params.sucursalId;
+
+        if (!sucursalId) {
+            return res.status(400).json({ error: 'El id de la sucursal es requerido.' });
+        }
+
+        const sucursal = await Sucursal.where({ id: sucursalId }).fetch({ require: false });
+
+        if (!sucursal) {
+            return res.status(404).json({ error: 'sucursal no encontrada.' });
+        }
+
+        res.status(200).json({ message: 'sucursal encontrada.', sucursal });
+    } catch (error) {
+        console.error('Error al obtener la sucursal:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
+app.put('/editar-sucursal', async (req, res) => {
+    try {
+        const { sucursalId, datosFormulario } = req.body;
+
+        if (!sucursalId || !datosFormulario) {
+            return res.status(400).json({ error: 'El id de la sucursal y los datos a actualizar son requeridos' });
+        }
+
+        await Sucursal.where({ id: sucursalId }).save(datosFormulario, { method: 'update', patch: true });
+
+        res.status(200).json({ message: 'Sucursal actualizada exitosamente.' });
+    } catch (error) {
+        console.error('Error al actualizar la sucursal:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar la sucursal.' });
+    }
+});
+
+
+// app.post('/eliminar-sucursal', async (req, res) => {
+//     const { id_sucursal } = req.body;
+
+//     try {
+//         //se fija si la sucursal tiene trueques creados o en espera, implementar estado para trueque 'exitoso' o 'rechazado', los cuales no serian
+//         //trueques pendientes, por lo tanto se podria eliminar la sucursal
+//         const truequesPendientesOCreados = await Trueque.where({ id_sucursal: id_sucursal })
+//             .where('estado', 'in', ['espera', 'creado'])
+//             .fetch({ require: false });
+
+//         if (truequesPendientesOCreados) {
+//             return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques pendientes o creados.' });
+//         }
+//         await Sucursal.where({ id : id_sucursal })//aca iria la linea que define que se hace con la sucursal, a resolver luego
+//         res.status(200).json({ message: 'sucursal eliminada exitosamente.' });
+//     } catch (error) {
+//         console.error('Error al eliminar la sucursal:', error);
+//         res.status(500).json({ error: 'Error interno del servidor.' });
+//     }
+// });
+
+app.get('/obtener-cliente/:clienteId', async (req, res) => {
+    try {
+        const clienteId = req.params.clienteId;
+
+        if (!clienteId) {
+            return res.status(400).json({ error: 'El id del cliente es requerido.' });
+        }
+
+        const cliente = await Usuario.where({ id: clienteId }).fetch({ require: false });
+
+        if (!cliente) {
+            return res.status(404).json({ error: 'cliente no encontrado.' });
+        }
+
+        res.status(200).json({ message: 'cliente encontrado.', cliente });
+    } catch (error) {
+        console.error('Error al obtener el cliente:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
+app.put('/editar-cliente', async (req, res) => {
+    try {
+        const { clienteId, datosFormulario } = req.body;
+
+        if (!clienteId || !datosFormulario) {
+            return res.status(400).json({ error: 'El id de la sucursal y los datos a actualizar son requeridos' });
+        }
+
+        await Usuario.where({ id: clienteId }).save(datosFormulario, { method: 'update', patch: true });
+
+        res.status(200).json({ message: 'Cliente actualizado exitosamente.' });
+    } catch (error) {
+        console.error('Error al actualizar el cliente:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar el cliente.' });
+    }
+})
+
+
+
+
+
+
+
+
+
+
+
 
 
 // iniciar servidor

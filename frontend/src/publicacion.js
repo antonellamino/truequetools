@@ -67,13 +67,13 @@ const Publicacion = () => {
             id_usuario: userId,
             comentario: nuevoComentario
         })
-        .then(response => {
-            setNuevoComentario('');
-            obtenerComentarios(id);
-        })
-        .catch(error => {
-            console.error('Error al agregar el comentario:', error);
-        });
+            .then(response => {
+                setNuevoComentario('');
+                obtenerComentarios(id);
+            })
+            .catch(error => {
+                console.error('Error al agregar el comentario:', error);
+            });
     };
 
     const settings = {
@@ -91,14 +91,14 @@ const Publicacion = () => {
             id_usuario: userId,
             respuesta: respuestaTruncada
         })
-        .then(response => {
-            console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuestaTruncada}`);
-            setNuevaRespuesta('');
-            obtenerComentarios(id);
-        })
-        .catch(error => {
-            console.error('Error al agregar la respuesta:', error);
-        });
+            .then(response => {
+                console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuestaTruncada}`);
+                setNuevaRespuesta('');
+                obtenerComentarios(id);
+            })
+            .catch(error => {
+                console.error('Error al agregar la respuesta:', error);
+            });
     };
 
     const enviarDatos = (producto) => {
@@ -109,7 +109,7 @@ const Publicacion = () => {
             sucursalId: producto.sucursal_elegida,
             propietarioId: producto.usuario_id
         };
-        
+
         const parametros = `${data.sucursalId}/${data.productoId}/${data.usuarioId}/${data.categoriaId}/${data.propietarioId}`;
         navigate(`/opciones/${parametros}`);
     };
@@ -162,7 +162,7 @@ const Publicacion = () => {
                         <p>{producto.nombre_usuario}</p>
                         <p>Categoría</p>
                         <p>{producto.nombre_categoria}</p>
-                        <p>Sucursal</p> 
+                        <p>Sucursal</p>
                         <p>{producto.nombre_sucursal}</p>
                     </div>
                 ) : (
@@ -185,7 +185,7 @@ const Publicacion = () => {
                                         {!esCreador && userId == comentario.id_usuario && (<button onClick={() => eliminarComentario(comentario.id)}>Eliminar Comentario</button>)}
                                     </div>
                                 )}
-                                { (esCreador) && (comentario.respuesta == null) &&(
+                                {(esCreador) && (comentario.respuesta == null) && (
                                     <form onSubmit={(e) => {
                                         e.preventDefault();
                                         const respuesta = e.target.elements.respuesta.value.trim(); // Eliminar espacios en blanco al principio y al final
@@ -207,7 +207,7 @@ const Publicacion = () => {
                     ) : (
                         <p>No hay comentarios.</p>
                     )}
-                    {!esCreador && isAuthenticated &&  (
+                    {!esCreador && isAuthenticated && (
                         <form className="caja_comentario" onSubmit={(e) => {
                             e.preventDefault();
                             const comentario = nuevoComentario.trim(); // Eliminar espacios en blanco al principio y al final
@@ -217,14 +217,14 @@ const Publicacion = () => {
                                 <p>No puedes enviar un mensaje vacío.</p>
                             }
                         }}>
-                            <textarea 
-                            value={nuevoComentario} 
-                            onChange={handleComentarioChange} 
-                            placeholder="Escribe un comentario..."
-                            maxLength={50} // Limitar a 50 caracteres
-                        />
-                        {nuevoComentario.length === 50 && <p>Has alcanzado el límite de 50 caracteres.</p>}
-                        <button type="submit" className=" btn-custom-short btn-custom-primary-short">Enviar</button>
+                            <textarea
+                                value={nuevoComentario}
+                                onChange={handleComentarioChange}
+                                placeholder="Escribe un comentario..."
+                                maxLength={50} // Limitar a 50 caracteres
+                            />
+                            {nuevoComentario.length === 50 && <p>Has alcanzado el límite de 50 caracteres.</p>}
+                            <button type="submit" className=" btn-custom-short btn-custom-primary-short">Enviar</button>
                         </form>
                     )}
                     {!isAuthenticated && (
@@ -237,7 +237,7 @@ const Publicacion = () => {
                     </button>
                 )}
             </div>
-            <Footer/>
+            <Footer />
         </Fragment>
     );
 };

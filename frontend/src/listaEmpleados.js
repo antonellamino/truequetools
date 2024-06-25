@@ -1,12 +1,14 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
-//import NavAdmin from './navAdmin';
 import Navbar from './navbar';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const ListaEmpleados = () => {
     const [empleados, setEmpleados] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchEmpleados = async () => {
@@ -25,14 +27,52 @@ const ListaEmpleados = () => {
         fetchEmpleados();
     }, []);
 
+    const eliminarEmpleado = async (empleadoId) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'No podrás revertir esta acción',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axios.post(`${backendUrl}/eliminar-empleado`, { empleadoId: empleadoId });
+                    console.log(res.data);
+
+                    setEmpleados(empleados.filter(empleado => empleado.id !== empleadoId));
+                    Swal.fire(
+                        'Eliminado!',
+                        'El empleado ha sido eliminado.',
+                        'success'
+                    );
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire(
+                        'Error!',
+                        'Hubo un error al eliminar el empleado.',
+                        'error'
+                    );
+                }
+            }
+        });
+    };
+
+    const editarEmpleado = (empleadoId) => {
+        navigate(`/editarEmpleado/${empleadoId}`);
+    };
 
     return (
         <Fragment>
-        <Navbar />
-        <div className="container mt-5">
-        <h2 className="text-white">Empleados</h2>
-            <div className="row justify-content-center">
-                <div className="col-12">
+            <Navbar />
+            <div className="container mt-5">
+                <h2 className="text-white">Empleados</h2>
+                {empleados.length === 0 ? (
+                    <p>No se registran empleados.</p>
+                ) : (
                     <div className="table-responsive">
                         <table className="table table-striped">
                             <thead className="thead-dark">
@@ -40,6 +80,7 @@ const ListaEmpleados = () => {
                                     <th>Nombre</th>
                                     <th>Apellido</th>
                                     <th>Nombre de Usuario</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -48,15 +89,28 @@ const ListaEmpleados = () => {
                                         <td>{empleado.nombre}</td>
                                         <td>{empleado.apellido}</td>
                                         <td>{empleado.nombre_usuario}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-info mr-2"
+                                                onClick={() => editarEmpleado(empleado.id)}
+                                            >
+                                                Editar
+                                            </button>
+                                            <button
+                                                className="btn btn-danger"
+                                                onClick={() => eliminarEmpleado(empleado.id)}
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-                </div>
+                )}
             </div>
-        </div>
-    </Fragment>
+        </Fragment>
     );
 }
 

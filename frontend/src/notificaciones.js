@@ -3,33 +3,35 @@ import { NavLink } from 'react-router-dom';
 import './notificaciones.css';
 import Navbar from './navbar';
 import axios from 'axios';
-import { AuthContext } from './AuthContext';
+import { useAuth } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const Notificaciones = () => {
-    const { userId } = useContext(AuthContext);
+    const { userId } = useAuth();
     const [notificaciones, setNotificaciones] = useState([]);
 
     useEffect(() => {
         axios.get(`${backendUrl}/notificaciones`, { params: { userId } })
-        .then(response => {
-            const data = response.data.notificaciones;
-            const sortedNotificaciones = data.sort((a, b) => b.id - a.id);
-            setNotificaciones(sortedNotificaciones);
+            .then(response => {
+                const data = response.data.notificaciones;
+                const sortedNotificaciones = data.sort((a, b) => b.id - a.id);
+                setNotificaciones(sortedNotificaciones);
 
-            axios.put(`${backendUrl}/notificaciones/leer`, { userId })
-            .then(() => {
-                console.log('Notificaciones marcadas como leídas correctamente.');
+
+                axios.put(`${backendUrl}/notificaciones/leer`, { userId })
+                    .then(() => {
+                        console.log('Notificaciones marcadas como leídas correctamente.');
+                    })
+                    .catch(error => {
+                        console.error('Error al marcar las notificaciones como leídas:', error);
+                    });
+
             })
             .catch(error => {
-                console.error('Error al marcar las notificaciones como leídas:', error);
+                console.error('Error al obtener las notificaciones:', error);
             });
-        })
-        .catch(error => {
-            console.error('Error al obtener las notificaciones:', error);
-        });
-    }, [userId]);
+    }, [userId]); // Cambio aquí para que el efecto se ejecute cuando userId cambie
 
     return (
         <div>
