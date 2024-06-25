@@ -25,13 +25,13 @@ const FormularioVenta = () => {
     };
 
     const validateFecha = () => {
-        if (!fecha) {
+        if (!fechaError) {
             setFechaError('Por favor ingresa una fecha');
             return false;
         }
 
         const today = new Date();
-        const selectedDate = new Date(fecha);
+        const selectedDate = new Date(fechaError);
 
         if (selectedDate > today) {
             setFechaError('La fecha no puede ser en el futuro');
