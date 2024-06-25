@@ -66,7 +66,7 @@ const InfoSucursal = () => {
     };
 
     
-
+    // falta caso en que no haya sucursales al listado mensaje de error: No hay sucursales registradas
     return (
         <Fragment>
             <Navbar />

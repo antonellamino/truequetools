@@ -25,6 +25,8 @@ const ListaSucursales = () => {
     const listaTruequesPendientes = (sucursalID) => {
         navigate(`/confirmarTrueque/${sucursalID}`);
     };
+    
+    // AGREGAR ESCENARIO CON LISTADO VACIO MENSAJE DE ERROR : "No hay sucursales disponibles"
 
     return (
         <Fragment>

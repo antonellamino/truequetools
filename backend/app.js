@@ -795,8 +795,7 @@ app.post('/guardar-trueque', async (req, res) => {
             id_ofertante,
             id_producto_propietario,
             id_producto_ofertante,
-            id_sucursal,
-            fecha
+            id_sucursal
         });
 
         console.log("aaasfa");

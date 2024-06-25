@@ -128,7 +128,7 @@ const TruequesPendientes = () => {
             .then(response => {
                 const nuevosMensajes = {
                     ...truequeMensajes,
-                    [trueque.id]: 
+                    [trueque.id]: 'trueque cancelado'
                 };
                 setTruequeMensajes(nuevosMensajes);
                 actualizarTrueque(trueque.id, response.data.estado);
@@ -149,7 +149,7 @@ const TruequesPendientes = () => {
         <Fragment>
             <Navbar />
             <div className="trueques-pendientes-container">
-                <h2 className="header">Trueques Pendientes</h2>
+                <h2 className="header">Mis trueques</h2>
                 {trueques.length > 0 ? (
                     <ul className="trueques-list">
                         {trueques.map((trueque) => (
