@@ -40,7 +40,7 @@ const ListaEmpleados = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.post(`${backendUrl}/eliminar-empleado`, { empleadoId: empleadoId });
+                    const res = await axios.post(`${backendUrl}/eliminar-empleado`, { id: empleadoId });
                     console.log(res.data);
 
                     setEmpleados(empleados.filter(empleado => empleado.id !== empleadoId));
@@ -53,7 +53,7 @@ const ListaEmpleados = () => {
                     console.error(err);
                     Swal.fire(
                         'Error!',
-                        'Hubo un error al eliminar el empleado.',
+                        'Error al intentar eliminar el empleado, por favor inténtalo nuevamente.',
                         'error'
                     );
                 }

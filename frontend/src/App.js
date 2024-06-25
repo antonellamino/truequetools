@@ -30,6 +30,8 @@ import EditarEmpleado from './editarEmpleado';
 import EditarSucursal from './editarSucursal';
 import EditarPerfil from './editarPerfilCliente';
 
+
+
 function App() {
   return (
     <div className="App">
@@ -67,6 +69,8 @@ function App() {
             <Route path="/editarEmpleado/:empleadoId" element={<EditarEmpleado/>} />
             <Route path="/editarSucursal/:sucursalId" element={<EditarSucursal/>} />
             <Route path="/editarPerfil" element={<EditarPerfil/>} />
+            <Route path="/formularioVenta" element={<FormularioVenta/>} />
+
           </Routes>
         </AuthProvider>
       </BrowserRouter>

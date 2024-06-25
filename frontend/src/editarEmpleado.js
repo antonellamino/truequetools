@@ -1,10 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from './navbar';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
-
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -16,16 +14,18 @@ const EditarEmpleado = () => {
     const { empleadoId } = useParams();
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const [errors, setErrors] = useState({});
+    const [originalNombreUsuario, setOriginalNombreUsuario] = useState('');
 
     useEffect(() => {
         const fetchEmpleado = async () => {
             try {
-                console.log(empleadoId);
                 const response = await axios.get(`${backendUrl}/obtener-empleado/${empleadoId}`);
                 const empleado = response.data.empleado;
                 setNombre(empleado.nombre);
                 setApellido(empleado.apellido);
                 setNombreUsuario(empleado.nombre_usuario);
+                setOriginalNombreUsuario(empleado.nombre_usuario);
                 setContrasena(empleado.contrasena);
             } catch (error) {
                 console.error('Error al obtener el empleado:', error);
@@ -35,8 +35,55 @@ const EditarEmpleado = () => {
         fetchEmpleado();
     }, [empleadoId]);
 
+    const validateForm = async () => {
+        let newErrors = {};
+        let isValid = true;
+
+        if (!nombre.trim()) {
+            newErrors.nombre = 'Por favor ingrese un nombre';
+            isValid = false;
+        }
+
+        if (!apellido.trim()) {
+            newErrors.apellido = 'Por favor ingrese un apellido';
+            isValid = false;
+        }
+
+        if (!nombre_usuario.trim()) {
+            newErrors.nombre_usuario = 'Por favor ingrese un nombre de usuario';
+            isValid = false;
+        } else if (nombre_usuario !== originalNombreUsuario) {
+            try {
+                const response = await axios.get(`${backendUrl}/existe-empleado/${nombre_usuario}`);//ME TIRA ERROR PERO ANDA
+                console.log('Respuesta de Axios:', response);
+                if (response.data.empleado) {
+                    newErrors.nombre_usuario = 'El nombre de usuario ya está en uso';
+                    isValid = false;
+                } else {
+                    console.log('todo ok');
+                }
+            } catch (error) {
+                console.error('Error al verificar el nombre de usuario:', error);
+            }
+        }
+
+        if (!contrasena.trim()) {
+            newErrors.contrasena = 'Por favor ingrese una contraseña';
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const isValid = await validateForm();
+
+        if (!isValid) {
+            return;
+        }
 
         const datosFormulario = {
             nombre: nombre,
@@ -57,8 +104,8 @@ const EditarEmpleado = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await axios.put(`${backendUrl}/editar-empleado`, {
-                        empleadoId: empleadoId,
+                    await axios.put(`${backendUrl}/editar-empleado`, {
+                        id: empleadoId,
                         datosFormulario: datosFormulario
                     });
 
@@ -71,20 +118,20 @@ const EditarEmpleado = () => {
                     });
 
                 } catch (error) {
-                    console.error('Error al editar los datos:', error);
-                    if (error.response && error.response.data && error.response.data.error) {
-                    }
-
+                    console.error('Error al actualizar los datos, por favor intente nuevamente', error);
                     Swal.fire(
                         'Error!',
-                        'Hubo un error al guardar los cambios.',
+                        'Error al actualizar los datos, por favor intente nuevamente.',
                         'error'
                     );
                 }
             }
         });
-    };;
+    };
 
+    const handleCancel = () => {
+        navigate('/listaEmpleados');
+    };
 
     return (
         <Fragment>
@@ -101,8 +148,9 @@ const EditarEmpleado = () => {
                             placeholder="Ingresa el nombre"
                             value={nombre}
                             onChange={(e) => setNombre(e.target.value)}
-                            required
+                            
                         />
+                        {errors.nombre && <small className="text-danger">{errors.nombre}</small>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="apellido" className="font-weight-bold">Apellido</label>
@@ -113,11 +161,12 @@ const EditarEmpleado = () => {
                             placeholder="Ingresa el apellido"
                             value={apellido}
                             onChange={(e) => setApellido(e.target.value)}
-                            required
+                            
                         />
+                        {errors.apellido && <small className="text-danger">{errors.apellido}</small>}
                     </div>
                     <div className="form-group">
-                        <label htmlFor="nombre_usuario" className="font-weight-bold">Nombre de Usuario</label>
+                        <label htmlFor="nombre_usuario" className="font-weight-bold">Nombre de usuario</label>
                         <input
                             type="text"
                             className="form-control"
@@ -125,8 +174,9 @@ const EditarEmpleado = () => {
                             placeholder="Ingresa el nombre de usuario"
                             value={nombre_usuario}
                             onChange={(e) => setNombreUsuario(e.target.value)}
-                            required
+                            
                         />
+                        {errors.nombre_usuario && <small className="text-danger">{errors.nombre_usuario}</small>}
                     </div>
                     <div className="mb-3">
                         <label htmlFor="contrasena" className="form-label">Contraseña</label>
@@ -137,7 +187,7 @@ const EditarEmpleado = () => {
                                 id="contrasena"
                                 value={contrasena}
                                 onChange={(e) => setContrasena(e.target.value)}
-                                required
+                                
                             />
                             <span
                                 className="input-group-text"
@@ -147,8 +197,12 @@ const EditarEmpleado = () => {
                                 <i className={showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'}></i>
                             </span>
                         </div>
+                        {errors.contrasena && <small className="text-danger">{errors.contrasena}</small>}
                     </div>
-                    <button type="submit" className="btn btn-primary">Guardar cambios</button>
+                    <div className="d-flex justify-content-between">
+                        <button type="submit" className="btn btn-primary">Guardar cambios</button>
+                        <button type="button" className="btn btn-secondary" onClick={handleCancel}>Cancelar</button>
+                    </div>
                 </form>
             </div>
         </Fragment>

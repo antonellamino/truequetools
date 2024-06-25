@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 import Navbar from './navbar';
+import Swal from 'sweetalert2';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -30,6 +31,38 @@ const Ventas = () => {
         }
     }, [isAuthenticated]);
 
+    const handleDelete = (id) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción no se puede deshacer.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await axios.post(`${backendUrl}/eliminar-venta`, { id: id });
+                    setVentas(ventas.filter(venta => venta.id !== id));
+                    Swal.fire(
+                        'Eliminado!',
+                        'La venta ha sido eliminada.',
+                        'success'
+                    );
+                } catch (error) {
+                    console.error('Error al eliminar la venta:', error);
+                    Swal.fire(
+                        'Error!',
+                        'Hubo un error al eliminar la venta.',
+                        'error'
+                    );
+                }
+            }
+        });
+    };
+
     if (!isAuthenticated) {
         return <p>No tienes permiso para ver esta página. Por favor, inicia sesión.</p>;
     }
@@ -53,6 +86,7 @@ const Ventas = () => {
                                         <th>Fecha de venta</th>
                                         <th>Precio</th>
                                         <th>Email usuario comprador</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -62,6 +96,14 @@ const Ventas = () => {
                                             <td>{venta.fecha_venta}</td>
                                             <td>{venta.valor}</td>
                                             <td>{venta.email_usuario}</td>
+                                            <td>
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={() => handleDelete(venta.id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
