@@ -143,7 +143,7 @@ const TruequesPendientes = () => {
             .then(response => {
                 const nuevosMensajes = {
                     ...truequeMensajes,
-                    [trueque.id]: 'Trueque cancelado'
+                    [trueque.id]: 
                 };
                 setTruequeMensajes(nuevosMensajes);
                 actualizarTrueque(trueque.id, response.data.estado);
