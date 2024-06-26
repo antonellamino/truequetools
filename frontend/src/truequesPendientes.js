@@ -123,28 +123,47 @@ const TruequesPendientes = () => {
             });
     };
 
-    const cancelarTrueque = (trueque) => {
-        axios.post(`${backendUrl}/cancelar_trueque`, { idTrueque: trueque.id })
-            .then(response => {
-                const nuevosMensajes = {
-                    ...truequeMensajes,
-                    [trueque.id]: 'trueque cancelado'
-                };
-                setTruequeMensajes(nuevosMensajes);
-                actualizarTrueque(trueque.id, response.data.estado);
-                obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de cancelar
+    const cancelarTrueque = async (trueque) => {
+        try {
+            const response = await axios.post(`${backendUrl}/cancelar_trueque`, { idTrueque: trueque.id });
     
-                // Limpiar el mensaje de error si la cancelación es exitosa
-                setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: '' }));
-            })
-            .catch(error => {
-                const errorMessage = error.response?.data?.error || 'Error desconocido al cancelar el trueque';
+            const nuevosMensajes = {
+                ...truequeMensajes,
+                [trueque.id]: 'trueque cancelado'
+            };
+            setTruequeMensajes(nuevosMensajes);
+            actualizarTrueque(trueque.id, response.data.estado);
+            obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de cancelar
+    
+            // Limpiar el mensaje de error si la cancelación es exitosa
+            setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: '' }));
+    
+            // Enviar notificación
+            const notificacion = {
+                id_usuario: trueque.id_ofertante, // Enviar la notificación al usuario que NO canceló el trueque
+                mensaje: `Han cancelado el trueque con ${trueque.id_producto_propietario}`, // Nombre del producto que no es propio
+                leido: false,
+                link: `/truequesPendientes/${trueque.id}`
+            };
+    
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+    
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.error) {
+                const errorMessage = error.response.data.error;
                 console.error('Error al cancelar el trueque:', errorMessage);
-    
+                
                 // Mostrar el mensaje de error al usuario
                 setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: errorMessage }));
-            });
+            } else {
+                console.error('Error desconocido al cancelar el trueque:', error);
+                
+                // Mostrar un mensaje de error genérico al usuario
+                setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: 'Error desconocido al cancelar el trueque' }));
+            }
+        }
     };
+    
 
 
     const formatDate = (dateString) => {
