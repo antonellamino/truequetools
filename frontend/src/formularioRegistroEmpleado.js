@@ -2,6 +2,7 @@ import React, { Fragment, useState } from 'react';
 //import NavAdmin from './navAdmin';
 import axios from 'axios';
 import Navbar from './navbar';
+import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -12,6 +13,8 @@ const AltaEmpleado = () => {
     const [apellido, setApellido] = useState('');
     const [nombre_usuario, setNombreUsuario] = useState('');
     const [mensajeError, setMensajeError] = useState('');
+    const navigate = useNavigate();
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -40,6 +43,10 @@ const AltaEmpleado = () => {
             }
             setMensaje('');
         }
+    };
+
+    const handleCancel = () => {
+        navigate('/adminDashboard');
     };
 
     return (
@@ -98,7 +105,18 @@ const AltaEmpleado = () => {
                     </div>
                     {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
                     {mensajeError && <div className="alert alert-danger mt-2">{mensajeError}</div>}
-                    <button type="submit" className="btn btn-primary">Crear Empleado</button>
+                    <div className="mb-3">
+                        <div className="row">
+                            <div className="col">
+                                <button type="submit" className="btn btn-primary w-100" >Guardar Cambios</button>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </Fragment>

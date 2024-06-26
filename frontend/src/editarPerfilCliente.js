@@ -159,6 +159,7 @@ const EditarPerfil = () => {
         }
     };
 
+
     useEffect(() => {
         const fetchDatosCliente = async () => {
             try {
@@ -188,6 +189,10 @@ const EditarPerfil = () => {
         fetchSucursales();
     }, [clienteId]);
 
+    const handleCancel = () => {
+        navigate('/');
+    };
+
     return (
         <Fragment>
             <Navbar />
@@ -204,11 +209,11 @@ const EditarPerfil = () => {
                         <input type="text" className="form-control" id="apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
                         {apellidoError && <div className="text-danger">{apellidoError}</div>}
                     </div>
-                    <div className="mb-3">
+                    {/* <div className="mb-3">
                         <label htmlFor="correo" className="form-label">Correo</label>
-                        <input type="email" className="form-control" id="correo" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
+                        <input type="email" className="form-control" id="correo" value={correo} onChange={(e) => setCorreo(e.target.value)} disabled />
                         {correoError && <div className="text-danger">{correoError}</div>}
-                    </div>
+                    </div> */}
                     <div className="mb-3">
                         <label htmlFor="fechaNacimiento" className="form-label">Fecha de Nacimiento</label>
                         <input type="date" className="form-control" id="fechaNacimiento" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required />
@@ -247,7 +252,16 @@ const EditarPerfil = () => {
                     </div>
 
                     <div className="mb-3">
-                        <button type="submit" className="btn btn-primary" onClick={onButtonClick}>Guardar Cambios</button>
+                        <div className="row">
+                            <div className="col">
+                                <button type="submit" className="btn btn-primary w-100" onClick={onButtonClick}>Guardar Cambios</button>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

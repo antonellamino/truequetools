@@ -32,7 +32,7 @@ const ListaSucursales = () => {
         <Fragment>
             <Navbar />
             <div className="container mt-5">
-                <h2 className="text-white">Sucursales</h2>
+                <h2 className="text-white">Trueques pendientes por sucursal</h2>
                 <div className="table-responsive">
                     <table className="table table-striped">
                         <thead className="thead-dark">

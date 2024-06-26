@@ -8,6 +8,7 @@ import Footer from './footer';
 import Navbar from './navbar';
 import './truequesPendientes.css';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -255,6 +256,10 @@ const TruequesPendientes = () => {
                     <p>No tienes trueques pendientes.</p>
                 )}
             </div>
+
+            {/* <div className="mt-3">
+                <Link to="/listaSucursales" className="btn btn-secondary w-100">Volver</Link>
+            </div> */}
             <Footer />
         </Fragment>
     );

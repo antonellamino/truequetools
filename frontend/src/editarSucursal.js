@@ -79,8 +79,11 @@ const EditarSucursal = () => {
                 }
             }
         });
-    };;
+    };
 
+    const handleCancel = () => {
+        navigate('/infoSucursal');
+    };
 
     return (
         <Fragment>
@@ -124,7 +127,18 @@ const EditarSucursal = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary">Guardar cambios</button>
+                    <div className="mb-3">
+                        <div className="row">
+                            <div className="col">
+                                <button type="submit" className="btn btn-primary w-100" >Crear sucursal</button>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </Fragment>

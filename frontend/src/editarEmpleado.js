@@ -199,9 +199,17 @@ const EditarEmpleado = () => {
                         </div>
                         {errors.contrasena && <small className="text-danger">{errors.contrasena}</small>}
                     </div>
-                    <div className="d-flex justify-content-between">
-                        <button type="submit" className="btn btn-primary">Guardar cambios</button>
-                        <button type="button" className="btn btn-secondary" onClick={handleCancel}>Cancelar</button>
+                    <div className="mb-3">
+                        <div className="row">
+                            <div className="col">
+                                <button type="submit" className="btn btn-primary w-100" >Guardar Cambios</button>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
