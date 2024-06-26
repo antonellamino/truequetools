@@ -133,9 +133,16 @@ const TruequesPendientes = () => {
                 setTruequeMensajes(nuevosMensajes);
                 actualizarTrueque(trueque.id, response.data.estado);
                 obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de cancelar
+    
+                // Limpiar el mensaje de error si la cancelación es exitosa
+                setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: '' }));
             })
             .catch(error => {
-                console.error('Error al cancelar el trueque:', error.response.data);
+                const errorMessage = error.response?.data?.error || 'Error desconocido al cancelar el trueque';
+                console.error('Error al cancelar el trueque:', errorMessage);
+    
+                // Mostrar el mensaje de error al usuario
+                setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: errorMessage }));
             });
     };
 

@@ -970,7 +970,6 @@ const { differenceInHours } = require('date-fns');
 app.post('/cancelar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
-
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
 
         if (!trueque) {
