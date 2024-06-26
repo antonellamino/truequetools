@@ -590,7 +590,7 @@ app.get('/productos-filtrados', async (req, res) => {
 //endpooint a usar cuando el admin quiera obtener la lista de empleados
 app.get('/empleados', async (req, res) => {
     try {
-        console.log("entra a empleados");
+        // console.log("entra a empleados");
         const usuarios = await Empleado.where({ rol_id: 2 }).fetchAll();
         res.json({ usuarios });
     } catch (error) {
@@ -1038,13 +1038,13 @@ app.get('/cantidad-trueques', async (req, res) => {
 
 app.post('/eliminar-empleado', async (req, res) => {
     try {
-        const { empleadoId } = req.body;
+        const { id } = req.body;
 
-        if (!empleadoId) {
+        if (!id) {
             return res.status(400).json({ error: 'el id del empleado es requerido' });
         }
 
-        const empleado = await Empleado.where({ id: empleadoId }).fetch({ require: false });
+        const empleado = await Empleado.where({ id: id }).fetch({ require: false });
         await empleado.destroy();
         res.status(200).json({ message: 'Empleado eliminado.' });
 
@@ -1055,15 +1055,15 @@ app.post('/eliminar-empleado', async (req, res) => {
 });
 
 
-app.get('/obtener-empleado/:empleadoId', async (req, res) => {
+app.get('/obtener-empleado/:id', async (req, res) => {
     try {
-        const empleadoId = req.params.empleadoId;
+        const id = req.params.id;
 
-        if (!empleadoId) {
+        if (!id) {
             return res.status(400).json({ error: 'El ID del empleado es requerido.' });
         }
 
-        const empleado = await Empleado.where({ id: empleadoId }).fetch({ require: false });
+        const empleado = await Empleado.where({ id: id }).fetch({ require: false });
 
         if (!empleado) {
             return res.status(404).json({ error: 'Empleado no encontrado.' });
@@ -1079,13 +1079,13 @@ app.get('/obtener-empleado/:empleadoId', async (req, res) => {
 
 app.put('/editar-empleado', async (req, res) => {
     try {
-        const { empleadoId, datosFormulario } = req.body;
+        const { id, datosFormulario } = req.body;
 
-        if (!empleadoId || !datosFormulario) {
+        if (!id || !datosFormulario) {
             return res.status(400).json({ error: 'El id del empleado y los datos a actualizar son requeridos' });
         }
 
-        await Empleado.where({ id: empleadoId }).save(datosFormulario, { method: 'update', patch: true });
+        await Empleado.where({ id: id }).save(datosFormulario, { method: 'update', patch: true });
 
         res.status(200).json({ message: 'Empleado actualizado exitosamente.' });
     } catch (error) {
@@ -1093,6 +1093,30 @@ app.put('/editar-empleado', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor al actualizar el empleado.' });
     }
 });
+
+
+app.get('/existe-empleado/:nombre_usuario', async (req, res) => {
+    try {
+        const { nombre_usuario } = req.params;
+
+        if (!nombre_usuario) {
+            return res.status(400).json({ error: 'El nombre de usuario es requerido.' });
+        }
+
+        const existingEmpleado = await Empleado.where({ nombre_usuario }).fetch({ require: false });
+        if (existingEmpleado) {
+            return res.status(200).json({ message: 'Empleado encontrado.', empleado: existingEmpleado });
+        } else {
+            return res.status(200).json({ message: 'Empleado no encontrado.' });
+        }
+
+    } catch (error) {
+        console.error('Error al obtener el empleado:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
 
 
 app.get('/obtener-sucursal/:sucursalId', async (req, res) => {
@@ -1192,6 +1216,25 @@ app.put('/editar-cliente', async (req, res) => {
     } catch (error) {
         console.error('Error al actualizar el cliente:', error);
         res.status(500).json({ error: 'Error interno del servidor al actualizar el cliente.' });
+    }
+});
+
+
+app.post('/eliminar-venta', async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ error: 'el id de la venta es requerido' });
+        }
+
+        const venta = await Venta.where({ id: id }).fetch({ require: false });
+        await venta.destroy();
+        res.status(200).json({ message: 'Venta eliminada.' });
+
+    } catch (error) {
+        console.error('Error al eliminar la venta:', error);
+        res.status(500).json({ error: 'Error al eliminar la venta.' });
     }
 })
 
