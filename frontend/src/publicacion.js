@@ -67,13 +67,32 @@ const Publicacion = () => {
             id_usuario: userId,
             comentario: nuevoComentario
         })
-            .then(response => {
-                setNuevoComentario('');
-                obtenerComentarios(id);
-            })
-            .catch(error => {
-                console.error('Error al agregar el comentario:', error);
-            });
+        .then(async response => {
+           
+            setNuevoComentario('');
+            
+          
+            try {
+   
+                const notificacion = {
+                    id_usuario: producto.usuario_id, // Aquí obtienes directamente el ID del usuario propietario del producto
+                    mensaje: `Han comentado tu producto ${producto.nombre}`,
+                    leido: false,
+                    link: `/publicacion/${id}`
+                };
+                
+                // Enviar la notificación al usuario propietario del producto
+                await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+                
+                // Luego puedes hacer lo que sea necesario después de enviar la notificación
+                obtenerComentarios(id); // Esto obtiene los comentarios nuevamente después de agregar uno nuevo
+            } catch (error) {
+                console.error('Error al obtener datos del producto o enviar la notificación:', error);
+            }
+        })
+        .catch(error => {
+            console.error('Error al agregar el comentario:', error);
+        });
     };
 
     const settings = {
@@ -84,21 +103,38 @@ const Publicacion = () => {
         slidesToScroll: 1
     };
 
-    const handleResponderComentario = (comentarioId, respuesta) => {
-        const respuestaTruncada = respuesta.substring(0, 50); // Limitar a 50 caracteres
-        axios.post(`${backendUrl}/agregar-respuesta`, {
-            id_comentario: comentarioId,
-            id_usuario: userId,
-            respuesta: respuestaTruncada
-        })
-            .then(response => {
-                console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuestaTruncada}`);
-                setNuevaRespuesta('');
-                obtenerComentarios(id);
-            })
-            .catch(error => {
-                console.error('Error al agregar la respuesta:', error);
+    const handleResponderComentario = async (usuarioId,comentarioId, respuesta) => {
+        try {
+            const respuestaTruncada = respuesta.substring(0, 50); // Limitar a 50 caracteres
+            
+            // Agregar respuesta al comentario
+            await axios.post(`${backendUrl}/agregar-respuesta`, {
+                id_comentario: comentarioId,
+                id_usuario: userId,
+                respuesta: respuestaTruncada
             });
+            
+            console.log(`Respuesta agregada al comentario ${comentarioId}: ${respuestaTruncada}`);
+            setNuevaRespuesta('');
+            obtenerComentarios(id);
+            
+            // Obtener el propietario del comentario
+    
+            // Crear la notificación
+            const notificacion = {
+                id_usuario: usuarioId,
+                mensaje: `Respondieron tu comentario en el producto ${producto.nombre}`,
+                leido: false,
+                link: `/publicacion/${id}`
+            };
+    
+            // Enviar la notificación
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+            
+            console.log('Notificación enviada correctamente');
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     const enviarDatos = (producto) => {
@@ -158,8 +194,6 @@ const Publicacion = () => {
                         )}
                         <p>Descripción</p>
                         <p>{producto.descripcion}</p>
-                        <p>Usuario</p>
-                        <p>{producto.nombre_usuario}</p>
                         <p>Categoría</p>
                         <p>{producto.nombre_categoria}</p>
                         <p>Sucursal</p>
@@ -176,7 +210,6 @@ const Publicacion = () => {
                                 <p>{comentario.comentario}</p>
                                 {comentario.respuesta != null ? (
                                     <div>
-                                        <p>{comentario.usuario.nombre}</p>
                                         <p>{comentario.respuesta}</p>
                                     </div>
                                 ) : (
@@ -190,7 +223,7 @@ const Publicacion = () => {
                                         e.preventDefault();
                                         const respuesta = e.target.elements.respuesta.value.trim(); // Eliminar espacios en blanco al principio y al final
                                         if (respuesta !== "") { // Validar que la respuesta no esté vacía
-                                            handleResponderComentario(comentario.id, respuesta.substring(0, 50)); // Limitar a 50 caracteres
+                                            handleResponderComentario(comentario.id_usuario,comentario.id, respuesta.substring(0, 50)); // Limitar a 50 caracteres
                                             setErrorMensaje(''); // Limpiar mensaje de error
                                             e.target.reset(); // Limpiar el formulario de respuesta después del envío
                                         } else {

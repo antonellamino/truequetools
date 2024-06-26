@@ -167,20 +167,26 @@ app.post('/publicarProducto', upload.array('foto', 4), async (req, res) => {
 //solo admin
 app.post('/agregar-sucursal', async (req, res) => {
     try {
+
         const { nombre, direccion, telefono } = req.body;
-        const sucursalExistente = await Sucursal.where({ nombre }).fetch();
-        if (sucursalExistente) {
-            return res.status(400).json({ error: 'El nombre de la sucursal ya existe' });
+        const existingSucursal = await Sucursal.where({ nombre }).fetch({ require: false });
+        if (existingSucursal) {
+            return res.status(400).json({ error: `La sucursal ya existe` });
         }
+
         const nuevaSucursal = await Sucursal.forge({
             nombre,
             direccion,
             telefono
-        }).save();
+        })
+        await nuevaSucursal.save();
+
+
+
         res.status(201).json({ mensaje: 'Sucursal creada exitosamente', sucursal: nuevaSucursal });
     } catch (error) {
-        console.error('Error al registrar la sucursal:', error);
-        res.status(500).json({ error: 'No se pudo registrar la sucursal' });
+        console.error('error al registrar la sucursal:', error);
+        res.status(500).json({ error: 'no se pudo registrar la sucursal' });
     }
 });
 
@@ -677,19 +683,20 @@ app.get('/productos_truequear', async (req, res) => {
 
         const productos = await Producto.query(p => {
             p.where('usuario_id', usuarioId)
-                .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
-                .join('categorias', 'productos.categoria_id', 'categorias.id')
-                .whereNotIn('productos.id', function () {
-                    this.select('id_producto_propietario')
-                        .from('trueque')
-                        .where('id_producto_ofertante', productoId)
-                        .union(function () {
-                            this.select('id_producto_ofertante')
-                                .from('trueque')
-                                .where('id_producto_propietario', productoId);
-                        });
-                })
-                .select('productos.*', 'categorias.nombre as nombre_categoria');
+             .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+             .andWhere('estado', false) // Excluye productos con estado = true
+             .join('categorias', 'productos.categoria_id', 'categorias.id')
+             .whereNotIn('productos.id', function() {
+                 this.select('id_producto_propietario')
+                     .from('trueque')
+                     .where('id_producto_ofertante', productoId)
+                     .union(function() {
+                         this.select('id_producto_ofertante')
+                             .from('trueque')
+                             .where('id_producto_propietario', productoId);
+                     });
+             })
+             .select('productos.*', 'categorias.nombre as nombre_categoria');
         }).fetchAll();
 
         res.json({ productos });
@@ -1204,5 +1211,4 @@ app.put('/editar-cliente', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
-
 

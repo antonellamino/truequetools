@@ -10,6 +10,55 @@ const FormularioVenta = () => {
     const [email, setEmailUsuario] = useState('');
     const [mensaje, setMensaje] = useState('');
     const [mensajeError, setMensajeError] = useState('');
+    const [articuloError, setArticuloError] = useState('');
+    const [fechaError, setFechaError] = useState('');
+    const [valorError, setValorError] = useState('');
+    const [emailError, setEmailError] = useState('');
+
+    const validateArticulo = () => {
+        if (!articulo) {
+            setArticuloError('Por favor ingresa un artículo');
+            return false;
+        }
+        setArticuloError('');
+        return true;
+    };
+
+    const validateFecha = () => {
+        if (!fechaError) {
+            setFechaError('Por favor ingresa una fecha');
+            return false;
+        }
+
+        const today = new Date();
+        const selectedDate = new Date(fechaError);
+
+        if (selectedDate > today) {
+            setFechaError('La fecha no puede ser en el futuro');
+            return false;
+        }
+
+        setFechaError('');
+        return true;
+    };
+
+    const validateValor = () => {
+        if (!valor) {
+            setValorError('Por favor ingresa un precio');
+            return false;
+        }
+        setValorError('');
+        return true;
+    };
+
+    const validateEmail = () => {
+        if (!email) {
+            setEmailError('Por favor ingresa un email');
+            return false;
+        }
+        setEmailError('');
+        return true;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,10 +90,8 @@ const FormularioVenta = () => {
             } else {
                 setMensajeError('Error al registrar los datos');
             }
-            setMensaje('');
         }
     };
-
 
     return (
         <Fragment>
@@ -61,8 +108,9 @@ const FormularioVenta = () => {
                             placeholder="Ingresa el artículo"
                             value={articulo}
                             onChange={(e) => setArticulo(e.target.value)}
-                            required
+                            
                         />
+                        {articuloError && <div className="alert alert-danger mt-2">{articuloError}</div>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="valor">Precio</label>
@@ -73,8 +121,9 @@ const FormularioVenta = () => {
                             placeholder="Ingresa el precio"
                             value={valor}
                             onChange={(e) => setValor(e.target.value)}
-                            required
+                            
                         />
+                        {valorError && <div className="alert alert-danger mt-2">{valorError}</div>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="email">Email del usuario al que se le realizó la venta</label>
@@ -85,8 +134,9 @@ const FormularioVenta = () => {
                             placeholder="Ingresa el email"
                             value={email}
                             onChange={(e) => setEmailUsuario(e.target.value)}
-                            required
+                            
                         />
+                        {emailError && <div className="alert alert-danger mt-2">{emailError}</div>}
                     </div>
                     {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
                     {mensajeError && <div className="alert alert-danger mt-2">{mensajeError}</div>}
