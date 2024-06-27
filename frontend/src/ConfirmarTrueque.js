@@ -48,9 +48,10 @@ const ConfirmarTrueque = () => {
         console.log("trueque rechazado");
     };
 
-    const registrarVenta = async () => {
-        navigate('/altaVenta');
+    const registrarVenta = async (id) => {
+        navigate(`/altaVenta/${id}`);
     };
+
 
     return (
         <div>
@@ -88,7 +89,7 @@ const ConfirmarTrueque = () => {
                                         </div>
                                     )}
                                     {trueque.confirmado && <p className="confirmation-message">Se ha aceptado el trueque correctamente</p>}
-                                    {trueque.confirmado && <button onClick={() => registrarVenta()}>Registrar Venta</button>}
+                                    {trueque.confirmado && <button onClick={() => registrarVenta(trueque.id)}>Registrar Venta</button>}
                                 </div>
                             </li>
                         ))}

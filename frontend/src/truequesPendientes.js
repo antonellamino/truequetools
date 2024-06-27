@@ -135,7 +135,7 @@ const TruequesPendientes = () => {
                 obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de cancelar
             })
             .catch(error => {
-                console.error('Error al cancelar el trueque:', error.response.data);
+                // falta mensaje de error
             });
     };
 

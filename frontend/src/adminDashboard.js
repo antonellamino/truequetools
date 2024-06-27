@@ -28,8 +28,7 @@ const AdminDashboard = () => {
     };
 
     const handlePromedio = () => {
-        //navigate();
-        console.log("falta implementar jiji");
+        navigate('/promedioVentas');
     };
 
     
@@ -44,11 +43,11 @@ const AdminDashboard = () => {
                             <div className="card-body">
                                 <div className="d-grid gap-2">
                                     <button className="btn btn-primary mb-3" onClick={handleAltaEmpleado}>Dar de alta empleado</button>
+                                    <button className="btn btn-primary mb-3" onClick={handleAltaSucursal}>Dar de alta sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleListaEmpleados}>Lista empleados</button>
                                     <button className="btn btn-primary mb-3" onClick={handleVentas}>Ventas registradas</button>
                                     <button className="btn btn-primary mb-3" onClick={handlePromedio}>Promedio de ventas por sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleTruequesExitosos}>Trueques exitosos por sucursal</button>
-                                    <button className="btn btn-primary mb-3" onClick={handleAltaSucursal}>Dar de alta sucursal</button>
                                 </div>
                             </div>
                         </div>
