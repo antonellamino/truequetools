@@ -46,9 +46,9 @@ const TruequesPendientes = () => {
         }));
     };
 
-    const confirmarFecha = (trueque) => {
+    const confirmarFecha = async (trueque) => {
         const selectedDate = selectedDates[trueque.id];
-
+    
         if (!selectedDate) {
             setErrorMensaje(prevState => ({
                 ...prevState,
@@ -56,31 +56,41 @@ const TruequesPendientes = () => {
             }));
             return;
         }
-
+    
         const formattedDate = selectedDate.toISOString().slice(0, 19).replace('T', ' ');
-        window.location.reload();
-
-        axios.post(`${backendUrl}/elegir_horario`, { fechaHora: formattedDate, idTrueque: trueque.id })
-            .then(response => {
-                // Manejar la respuesta del backend según sea necesario
-                const nuevosHorarios = {
-                    ...horarioConfirmado,
-                    [trueque.id]: true
-                };
-
-                console.log("nuevo horario ");
-                console.log(nuevosHorarios);
-
-                setHorarioConfirmado(nuevosHorarios);
-                setMensaje(formattedDate);
-
-                // Recargar la página después de confirmar la fecha y hora
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Error al enviar la fecha y hora seleccionadas:', error);
-            });
+    
+        try {
+            const response = await axios.post(`${backendUrl}/elegir_horario`, { fechaHora: formattedDate, idTrueque: trueque.id });
+            // Manejar la respuesta del backend según sea necesario
+            const nuevosHorarios = {
+                ...horarioConfirmado,
+                [trueque.id]: true
+            };
+    
+            console.log("nuevo horario ");
+            console.log(nuevosHorarios);
+    
+            setHorarioConfirmado(nuevosHorarios);
+            setMensaje(formattedDate);
+    
+            let notificacion = {
+                id_usuario: trueque.id_ofertante, // Notificar al ofertante
+                mensaje: `Han propuesto un horario para el trueque con el producto ${trueque.id_producto_propietario}`, // Nombre del producto propietario
+                leido: false,
+                link: `/truequesPendientes/${trueque.id_ofertante}`
+            };
+    
+            // Esperar a que se envíe la notificación antes de recargar la página
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+    
+            // Recargar la página después de confirmar la fecha y hora
+            window.location.reload();
+        } catch (error) {
+            console.error('Error al enviar la fecha y hora seleccionadas:', error);
+        }
     };
+    
+    
 
     const actualizarTrueque = (truequeId, estado) => {
         setTrueques(prevState =>
@@ -90,38 +100,75 @@ const TruequesPendientes = () => {
         );
     };
 
-    const aceptarTrueque = (trueque) => {
-        axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
-            .then(response => {
-                console.log("se acepto el trueque");
-                const nuevosMensajes = {
-                    ...truequeMensajes,
-                    [trueque.id]: 'Trueque aceptado'
+    const aceptarTrueque = async (trueque) => {
+        try {
+            const response = await axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id });
+            console.log("Se aceptó el trueque");
+    
+            const nuevosMensajes = {
+                ...truequeMensajes,
+                [trueque.id]: 'Trueque aceptado'
+            };
+            setTruequeMensajes(nuevosMensajes);
+            actualizarTrueque(trueque.id, response.data.estado);
+            obtenerTrueques(idUsuario);
+    
+            let notificacion = {
+                    id_usuario: trueque.id_propietario, // Notificar al propietario
+                    mensaje: `Han aceptado el trueque con el producto ${trueque.id_producto_ofertante}`, // Nombre del producto ofertante
+                    leido: false,
+                    link: `/truequesPendientes/${trueque.id_propietario}`
                 };
-                setTruequeMensajes(nuevosMensajes);
-                actualizarTrueque(trueque.id, response.data.estado);
-                obtenerTrueques(idUsuario);
-            })
-            .catch(error => {
-                console.error('Error al aceptar el trueque:', error);
-            });
+            
+    
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+        } catch (error) {
+            console.error('Error al aceptar el trueque:', error);
+    
+            // Mostrar un mensaje de error genérico al usuario
+            setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: 'Error al aceptar el trueque' }));
+        }
     };
+    
 
-    const rechazarTrueque = (trueque) => {
-        axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id })
-            .then(response => {
-                const nuevosMensajes = {
-                    ...truequeMensajes,
-                    [trueque.id]: 'Trueque cancelado'
+    const rechazarTrueque = async (trueque) => {
+        try {
+            const response = await axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id });
+            
+            const nuevosMensajes = {
+                ...truequeMensajes,
+                [trueque.id]: 'Trueque cancelado'
+            };
+            setTruequeMensajes(nuevosMensajes);
+            actualizarTrueque(trueque.id, response.data.estado);
+            obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de rechazar
+    
+            // Determinar la notificación según el idUsuario
+            let notificacion;
+            if (idUsuario === trueque.id_ofertante) {  // Si soy el ofertante
+                notificacion = {
+                    id_usuario: trueque.id_propietario, // Notificar al propietario
+                    mensaje: `Han cancelado el trueque con el producto ${trueque.id_producto_ofertante}`, // Nombre del producto ofertante
+                    leido: false,
+                    link: `/truequesPendientes/${trueque.id_propietario}`
                 };
-                setTruequeMensajes(nuevosMensajes);
-                actualizarTrueque(trueque.id, response.data.estado);
-                obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de rechazar
-            })
-            .catch(error => {
-                console.error('Error al rechazar el trueque:', error);
-            });
-    };
+            } else {
+                notificacion = {
+                    id_usuario: trueque.id_ofertante, // Notificar al ofertante
+                    mensaje: `Han cancelado el trueque con el producto ${trueque.id_producto_propietario}`, // Nombre del producto propietario
+                    leido: false,
+                    link: `/truequesPendientes/${trueque.id_ofertante}`
+                };
+            }
+    
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+        } catch (error) {
+            console.error('Error al rechazar el trueque:', error);
+    
+            // Mostrar un mensaje de error genérico al usuario
+            setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: 'Error al rechazar el trueque' }));
+        }
+    };    
 
     const cancelarTrueque = async (trueque) => {
         try {
@@ -139,12 +186,22 @@ const TruequesPendientes = () => {
             setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: '' }));
     
             // Enviar notificación
-            const notificacion = {
-                id_usuario: trueque.id_ofertante, // Enviar la notificación al usuario que NO canceló el trueque
-                mensaje: `Han cancelado el trueque con ${trueque.id_producto_propietario}`, // Nombre del producto que no es propio
-                leido: false,
-                link: `/truequesPendientes/${trueque.id}`
-            };
+            let notificacion;
+            if (idUsuario === trueque.id_ofertante) {  //si soy el ofertante
+                notificacion = {
+                    id_usuario: trueque.id_propietario, // Notificar al propietario
+                    mensaje: `Han cancelado el trueque con el producto ${trueque.id_producto_ofertante}`, //deberia ser el nombre
+                    leido: false,
+                    link: `/truequesPendientes/${trueque.id_propietario}`
+                };
+            } else {
+                notificacion = {
+                    id_usuario: trueque.id_ofertante, // Notificar al ofertante
+                    mensaje: `Han cancelado el trueque con el producto ${trueque.id_producto_propietario}`, //deberia ser el nombre
+                    leido: false,
+                    link: `/truequesPendientes/${trueque.id_ofertante}`
+                };
+            }
     
             await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
     

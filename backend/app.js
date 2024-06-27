@@ -683,17 +683,19 @@ app.get('/productos_truequear', async (req, res) => {
 
         const productos = await Producto.query(p => {
             p.where('usuario_id', usuarioId)
-             .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+             .andWhere('categoria_id', categoriaId)
              .andWhere('estado', false) // Excluye productos con estado = true
              .join('categorias', 'productos.categoria_id', 'categorias.id')
              .whereNotIn('productos.id', function() {
                  this.select('id_producto_propietario')
                      .from('trueque')
                      .where('id_producto_ofertante', productoId)
+                     .andWhere('estado', '<>', 'cancelado') // Nueva condición para estado del trueque
                      .union(function() {
                          this.select('id_producto_ofertante')
                              .from('trueque')
-                             .where('id_producto_propietario', productoId);
+                             .where('id_producto_propietario', productoId)
+                             .andWhere('estado', '<>', 'cancelado'); // Nueva condición para estado del trueque
                      });
              })
              .select('productos.*', 'categorias.nombre as nombre_categoria');
@@ -705,6 +707,8 @@ app.get('/productos_truequear', async (req, res) => {
         res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
     }
 });
+
+
 
 
 
@@ -823,12 +827,14 @@ app.get('/mis_trueques', async (req, res) => {
             return res.status(400).json({ error: 'Usuario ID es requerido' });
         }
 
+        
         const trueques = await Trueque.query(qb => {
             qb.where('id_propietario', usuario_id)
                 .orWhere('id_ofertante', usuario_id)
                 .leftJoin('productos as propietario_productos', 'trueque.id_producto_propietario', 'propietario_productos.id')
                 .leftJoin('productos as ofertante_productos', 'trueque.id_producto_ofertante', 'ofertante_productos.id')
-                .select('trueque.*', 'propietario_productos.imagen_1 as imagenPropietario', 'ofertante_productos.imagen_1 as imagenOfertante');
+                .select('trueque.*', 'propietario_productos.imagen_1 as imagenPropietario', 'ofertante_productos.imagen_1 as imagenOfertante')
+                .orderBy('trueque.id', 'desc'); // Ordenar por id en orden descendente
         }).fetchAll({
             withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante']
         });
@@ -880,19 +886,33 @@ app.post('/rechazar_trueque', async (req, res) => {
         const { idTrueque } = req.body;
 
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
-        const estado = "cancelado";
-        trueque.set({ estado });
+        const estadoTrueque = "cancelado";
+        trueque.set({ estado: estadoTrueque });
 
         await trueque.save();
 
-        res.status(200).json({ message: 'Trueque rechazado con exito' });
+        const propietarioID = trueque.get('id_producto_propietario');
+        const ofertanteID = trueque.get('id_producto_ofertante');
 
+        const productoPropietario = await Producto.where({ id: propietarioID }).fetch();
+        const productoOfertante = await Producto.where({ id: ofertanteID }).fetch();
+
+        const estadoProductos = false;
+
+        productoPropietario.set({ estado: estadoProductos });
+        productoOfertante.set({ estado: estadoProductos });
+
+        await productoPropietario.save();
+        await productoOfertante.save();
+
+        res.status(200).json({ message: 'Trueque rechazado exitosamente' });
 
     } catch (error) {
-        console.error('Error al rechazar el trueque:', error); // Imprime en consola si hay un error.
-        res.status(500).json({ message: 'Error del servidor' }); // Envía un mensaje de error con un código de estado 500 (Error Interno del Servidor).
+        console.error('Error al rechazar el trueque:', error);
+        res.status(500).json({ error: 'Error al rechazar el trueque' });
     }
 });
+
 
 app.post('/aceptar_trueque', async (req, res) => {
     try {

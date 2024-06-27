@@ -62,7 +62,7 @@ const LoginCliente = () => {
                     const rol = response.data.rol_id;
 
                     login(token,userId, rol)
-                    navigate('/home');
+                    navigate('/');
                 }
             } catch (error) {
                 console.error('entra x el catch:', error.message);
