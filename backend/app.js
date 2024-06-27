@@ -1257,6 +1257,24 @@ app.post('/eliminar-venta', async (req, res) => {
     }
 })
 
+app.get('/producto_especifico/:idProducto', async (req, res) => {
+    try {
+        const { idProducto } = req.params;
+
+        // Realiza la consulta para obtener el producto por su ID
+        const producto = await Producto.where({ id: idProducto }).fetch({ columns: ['nombre'] });
+
+        if (!producto) {
+            console.log("no encontrado")
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+        console.log(`se encontro el nombre del producto con id ${idProducto}: ${producto}`)
+        res.json({ nombre: producto.get('nombre') });
+    } catch (error) {
+        console.error('Error al obtener el producto:', error);
+        res.status(500).json({ error: 'Error al obtener el producto' });
+    }
+});
 
 
 

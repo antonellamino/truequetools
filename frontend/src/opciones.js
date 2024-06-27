@@ -30,49 +30,53 @@ const Opciones = () => {
     }, [productoId, usuarioId, categoriaId]);
     
 
-    const seleccionar = (producto) => {
+    const seleccionar = async (producto) => {
         setMensaje('Trueque solicitado, esperando confirmación de horario');
-
-        
+    
         console.log(sucursalId);
         const datosTrueque = {
-            id_propietario : propietarioId,
-            id_ofertante : usuarioId,
-            id_producto_propietario : productoId,
-            id_producto_ofertante : producto.id,
-            id_sucursal : sucursalId
+            id_propietario: propietarioId,
+            id_ofertante: usuarioId,
+            id_producto_propietario: productoId,
+            id_producto_ofertante: producto.id,
+            id_sucursal: sucursalId
         };
     
-        axios.post(`${backendUrl}/guardar-trueque`, datosTrueque)
-        .then(response => {
+        try {
+            // Guardar el trueque
+            await axios.post(`${backendUrl}/guardar-trueque`, datosTrueque);
             console.log('Trueque registrado correctamente');
+    
             // Actualizar el estado para marcar el producto como seleccionado
-            setProductos(prevProductos => prevProductos.map(p => {
-                if (p.id === producto.id) {
-                    return { ...p, seleccionado: true };
-                }
-                return p;
-            }));
-        })
-        .catch(error => {
-            console.error('Error al guardar el trueque:', error);
-        });
-
-        const notificacion = {
-            id_usuario : propietarioId,
-            mensaje : `Nueva solicitud de trueque para tu producto: ${productoId}`,
-            leido : false,
-            link : `/truequesPendientes/${propietarioId}`
-        }
-
-        axios.post(`${backendUrl}/enviar-notificacion`, notificacion)
-        .then(response => {
+            setProductos(prevProductos =>
+                prevProductos.map(p => {
+                    if (p.id === producto.id) {
+                        return { ...p, seleccionado: true };
+                    }
+                    return p;
+                })
+            );
+    
+            // Obtener el nombre del producto
+            const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${producto.id}`);
+            const nombreProducto = productoResponse.data.nombre;
+    
+            // Enviar notificación
+            const notificacion = {
+                id_usuario: propietarioId,
+                mensaje: `Nueva solicitud de trueque para tu producto: ${nombreProducto}`,
+                leido: false,
+                link: `/truequesPendientes/${propietarioId}`
+            };
+    
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
             console.log('Notificación enviada correctamente');
-        })
-        .catch(error => {
-            console.error('Error al enviar la notificación:', error);
-        });
+        } catch (error) {
+            console.error('Error en la operación de trueque:', error);
+            // Manejar errores específicos si es necesario
+        }
     };
+    
 
     return (
         <Fragment>

@@ -73,9 +73,12 @@ const TruequesPendientes = () => {
             setHorarioConfirmado(nuevosHorarios);
             setMensaje(formattedDate);
     
+            // Obtener el nombre del producto ofertante
+            const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${trueque.id_producto_ofertante}`);
+            const nombreProducto = productoResponse.data.nombre; // Suponiendo que el backend devuelve el nombre del producto
             let notificacion = {
                 id_usuario: trueque.id_ofertante, // Notificar al ofertante
-                mensaje: `Han propuesto un horario para el trueque con el producto ${trueque.id_producto_propietario}`, // Nombre del producto propietario
+                mensaje: `Han propuesto un horario para el trueque con el producto ${nombreProducto}`, // Nombre del producto propietario
                 leido: false,
                 link: `/truequesPendientes/${trueque.id_ofertante}`
             };
@@ -113,13 +116,16 @@ const TruequesPendientes = () => {
             actualizarTrueque(trueque.id, response.data.estado);
             obtenerTrueques(idUsuario);
     
+            // Obtener el nombre del producto ofertante
+            const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${trueque.id_producto_propietario}`);
+            const nombreProducto = productoResponse.data.nombre; // Suponiendo que el backend devuelve el nombre del producto
+    
             let notificacion = {
-                    id_usuario: trueque.id_propietario, // Notificar al propietario
-                    mensaje: `Han aceptado el trueque con el producto ${trueque.id_producto_ofertante}`, // Nombre del producto ofertante
-                    leido: false,
-                    link: `/truequesPendientes/${trueque.id_propietario}`
-                };
-            
+                id_usuario: trueque.id_propietario, // Notificar al propietario
+                mensaje: `Han aceptado el trueque con el producto ${nombreProducto}`, // Nombre del producto ofertante
+                leido: false,
+                link: `/truequesPendientes/${trueque.id_propietario}`
+            };
     
             await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
         } catch (error) {
@@ -129,6 +135,7 @@ const TruequesPendientes = () => {
             setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: 'Error al aceptar el trueque' }));
         }
     };
+    
     
 
     const rechazarTrueque = async (trueque) => {
@@ -146,16 +153,22 @@ const TruequesPendientes = () => {
             // Determinar la notificación según el idUsuario
             let notificacion;
             if (idUsuario === trueque.id_ofertante) {  // Si soy el ofertante
+                const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${trueque.id_producto_propietario}`);
+                const nombreProducto = productoResponse.data.nombre; // Suponiendo que el backend devuelve el nombre del producto
+                console.log(nombreProducto);
                 notificacion = {
                     id_usuario: trueque.id_propietario, // Notificar al propietario
-                    mensaje: `Han cancelado el trueque con el producto ${trueque.id_producto_ofertante}`, // Nombre del producto ofertante
+                    mensaje: `Han cancelado el trueque con el producto ${nombreProducto}`, // Nombre del producto ofertante
                     leido: false,
                     link: `/truequesPendientes/${trueque.id_propietario}`
                 };
             } else {
+                const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${trueque.id_producto_ofertante}`);
+                const nombreProducto = productoResponse.data.nombre; // Suponiendo que el backend devuelve el nombre del producto
+        
                 notificacion = {
                     id_usuario: trueque.id_ofertante, // Notificar al ofertante
-                    mensaje: `Han cancelado el trueque con el producto ${trueque.id_producto_propietario}`, // Nombre del producto propietario
+                    mensaje: `Han cancelado el trueque con el producto ${nombreProducto}`, // Nombre del producto propietario
                     leido: false,
                     link: `/truequesPendientes/${trueque.id_ofertante}`
                 };
