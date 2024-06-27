@@ -13,7 +13,7 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const TruequesPendientes = () => {
     const [trueques, setTrueques] = useState([]);
-    const [setMensaje, mensaje] = useState(null);
+    const [mensaje, setMensaje] = useState(null);
     const [selectedDates, setSelectedDates] = useState({});
     const [horarioConfirmado, setHorarioConfirmado] = useState({});
     const [truequeMensajes, setTruequeMensajes] = useState({});
