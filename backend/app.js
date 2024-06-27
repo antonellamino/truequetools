@@ -933,8 +933,7 @@ app.post('/aceptar_trueque', async (req, res) => {
 app.post('/confirmar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
-        const trueque = await Trueque.where({ id: idTrueque }).fetch();
-        console.log(trueque);
+        const trueque = await Trueque.where({ id: idTrueque }).fetch(); //obtengo el trueque
 
         if (!trueque) {
             return res.status(404).json({ error: 'Trueque no encontrado' });
@@ -943,20 +942,32 @@ app.post('/confirmar_trueque', async (req, res) => {
         const propietarioID = trueque.get('id_producto_propietario');
         const ofertanteID = trueque.get('id_producto_ofertante');
 
-        const productoPropietario = await Producto.where({ id: propietarioID }).fetch();
-        const productoOfertante = await Producto.where({ id: ofertanteID }).fetch();
+        const producto1 = await Producto.where({ id: propietarioID }).fetch(); //obtengo los productos
+        const producto2 = await Producto.where({ id: ofertanteID }).fetch();
 
-        estado = "completado";
+        estado = "completado";  //confirmo el trueque
         trueque.set({ estado });
         await trueque.save();
 
         estado = true;
 
-        productoPropietario.set({ estado });
-        productoOfertante.set({ estado });
+        producto1.set({ estado });  //cambio el estado de los productos
+        producto2.set({ estado });
 
-        await productoPropietario.save();
-        await productoOfertante.save();
+        await producto1.save();
+        await producto2.save();
+
+        // Llamada al endpoint cancelar_otros_trueques
+        try {
+          await axios.post('/cancelar_otros_trueques', {
+            idProducto1: propietarioID,
+            idProducto2: ofertanteID,
+            idTruequeConfirmado: idTrueque
+            });
+        } catch (cancelError) {
+          console.error('Error al cancelar otros trueques:', cancelError);
+          return res.status(500).json({ error: 'Error al cancelar otros trueques' });
+        }
 
         res.status(200).json({ message: 'Trueque confirmado exitosamente', trueque });
     } catch (error) {
@@ -1017,6 +1028,48 @@ app.post('/cancelar_trueque', async (req, res) => {
     } catch (error) {
         console.error('Error al cancelar trueque:', error);
         res.status(500).json({ error: 'Error al cancelar trueque' });
+    }
+});
+
+app.post('/cancelar_otros_trueques', async (req, res) => {
+    const { idProducto1, idProducto2, idTruequeConfirmado } = req.body;
+    try {
+
+        const trueques = await Trueque.query(qb => {  //obtengo todos los trueques a cancelar
+            qb.where(function() {
+                this.where('id_producto_propietario', idProducto1)
+                    .orWhere('id_producto_ofertante', idProducto1)
+                    .orWhere('id_producto_propietario', idProducto2)
+                    .orWhere('id_producto_ofertante', idProducto2);
+            })
+            .andWhere('estado', '!=', 'confirmado')
+            .andWhere('estado', '!=', 'cancelado')
+            .andWhere('id', '!=', idTruequeConfirmado);
+        }).fetchAll();
+
+        for (const trueque of trueques.models) {
+            trueque.set({ estado: 'cancelado' });
+            await trueque.save();
+
+            // Obtener los nombres de los productos usando el endpoint existente
+            const nomproducto1 = await axios.get(`/producto_especifico/${trueque.get('id_producto_propietario')}`);
+            const nomproducto2 = await axios.get(`/producto_especifico/${trueque.get('id_producto_ofertante')}`);
+
+            // Obtener IDs de propietario y ofertante
+            const propietarioID = trueque.get('id_producto_propietario');
+            const ofertanteID = trueque.get('id_producto_ofertante');
+
+            // Crear notificaciones para el propietario y el ofertante
+            await Promise.all([
+                agregarNotificacion(propietarioID, `Se ha cancelado el trueque con el producto ${nomproducto1.data.nombre} por indisponibilidad de un producto`, `/truequesPendientes/${propietarioID}`),
+                agregarNotificacion(ofertanteID, `Se ha cancelado el trueque con el producto ${nomproducto2.data.nombre} por indisponibilidad de un producto`, `/truequesPendientes/${ofertanteID}`)
+            ]);
+        }
+
+        res.status(200).json({ message: 'Otros trueques cancelados exitosamente' });
+    } catch (error) {
+        console.error('Error al cancelar otros trueques:', error);
+        res.status(500).json({ error: 'Error al cancelar otros trueques' });
     }
 });
 
@@ -1268,7 +1321,6 @@ app.get('/producto_especifico/:idProducto', async (req, res) => {
             console.log("no encontrado")
             return res.status(404).json({ error: 'Producto no encontrado' });
         }
-        console.log(`se encontro el nombre del producto con id ${idProducto}: ${producto}`)
         res.json({ nombre: producto.get('nombre') });
     } catch (error) {
         console.error('Error al obtener el producto:', error);
