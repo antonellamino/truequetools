@@ -1242,29 +1242,25 @@ app.post('/eliminar-venta', async (req, res) => {
 app.get('/promedio-ventas', async (req, res) => {
     try {
         const { fechaInicio, fechaFin } = req.query;
-        const ventasPorSucursal = await knex('Trueque')
-            .select(
-                'Trueque.id as id_trueque',
-                'Productos1.nombre as nombre_producto_propietario',
-                'Productos2.nombre as nombre_producto_ofertante',
-                'UsuariosPropietario.nombre as nombre_propietario',
-                'UsuariosOfertante.nombre as nombre_ofertante',
-                'Sucursales.nombre as nombre_sucursal',
-                'Ventas.articulo',
-                'Ventas.fecha_venta',
-                'Ventas.valor'
-            )
-            .where('Trueque.estado', 'completado')
-            .whereBetween('Trueque.fecha', [fechaInicio, fechaFin])
-            .join('Sucursales', 'Trueque.id_sucursal', 'Sucursales.id')
-            .join('Ventas', 'Trueque.id', 'Ventas.id_trueque')
-            .join('Usuarios as UsuariosPropietario', 'Trueque.id_propietario', 'UsuariosPropietario.id')
-            .join('Usuarios as UsuariosOfertante', 'Trueque.id_ofertante', 'UsuariosOfertante.id')
-            .join('Productos as Productos1', 'Trueque.id_producto_propietario', 'Productos1.id')
-            .join('Productos as Productos2', 'Trueque.id_producto_ofertante', 'Productos2.id');
+        const truequesConVentas = await Trueque.query()
+            .select('trueque.id as id_trueque', 'trueque.fecha as fecha_trueque')
+            .sum('ventas.valor as total_valor_ventas')
+            .innerJoin('ventas', 'trueque.id', 'ventas.id_trueque')
+            .where('trueque.estado', 'completado')
+            .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
+            .groupBy('trueque.id', 'trueque.fecha');
+        console.log(truequesConVentas);
+        res.json(truequesConVentas);
 
-        console.log(ventasPorSucursal);
-        res.json(ventasPorSucursal);
+        /* const truequesConVentas = await Trueque.query()
+            .select('trueque.id as id_trueque', 'trueque.fecha as fecha_trueque')
+            .sum('venta.valor as total_valor_ventas')
+            .innerJoin('venta', 'trueque.id', 'venta.id_trueque')
+            .where('trueque.estado', 'completado')
+            .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
+            .groupBy('trueque.id', 'trueque.fecha'); */
+
+
     } catch (error) {
         console.error('Error al traer las ventas y los trueques:', error);
         res.status(500).json({ error: 'Error al traer las ventas y los trueques' });
