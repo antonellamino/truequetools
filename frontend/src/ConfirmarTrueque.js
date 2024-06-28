@@ -38,6 +38,8 @@ const ConfirmarTrueque = () => {
                     trueque.id === idTrueque ? { ...trueque, confirmado: true } : trueque
                 )
             );
+
+            console.log('seteados', response.data);
         } catch (error) {
             console.error('Error al confirmar el trueque:', error);
             setError('Error al confirmar el trueque');

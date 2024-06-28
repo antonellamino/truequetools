@@ -930,6 +930,8 @@ app.post('/aceptar_trueque', async (req, res) => {
     }
 });
 
+const axios = require('axios');
+
 app.post('/confirmar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
@@ -944,6 +946,9 @@ app.post('/confirmar_trueque', async (req, res) => {
 
         const producto1 = await Producto.where({ id: propietarioID }).fetch(); //obtengo los productos
         const producto2 = await Producto.where({ id: ofertanteID }).fetch();
+        
+        console.log("id propietario",propietarioID);
+        console.log("id ofertante",ofertanteID);
 
         estado = "completado";  //confirmo el trueque
         trueque.set({ estado });
@@ -957,16 +962,20 @@ app.post('/confirmar_trueque', async (req, res) => {
         await producto1.save();
         await producto2.save();
 
+        console.log("llego al try");
         // Llamada al endpoint cancelar_otros_trueques
         try {
-          await axios.post('/cancelar_otros_trueques', {
-            idProducto1: propietarioID,
-            idProducto2: ofertanteID,
-            idTruequeConfirmado: idTrueque
+            await axios.post('http://localhost:5000/cancelar_otros_trueques', {
+                idProducto1: propietarioID,
+                idProducto2: ofertanteID,
+                idTruequeConfirmado: idTrueque
             });
+
+            console.log("Llamada a /cancelar_otros_trueques exitosa");
+
         } catch (cancelError) {
-          console.error('Error al cancelar otros trueques:', cancelError);
-          return res.status(500).json({ error: 'Error al cancelar otros trueques' });
+            console.error('Error al cancelar otros trueques:', cancelError);
+            return res.status(500).json({ error: 'Error al cancelar otros trueques' });
         }
 
         res.status(200).json({ message: 'Trueque confirmado exitosamente', trueque });
@@ -1033,8 +1042,9 @@ app.post('/cancelar_trueque', async (req, res) => {
 
 app.post('/cancelar_otros_trueques', async (req, res) => {
     const { idProducto1, idProducto2, idTruequeConfirmado } = req.body;
+    
     try {
-
+        console.log("intento cancelar otros trueques");
         const trueques = await Trueque.query(qb => {  //obtengo todos los trueques a cancelar
             qb.where(function() {
                 this.where('id_producto_propietario', idProducto1)
@@ -1043,26 +1053,33 @@ app.post('/cancelar_otros_trueques', async (req, res) => {
                     .orWhere('id_producto_ofertante', idProducto2);
             })
             .andWhere('estado', '!=', 'confirmado')
-            .andWhere('estado', '!=', 'cancelado')
             .andWhere('id', '!=', idTruequeConfirmado);
         }).fetchAll();
 
         for (const trueque of trueques.models) {
+            console.log("itero");
             trueque.set({ estado: 'cancelado' });
             await trueque.save();
-
+            console.log("ya cancelé");
             // Obtener los nombres de los productos usando el endpoint existente
-            const nomproducto1 = await axios.get(`/producto_especifico/${trueque.get('id_producto_propietario')}`);
-            const nomproducto2 = await axios.get(`/producto_especifico/${trueque.get('id_producto_ofertante')}`);
-
+            const nomproducto1 = await axios.get(`http://localhost:5000/producto_especifico/${trueque.get('id_producto_propietario')}`);
+            const nomproducto2 = await axios.get(`http://localhost:5000/producto_especifico/${trueque.get('id_producto_ofertante')}`);
             // Obtener IDs de propietario y ofertante
-            const propietarioID = trueque.get('id_producto_propietario');
-            const ofertanteID = trueque.get('id_producto_ofertante');
-
+            const propietarioID = trueque.get('id_propietario');
+            const ofertanteID = trueque.get('id_ofertante');
+            console.log("intento agregar notificaciones");
             // Crear notificaciones para el propietario y el ofertante
             await Promise.all([
-                agregarNotificacion(propietarioID, `Se ha cancelado el trueque con el producto ${nomproducto1.data.nombre} por indisponibilidad de un producto`, `/truequesPendientes/${propietarioID}`),
-                agregarNotificacion(ofertanteID, `Se ha cancelado el trueque con el producto ${nomproducto2.data.nombre} por indisponibilidad de un producto`, `/truequesPendientes/${ofertanteID}`)
+                axios.post(`http://localhost:5000/agregar-notificacion`, {
+                    idUser: propietarioID,
+                    comentario: `Se ha cancelado el trueque con el producto ${nomproducto1.data.nombre} por indisponibilidad de un producto`,
+                    link: `/truequesPendientes/${propietarioID}`
+                }),
+                axios.post(`http://localhost:5000/agregar-notificacion`, {
+                    idUser: ofertanteID,
+                    comentario: `Se ha cancelado el trueque con el producto ${nomproducto2.data.nombre} por indisponibilidad de un producto`,
+                    link: `/truequesPendientes/${ofertanteID}`
+                })
             ]);
         }
 
