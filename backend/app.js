@@ -1053,7 +1053,7 @@ app.post('/cancelar_otros_trueques', async (req, res) => {
                     .orWhere('id_producto_propietario', idProducto2)
                     .orWhere('id_producto_ofertante', idProducto2);
             })
-            .andWhere('estado', '!=', 'confirmado')
+            .andWhere('estado', '!=', 'completado')
             .andWhere('id', '!=', idTruequeConfirmado);
         }).fetchAll();
 
@@ -1073,12 +1073,12 @@ app.post('/cancelar_otros_trueques', async (req, res) => {
             await Promise.all([
                 axios.post(`http://localhost:5000/agregar-notificacion`, {
                     idUser: propietarioID,
-                    comentario: `Se ha cancelado el trueque con el producto ${nomproducto1.data.nombre} por indisponibilidad de un producto`,
+                    comentario: `Se ha cancelado el trueque con el producto ${nomproducto1.data.nombre} por producto no disponible`,
                     link: `/truequesPendientes/${propietarioID}`
                 }),
                 axios.post(`http://localhost:5000/agregar-notificacion`, {
                     idUser: ofertanteID,
-                    comentario: `Se ha cancelado el trueque con el producto ${nomproducto2.data.nombre} por indisponibilidad de un producto`,
+                    comentario: `Se ha cancelado el trueque con el producto ${nomproducto2.data.nombre} por producto no disponible`,
                     link: `/truequesPendientes/${ofertanteID}`
                 })
             ]);
