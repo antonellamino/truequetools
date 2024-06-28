@@ -1,6 +1,7 @@
 import React, { useState, Fragment } from "react";
 import axios from "axios";
 import Navbar from "./navbar"; // Ajusta la ruta de importación según sea necesario
+import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL; // URL del backend obtenida de las variables de entorno
 
@@ -10,6 +11,7 @@ const PromedioVentas = () => {
     const [fechaFin, setFechaFin] = useState(""); // Estado para la fecha de fin
     const [mostrarMensaje, setMostrarMensaje] = useState(false); // Estado para mostrar el mensaje de falta de trueques
     const [botonHabilitado, setBotonHabilitado] = useState(false); // Estado para habilitar el botón de búsqueda
+    const navigate = useNavigate();
 
     // Manejador para cambios en la fecha de inicio
     const handleFechaInicioChange = (event) => {
@@ -28,12 +30,11 @@ const PromedioVentas = () => {
         // Habilitar el botón si ambas fechas están definidas
         setBotonHabilitado(fechaInicio !== "" && event.target.value !== "");
     };
-    
+
     const formatDate = (dateString) => {
         const options = { year: "numeric", month: "2-digit", day: "2-digit" };
         return new Date(dateString).toLocaleDateString("es-ES", options);
     };
-
 
     // Función para obtener los trueques desde el backend
     const fetchTrueques = async () => {
@@ -41,7 +42,7 @@ const PromedioVentas = () => {
             const response = await axios.get(`${backendUrl}/promedio-ventas`, {
                 params: {
                     fechaInicio: fechaInicio,
-                    fechaFin: fechaFin, // Usa fechaFinActual en lugar de fechaFin
+                    fechaFin: fechaFin,
                 },
             });
             console.log(response.data);
@@ -52,11 +53,15 @@ const PromedioVentas = () => {
         }
     };
 
+    const handleIdClick = (id) => {
+        navigate(`/detalleTrueque/${id}`);
+    };
+
     return (
         <Fragment>
             <Navbar /> {/* Componente de navegación */}
             <div className="container mt-5">
-                <h2 className="text-white">Estadisticas ventas</h2>
+                <h2 className="text-white">Estadísticas ventas</h2>
                 <div className="row justify-content-center">
                     <div className="col-12">
                         <form>
@@ -103,6 +108,7 @@ const PromedioVentas = () => {
                                     <thead className="thead-dark">
                                         <tr>
                                             <th>ID Trueque</th>
+                                            <th>Sucursal</th>
                                             <th>Fecha</th>
                                             <th>Total Ventas</th>
                                         </tr>
@@ -111,7 +117,16 @@ const PromedioVentas = () => {
                                         {/* Iterar sobre los trueques y mostrar en la tabla */}
                                         {trueques.map((trueque, index) => (
                                             <tr key={index}>
-                                                <td>{trueque.id_trueque}</td>
+                                                <td>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-link"
+                                                        onClick={() => handleIdClick(trueque.id_trueque)}
+                                                    >
+                                                        {trueque.id_trueque}
+                                                    </button>
+                                                </td>
+                                                <td>{trueque.nombre_sucursal}</td>
                                                 <td>{formatDate(trueque.fecha_trueque)}</td>
                                                 <td>{trueque.total_valor_ventas}</td>
                                             </tr>

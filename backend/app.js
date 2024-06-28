@@ -1243,30 +1243,39 @@ app.get('/promedio-ventas', async (req, res) => {
     try {
         const { fechaInicio, fechaFin } = req.query;
         const truequesConVentas = await Trueque.query()
-            .select('trueque.id as id_trueque', 'trueque.fecha as fecha_trueque')
+            .select(
+                'trueque.id as id_trueque',
+                'trueque.fecha as fecha_trueque',
+                'sucursales.nombre as nombre_sucursal'
+            )
             .sum('ventas.valor as total_valor_ventas')
             .innerJoin('ventas', 'trueque.id', 'ventas.id_trueque')
+            .innerJoin('sucursales', 'trueque.id_sucursal', 'sucursales.id')
             .where('trueque.estado', 'completado')
             .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
-            .groupBy('trueque.id', 'trueque.fecha');
+            .groupBy('trueque.id', 'trueque.fecha', 'sucursales.nombre');
         console.log(truequesConVentas);
         res.json(truequesConVentas);
-
-        /* const truequesConVentas = await Trueque.query()
-            .select('trueque.id as id_trueque', 'trueque.fecha as fecha_trueque')
-            .sum('venta.valor as total_valor_ventas')
-            .innerJoin('venta', 'trueque.id', 'venta.id_trueque')
-            .where('trueque.estado', 'completado')
-            .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
-            .groupBy('trueque.id', 'trueque.fecha'); */
-
-
     } catch (error) {
         console.error('Error al traer las ventas y los trueques:', error);
         res.status(500).json({ error: 'Error al traer las ventas y los trueques' });
     }
 });
 
+app.get('/detalle_trueque', async (req, res) => {
+    try {
+        console.log('Entra a detalle trueque');
+        const { id } = req.query;
+        console.log(id);
+        const ventasTrueque = await Venta.where({ id_trueque: id }).fetchAll();
+
+        console.log(ventasTrueque);
+        res.json(ventasTrueque);
+    } catch (error) {
+        console.error('Error al traer las ventas del trueque:', error);
+        res.status(500).json({ error: 'Error al traer las ventas del trueque' });
+    }
+});
 
 // iniciar servidor
 app.listen(PORT, () => {
