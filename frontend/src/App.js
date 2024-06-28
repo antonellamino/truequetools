@@ -30,7 +30,7 @@ import EditarEmpleado from './editarEmpleado';
 import EditarSucursal from './editarSucursal';
 import EditarPerfil from './editarPerfilCliente';
 import PromedioVentas from './promedioVentas';
-
+import DetalleTrueque from './detalleTrueque';
 
 function App() {
   return (
@@ -70,6 +70,7 @@ function App() {
             <Route path="/editarPerfil" element={<EditarPerfil/>} />
             <Route path="/formularioVenta" element={<FormularioVenta/>} />
             <Route path="/promedioVentas" element={<PromedioVentas/>} />
+            <Route path="/detalleTrueque/:id" element={<DetalleTrueque/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
