@@ -4,10 +4,10 @@ import Navbar from "./navbar"; // Ajusta la ruta de importación según sea nece
 
 const backendUrl = process.env.REACT_APP_BACK_URL; // URL del backend obtenida de las variables de entorno
 
-const TruequesExitosos = () => {
+const PromedioVentas = () => {
     const [trueques, setTrueques] = useState([]); // Estado para almacenar los trueques obtenidos
     const [fechaInicio, setFechaInicio] = useState(""); // Estado para la fecha de inicio
-    const [fechaFin, setFechaFin] = useState("");       // Estado para la fecha de fin
+    const [fechaFin, setFechaFin] = useState(""); // Estado para la fecha de fin
     const [mostrarMensaje, setMostrarMensaje] = useState(false); // Estado para mostrar el mensaje de falta de trueques
     const [botonHabilitado, setBotonHabilitado] = useState(false); // Estado para habilitar el botón de búsqueda
 
@@ -28,19 +28,24 @@ const TruequesExitosos = () => {
         // Habilitar el botón si ambas fechas están definidas
         setBotonHabilitado(fechaInicio !== "" && event.target.value !== "");
     };
+    
+    const formatDate = (dateString) => {
+        const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+        return new Date(dateString).toLocaleDateString("es-ES", options);
+    };
+
 
     // Función para obtener los trueques desde el backend
     const fetchTrueques = async () => {
         try {
-            // Realizar la petición GET al backend con axios
-            const response = await axios.get(`${backendUrl}/cantidad-trueques`, {
+            const response = await axios.get(`${backendUrl}/promedio-ventas`, {
                 params: {
                     fechaInicio: fechaInicio,
-                    fechaFin: fechaFin // Usar fechaFinActual en lugar de fechaFin
-                }
+                    fechaFin: fechaFin, // Usa fechaFinActual en lugar de fechaFin
+                },
             });
-            setTrueques(response.data); // Actualizar el estado de trueques con los datos recibidos
-            // Mostrar mensaje solo si no se encontraron trueques
+            console.log(response.data);
+            setTrueques(response.data);
             setMostrarMensaje(response.data.length === 0);
         } catch (error) {
             console.error("Error al obtener trueques:", error); // Manejar errores de la petición
@@ -51,19 +56,19 @@ const TruequesExitosos = () => {
         <Fragment>
             <Navbar /> {/* Componente de navegación */}
             <div className="container mt-5">
-                <h2 className="text-white">Trueques exitosos</h2>
+                <h2 className="text-white">Estadisticas ventas</h2>
                 <div className="row justify-content-center">
                     <div className="col-12">
                         <form>
                             <div className="form-group">
                                 <label htmlFor="fechaInicio">Fecha de Inicio:</label>
                                 {/* Input para seleccionar la fecha de inicio */}
-                                <input 
-                                    type="date" 
-                                    className="form-control" 
-                                    id="fechaInicio" 
-                                    value={fechaInicio} 
-                                    onChange={handleFechaInicioChange} 
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    id="fechaInicio"
+                                    value={fechaInicio}
+                                    onChange={handleFechaInicioChange}
                                 />
                             </div>
                             {/* Mostrar el input de fecha fin solo si fechaInicio está definido */}
@@ -71,20 +76,20 @@ const TruequesExitosos = () => {
                                 <div className="form-group">
                                     <label htmlFor="fechaFin">Fecha de Fin:</label>
                                     {/* Input para seleccionar la fecha de fin */}
-                                    <input 
-                                        type="date" 
-                                        className="form-control" 
-                                        id="fechaFin" 
-                                        value={fechaFin} 
-                                        onChange={handleFechaFinChange} 
+                                    <input
+                                        type="date"
+                                        className="form-control"
+                                        id="fechaFin"
+                                        value={fechaFin}
+                                        onChange={handleFechaFinChange}
                                         min={fechaInicio} // Establecer fecha mínima como fechaInicio
                                     />
                                 </div>
                             )}
                             {/* Botón para ejecutar la búsqueda de trueques */}
-                            <button 
-                                type="button" 
-                                className="btn btn-primary" 
+                            <button
+                                type="button"
+                                className="btn btn-primary"
                                 onClick={fetchTrueques} // Llamar a fetchTrueques al hacer clic
                                 disabled={!botonHabilitado} // Deshabilitar el botón si no están definidas ambas fechas
                             >
@@ -97,16 +102,18 @@ const TruequesExitosos = () => {
                                 <table className="table table-striped">
                                     <thead className="thead-dark">
                                         <tr>
-                                            <th>Sucursal</th>
-                                            <th>Cantidad</th>
+                                            <th>ID Trueque</th>
+                                            <th>Fecha</th>
+                                            <th>Total Ventas</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {/* Iterar sobre los trueques y mostrar en la tabla */}
                                         {trueques.map((trueque, index) => (
                                             <tr key={index}>
-                                                <td>{trueque.nombre_sucursal}</td>
-                                                <td>{trueque.cantidad}</td>
+                                                <td>{trueque.id_trueque}</td>
+                                                <td>{formatDate(trueque.fecha_trueque)}</td>
+                                                <td>{trueque.total_valor_ventas}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -126,4 +133,4 @@ const TruequesExitosos = () => {
     );
 };
 
-export default TruequesExitosos;
+export default PromedioVentas;

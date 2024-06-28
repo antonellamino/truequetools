@@ -29,7 +29,7 @@ import ProtectedRoute from './protectedRoute';
 import EditarEmpleado from './editarEmpleado';
 import EditarSucursal from './editarSucursal';
 import EditarPerfil from './editarPerfilCliente';
-
+import PromedioVentas from './promedioVentas';
 
 
 function App() {
@@ -53,14 +53,13 @@ function App() {
             <Route path="/empleadoDashboard" element={<EmpleadoDashboard />} />
             <Route path="/formularioRegistroEmpleado" element={<AltaEmpleado />} />
             <Route path="/listaEmpleados" element={<ListaEmpleados />} />
-            <Route path="/listaEmpleados" element={<ListaEmpleados />} />
             <Route path="/formularioSucursal" element={<AltaSucursal />} />
             <Route path='/altaEmpleado' element={<FormularioRegistroEmpleado />}/>
             <Route path='/publicacion/:id' element={<Publicacion />} />
             <Route path='/listaSucursales' element={ <ListaSucursales /> } />
             <Route path='/ConfirmarTrueque/:id' element={ <ConfirmarTrueque /> } />
             <Route path='/ventas' element={  <Ventas /> }/>
-            <Route path="/altaVenta" element={<FormularioVenta/>} />
+            <Route path="/altaVenta/:id" element={<FormularioVenta/>} />
             <Route path="/notificaciones/:id" element={<Notificaciones />} /> 
             <Route path="/opciones/:sucursalId/:productoId/:usuarioId/:categoriaId/:propietarioId" element={<Opciones />} />
             <Route path="/truequesPendientes/:usuarioId" element={<TruequesPendientes/>} />
@@ -70,7 +69,7 @@ function App() {
             <Route path="/editarSucursal/:sucursalId" element={<EditarSucursal/>} />
             <Route path="/editarPerfil" element={<EditarPerfil/>} />
             <Route path="/formularioVenta" element={<FormularioVenta/>} />
-
+            <Route path="/promedioVentas" element={<PromedioVentas/>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

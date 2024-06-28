@@ -429,13 +429,14 @@ app.get('/ventas', async (req, res) => {
 
 app.post('/agregar-venta', async (req, res) => {
     try {
-        const { articulo, fecha_venta, valor, email_usuario } = req.body;
+        const { articulo, fecha_venta, valor, email_usuario, id_trueque } = req.body;
 
         const nuevaVenta = await Venta.forge({
             articulo,
             fecha_venta,
             valor,
-            email_usuario
+            email_usuario,
+            id_trueque
         }).save();
 
         res.status(201).json({ nuevaVenta, message: 'Venta registrada exitosamente' });
@@ -1325,6 +1326,7 @@ app.post('/eliminar-venta', async (req, res) => {
         console.error('Error al eliminar la venta:', error);
         res.status(500).json({ error: 'Error al eliminar la venta.' });
     }
+
 })
 
 app.get('/producto_especifico/:idProducto', async (req, res) => {
@@ -1346,14 +1348,31 @@ app.get('/producto_especifico/:idProducto', async (req, res) => {
 });
 
 
+app.get('/promedio-ventas', async (req, res) => {
+    try {
+        const { fechaInicio, fechaFin } = req.query;
+        const truequesConVentas = await Trueque.query()
+            .select('trueque.id as id_trueque', 'trueque.fecha as fecha_trueque')
+            .sum('ventas.valor as total_valor_ventas')
+            .innerJoin('ventas', 'trueque.id', 'ventas.id_trueque')
+            .where('trueque.estado', 'completado')
+            .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
+            .groupBy('trueque.id', 'trueque.fecha');
+        console.log(truequesConVentas);
+        res.json(truequesConVentas);
 
-
-
-
-
-
-
-
+        /* const truequesConVentas = await Trueque.query()
+            .select('trueque.id as id_trueque', 'trueque.fecha as fecha_trueque')
+            .sum('venta.valor as total_valor_ventas')
+            .innerJoin('venta', 'trueque.id', 'venta.id_trueque')
+            .where('trueque.estado', 'completado')
+            .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
+            .groupBy('trueque.id', 'trueque.fecha'); */
+    } catch (error) {
+        console.error('Error al traer las ventas y los trueques:', error);
+        res.status(500).json({ error: 'Error al traer las ventas y los trueques' });
+    }
+});
 
 
 // iniciar servidor

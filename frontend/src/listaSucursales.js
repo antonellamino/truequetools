@@ -25,8 +25,6 @@ const ListaSucursales = () => {
     const listaTruequesPendientes = (sucursalID) => {
         navigate(`/confirmarTrueque/${sucursalID}`);
     };
-    
-    // AGREGAR ESCENARIO CON LISTADO VACIO MENSAJE DE ERROR : "No hay sucursales disponibles"
 
     return (
         <Fragment>
@@ -44,18 +42,24 @@ const ListaSucursales = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {sucursales.map(sucursal => (
-                                <tr key={sucursal.id}>
-                                    <td>{sucursal.nombre}</td>
-                                    <td>{sucursal.direccion}</td>
-                                    <td>{sucursal.telefono}</td>
-                                    <td>
-                                        <button onClick={() => listaTruequesPendientes(sucursal.id)}>
-                                            Trueques por confirmar
-                                        </button>
-                                    </td>
+                            {sucursales.length > 0 ? (
+                                sucursales.map(sucursal => (
+                                    <tr key={sucursal.id}>
+                                        <td>{sucursal.nombre}</td>
+                                        <td>{sucursal.direccion}</td>
+                                        <td>{sucursal.telefono}</td>
+                                        <td>
+                                            <button onClick={() => listaTruequesPendientes(sucursal.id)}>
+                                                Trueques por confirmar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4" className="text-center">No hay sucursales disponibles</td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>

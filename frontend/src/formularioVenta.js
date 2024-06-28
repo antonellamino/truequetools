@@ -1,10 +1,12 @@
 import React, { Fragment, useState } from 'react';
 import axios from 'axios';
 import Navbar from './navbar';
+import { useParams } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const FormularioVenta = () => {
+    const { id } = useParams();
     const [articulo, setArticulo] = useState('');
     const [valor, setValor] = useState('');
     const [email, setEmailUsuario] = useState('');
@@ -73,7 +75,8 @@ const FormularioVenta = () => {
             articulo: articulo,
             fecha_venta: fechaVenta,
             valor: valor,
-            email_usuario: email
+            email_usuario: email,
+            id_trueque: id
         };
 
         try {
