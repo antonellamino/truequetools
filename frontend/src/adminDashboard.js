@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 
 const AdminDashboard = () => {
     const { isAuthenticated, rol } = useAuth();

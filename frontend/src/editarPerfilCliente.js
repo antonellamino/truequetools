@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Footer from './footer';
+import Footer from './Footer';
 import Swal from 'sweetalert2';
 import './formulario.css';
 
@@ -144,7 +144,7 @@ const EditarPerfil = () => {
                             'Tu perfil ha sido actualizado exitosamente.',
                             'success'
                         ).then(() => {
-                            navigate('/');
+                            navigate('/miPerfil');
                         });
                     } catch (error) {
                         console.error('Error al actualizar los datos:', error);
@@ -206,9 +206,9 @@ const EditarPerfil = () => {
                     </div>
                     <div className="mb-3">
                         <label htmlFor="correo" className="form-label">Correo</label>
-                        <input type="email" className="form-control" id="correo" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
-                        {correoError && <div className="text-danger">{correoError}</div>}
-                    </div>
+                        <input type="email" className="form-control" id="correo" value={correo} disabled />
+                        <small className="text-muted">El correo no puede cambiarse.</small>
+                    </div> 
                     <div className="mb-3">
                         <label htmlFor="fechaNacimiento" className="form-label">Fecha de Nacimiento</label>
                         <input type="date" className="form-control" id="fechaNacimiento" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required />
@@ -245,7 +245,7 @@ const EditarPerfil = () => {
                         </div>
                         {contraseniaError && <div className="text-danger">{contraseniaError}</div>}
                     </div>
-
+    
                     <div className="mb-3">
                         <button type="submit" className="btn btn-primary" onClick={onButtonClick}>Guardar Cambios</button>
                     </div>
@@ -254,6 +254,7 @@ const EditarPerfil = () => {
             <Footer />
         </Fragment>
     );
+    
 };
 
 export default EditarPerfil;

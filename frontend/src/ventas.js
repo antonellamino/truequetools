@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import Swal from 'sweetalert2';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;

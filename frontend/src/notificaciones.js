@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import './notificaciones.css';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 

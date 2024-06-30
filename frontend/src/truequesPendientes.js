@@ -4,8 +4,8 @@ import DatePicker from 'react-datepicker';
 import es from 'date-fns/locale/es';
 import 'react-datepicker/dist/react-datepicker.css';
 import { setHours, setMinutes } from 'date-fns';
-import Footer from './footer';
-import Navbar from './navbar';
+import Footer from './Footer';
+import Navbar from './Navbar';
 import './truequesPendientes.css';
 import { format } from 'date-fns';
 

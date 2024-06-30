@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 

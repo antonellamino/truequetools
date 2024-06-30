@@ -197,11 +197,27 @@ app.get('/usuarios', async (req, res) => {
         res.json({ usuarios });
     } catch (error) {
         console.error('error al obtener los usuarios:', error);
-        res.status(500).json({ error: 'ocurrio un error al obtener las sucursales' });
+        res.status(500).json({ error: 'ocurrio un error al obtener los usuarios' });
     }
 });
 
+app.get('/usuarioActual/:id', async (req, res) => {
+    try{
+        const id = req.params.id;
 
+        const usuario = await Usuario.where({id : id}).fetch();
+        
+        if (!usuario) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        res.json({ usuario });
+    } catch (error) {
+        
+        console.error('error al obtener el usuario:', error);
+        res.status(500).json({ error: 'ocurrio un error al obtener el usuario :) ' });
+    }
+});
 
 //solo admin
 app.get('/sucursales', async (req, res) => {
@@ -324,6 +340,33 @@ app.get('/productos-filtrados', async (req, res) => {
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).json({ error: 'Error fetching products' });
+    }
+});
+
+//me trae los datos de un producto con x id
+app.get('/obtener-producto/:productoId', async (req, res) => {
+    try {
+        const { productoId } = req.params;
+        console.log("PRODUCTO ID:::", productoId);
+
+        const producto = await Producto.where('id', productoId).fetch();
+
+        if (!producto) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        // Construir la respuesta en el formato esperado por el frontend
+        const productoData = {
+            nombre: producto.get('nombre'),
+            descripcion: producto.get('descripcion'),
+            categoria_id: producto.get('categoria_id')
+        };
+
+        
+        res.json({ producto: productoData });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).json({ error: 'Error fetching product' });
     }
 });
 
@@ -478,7 +521,86 @@ app.get('/datos-producto', async (req, res) => {
     }
 });
 
+app.get('/obtener-producto', async (req, res) => {
+    const productoId = req.query.id_producto;
+    try {
+        // Consulta a la base de datos filtrando la tabla productos por el id_producto recibido
+        const producto = await Producto.query(qb => {
+            qb.where('productos.id', productoId)
+                .join('sucursales', 'productos.sucursal_elegida', 'sucursales.id')
+                .join('categorias', 'productos.categoria_id', 'categorias.id')
+                .join('usuarios', 'productos.usuario_id', 'usuarios.id')
+                .select(
+                    'productos.id',
+                    'productos.nombre',
+                    'productos.descripcion',
+                    'productos.sucursal_elegida',
+                    'productos.usuario_id',
+                    'productos.categoria_id',
+                    'productos.imagen_1',
+                    'productos.imagen_2',
+                    'productos.imagen_3',
+                    'productos.imagen_4',
+                    'productos.estado',
+                    'sucursales.nombre as nombre_sucursal',
+                    'categorias.nombre as nombre_categoria',
+                    'usuarios.nombre as nombre_usuario'
+                );
+        }).fetch();
 
+        console.log("PRUEBA EDITAR PUBLICACION, ME DIO EL BACK EL PRODUCTO:");
+        console.log(producto);
+
+        if (producto) {
+            res.json({ producto });
+        } else {
+            res.status(404).json({ message: 'Producto no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al obtener datos del producto:', error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+});
+
+//para el editar publicacion
+// En tu archivo de rutas del servidor, por ejemplo, routes.js o app.js
+app.get('/verificar-trueques-producto/:productoId', async (req, res) => {
+    const { productoId } = req.params;
+
+    try {
+        //me agarro los trueques en los que participa ese producto (tanto como propietario o ofertante)
+        const truequesPropietario = await Trueque.query(qb => {
+            qb.where('id_producto_propietario', productoId);
+        }).fetchAll();
+
+        const truequesOfertante = await Trueque.query(qb => {
+            qb.where('id_producto_ofertante', productoId);
+        }).fetchAll();
+        
+        //uno los trueques en un sola constante
+        const trueques = truequesPropietario.toJSON().concat(truequesOfertante.toJSON());
+
+        if (trueques.length === 0) {
+            return res.json({ puedeEditar: true });
+        }
+
+        //verificar si hay trueques con estados diferentes a cancelado
+
+        const tieneTruequesPendientes = trueques.some(trueque => trueque.get('estado') !== 'cancelado');
+
+        //creado, rechazado, confirado, completado,
+
+        if (tieneTruequesPendientes) {
+            return res.json({ puedeEditar: false });
+        }
+
+        res.json({ puedeEditar: true });
+
+    } catch (error) {
+        console.error('Error al verificar los trueques del producto:', error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+});
 
 
 app.get('/comentarios', async (req, res) => { //ok
@@ -1054,7 +1176,24 @@ app.post('/eliminar-empleado', async (req, res) => {
         res.status(500).json({ error: 'Error al eliminar el empleado.' });
     }
 });
+                  
+app.post('/eliminar-producto', async (req, res) => {
+    //me mandan el id del producto
+    const { id } = req.body;
+    try{
+        if(!id){
+         return res.status(400).json({ error: 'el id del empleado es requerido' });
+        }
 
+        const producto = await Producto.where({ id: id}).fetch();
+        await producto.destroy();
+        res.status(200).json({ message: 'Producto eliminado.' });
+
+    } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+        res.status(500).json({ error: 'Error al eliminar el producto.' });
+    }
+});
 
 app.get('/obtener-empleado/:id', async (req, res) => {
     try {
@@ -1074,6 +1213,23 @@ app.get('/obtener-empleado/:id', async (req, res) => {
     } catch (error) {
         console.error('Error al obtener el empleado:', error);
         res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+app.put('/editar-producto', async (req, res) => {
+    try {
+        const { productoId, datosFormulario } = req.body;
+    
+        if (!productoId || !datosFormulario) {
+            return res.status(400).json({ error: 'El id del producto y los datos a actualizar son requeridos' });
+        }
+
+        await Producto.where({ id: productoId }).save(datosFormulario, { method: 'update', patch: true });
+
+        res.status(200).json({ message: 'Producto actualizado exitosamente.' });
+    } catch (error) {
+        console.error('Error al actualizar el producto:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar el producto.' });
     }
 });
 
