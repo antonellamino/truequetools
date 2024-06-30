@@ -42,31 +42,35 @@ const Notificaciones = () => {
             <Navbar />
             <div className="container mt-4">
                 <h1>Notificaciones</h1>
-                <ul className="list-group">
-                    {notificaciones.map(notificacion => (
-                        <li 
-                            key={notificacion.id} 
-                            className={`list-group-item ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}
-                        >
-                            {notificacion.link ? (
-                                <NavLink to={notificacion.link} className="notification-link">
+                {notificaciones.length === 0 ? (
+                    <p>No tienes notificaciones.</p>
+                ) : (
+                    <ul className="list-group">
+                        {notificaciones.map(notificacion => (
+                            <li 
+                                key={notificacion.id} 
+                                className={`list-group-item ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}
+                            >
+                                {notificacion.link ? (
+                                    <NavLink to={notificacion.link} className="notification-link">
+                                        <button
+                                            className={`notification-button ${notificacion.leida ? 'btn-read' : 'btn-unread'}`}
+                                        >
+                                            {notificacion.mensaje}
+                                        </button>
+                                    </NavLink>
+                                ) : (
                                     <button
-                                        className={`notification-button ${notificacion.leida ? 'btn-read' : 'btn-unread'}`}
+                                        className={`notification-button ${notificacion.leida ? 'btn-read' : 'btn-unread'} notification-disabled`}
+                                        disabled
                                     >
                                         {notificacion.mensaje}
                                     </button>
-                                </NavLink>
-                            ) : (
-                                <button
-                                    className={`notification-button ${notificacion.leida ? 'btn-read' : 'btn-unread'} notification-disabled`}
-                                    disabled
-                                >
-                                    {notificacion.mensaje}
-                                </button>
-                            )}
-                        </li>
-                    ))}
-                </ul>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
         </div>
     );
