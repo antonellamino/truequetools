@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
-import Footer from './footer';
+import Footer from './Footer';
 import './formulario.css';  // Make sure to import the CSS file here
 
 const backendUrl = process.env.REACT_APP_BACK_URL;

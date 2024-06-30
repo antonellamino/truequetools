@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import './ConfirmarTrueque.css'; // Importa el archivo de estilos
 import { useNavigate } from 'react-router-dom';
 

@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from "react";
 import axios from "axios";
-import Navbar from "./navbar"; // Ajusta la ruta de importación según sea necesario
+import Navbar from "./Navbar"; // Ajusta la ruta de importación según sea necesario
 
 const backendUrl = process.env.REACT_APP_BACK_URL; // URL del backend obtenida de las variables de entorno
 

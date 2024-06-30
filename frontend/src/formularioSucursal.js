@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import axios from 'axios';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 

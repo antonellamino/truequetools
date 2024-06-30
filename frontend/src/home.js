@@ -1,9 +1,9 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import CardProducto from './cardProducto';
 import PanelFiltrado from './panelFiltrado';
-import Footer from './footer';
+import Footer from './Footer';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 

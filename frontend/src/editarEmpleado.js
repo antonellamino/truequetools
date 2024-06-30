@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
@@ -148,7 +148,6 @@ const EditarEmpleado = () => {
                             placeholder="Ingresa el nombre"
                             value={nombre}
                             onChange={(e) => setNombre(e.target.value)}
-                            
                         />
                         {errors.nombre && <small className="text-danger">{errors.nombre}</small>}
                     </div>
@@ -161,7 +160,6 @@ const EditarEmpleado = () => {
                             placeholder="Ingresa el apellido"
                             value={apellido}
                             onChange={(e) => setApellido(e.target.value)}
-                            
                         />
                         {errors.apellido && <small className="text-danger">{errors.apellido}</small>}
                     </div>
@@ -171,12 +169,10 @@ const EditarEmpleado = () => {
                             type="text"
                             className="form-control"
                             id="nombre_usuario"
-                            placeholder="Ingresa el nombre de usuario"
                             value={nombre_usuario}
-                            onChange={(e) => setNombreUsuario(e.target.value)}
-                            
+                            disabled
                         />
-                        {errors.nombre_usuario && <small className="text-danger">{errors.nombre_usuario}</small>}
+                        <small className="text-muted">El nombre de usuario no puede cambiarse.</small>
                     </div>
                     <div className="mb-3">
                         <label htmlFor="contrasena" className="form-label">Contraseña</label>
@@ -187,7 +183,6 @@ const EditarEmpleado = () => {
                                 id="contrasena"
                                 value={contrasena}
                                 onChange={(e) => setContrasena(e.target.value)}
-                                
                             />
                             <span
                                 className="input-group-text"
@@ -207,6 +202,7 @@ const EditarEmpleado = () => {
             </div>
         </Fragment>
     );
+    
 };
 
 export default EditarEmpleado;

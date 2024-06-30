@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './opciones.css';
 import { Fragment } from 'react';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 

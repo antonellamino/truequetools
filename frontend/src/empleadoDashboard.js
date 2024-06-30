@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 
 const EmpleadoDashboard = () => {
     const navigate = useNavigate();
