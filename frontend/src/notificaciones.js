@@ -46,19 +46,19 @@ const Notificaciones = () => {
                     {notificaciones.map(notificacion => (
                         <li 
                             key={notificacion.id} 
-                            className={`list-group-item ${notificacion.link ? (notificacion.leida ? 'notification-read' : 'notification-unread') : (notificacion.leida ? 'notification-no-link-read' : 'notification-no-link-unread')}`}
+                            className={`list-group-item ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}
                         >
                             {notificacion.link ? (
                                 <NavLink to={notificacion.link} className="notification-link">
                                     <button
-                                        className={`notification-button ${notificacion.leida ? 'notification-read' : 'notification-unread'}`}
+                                        className={`notification-button ${notificacion.leida ? 'btn-read' : 'btn-unread'}`}
                                     >
                                         {notificacion.mensaje}
                                     </button>
                                 </NavLink>
                             ) : (
                                 <button
-                                    className={`notification-button ${notificacion.leida ? 'notification-no-link-read' : 'notification-no-link-unread'} notification-disabled`}
+                                    className={`notification-button ${notificacion.leida ? 'btn-read' : 'btn-unread'} notification-disabled`}
                                     disabled
                                 >
                                     {notificacion.mensaje}
@@ -71,6 +71,5 @@ const Notificaciones = () => {
         </div>
     );
 };
-
 
 export default Notificaciones;
