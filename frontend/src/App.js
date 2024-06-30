@@ -72,7 +72,7 @@ function App() {
             <Route path="/promedioVentas" element={<PromedioVentas />} />
             <Route path="/miPerfil" element={<MiPerfil />} />
             <Route path="/editarPublicacion/:productoId" element={<EditarPublicacion/>}/>
-            <Route path="/navbar" element={<Navbar/>}/>
+            <Route path="/Navbar" element={<Navbar/>}/>
             <Route path="/formularioVenta" element={<FormularioVenta/>} />
             <Route path="/promedioVentas" element={<PromedioVentas/>} />
             <Route path="/detalleTrueque/:id" element={<DetalleTrueque/>} />

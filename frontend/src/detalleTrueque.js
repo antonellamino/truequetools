@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Footer from "./Footer";
+import Navbar from "./Navbar";
 
 const backendUrl = process.env.REACT_APP_BACK_URL; // URL del backend obtenida de las variables de entorno
 
@@ -26,35 +28,39 @@ const DetalleTrueque = () => {
     }, [id]);
 
     return (
-        <div className="container mt-4">
-            <h3>Detalle del Trueque</h3>
-            {detalleTrueque.length > 0 ? (
-                <div className="table-responsive">
-                    <table className="table table-striped">
-                        <thead className="thead-dark">
-                            <tr>
-                                <th>Nombre Venta</th>
-                                <th>Precio</th>
-                                <th>Email Usuario</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {detalleTrueque.map((venta, index) => (
-                                <tr key={index}>
-                                    <td>{venta.articulo}</td>
-                                    <td>{venta.valor}</td>
-                                    <td>{venta.email_usuario}</td>
+        <Fragment>
+            <Navbar /> 
+            <div className="container mt-4">
+                <h3>Detalle del Trueque</h3>
+                {detalleTrueque.length > 0 ? (
+                    <div className="table-responsive">
+                        <table className="table table-striped">
+                            <thead className="thead-dark">
+                                <tr>
+                                    <th>Nombre Venta</th>
+                                    <th>Precio</th>
+                                    <th>Email Usuario</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            ) : (
-                <div className="alert alert-info mt-3" role="alert">
-                    No se encontraron ventas para este trueque.
-                </div>
-            )}
-        </div>
+                            </thead>
+                            <tbody>
+                                {detalleTrueque.map((venta, index) => (
+                                    <tr key={index}>
+                                        <td>{venta.articulo}</td>
+                                        <td>{venta.valor}</td>
+                                        <td>{venta.email_usuario}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <div className="alert alert-info mt-3" role="alert">
+                        No se encontraron ventas para este trueque.
+                    </div>
+                )}
+            </div>
+        <Footer/>
+        </Fragment>
     );
 };
 

@@ -579,22 +579,22 @@ app.get('/verificar-trueques-producto/:productoId', async (req, res) => {
         
         //uno los trueques en un sola constante
         const trueques = truequesPropietario.toJSON().concat(truequesOfertante.toJSON());
-
+        
         if (trueques.length === 0) {
             return res.json({ puedeEditar: true });
         }
 
         //verificar si hay trueques con estados diferentes a cancelado
 
-        const tieneTruequesPendientes = trueques.some(trueque => trueque.get('estado') !== 'cancelado');
-
+        const tieneTruequesPendientes = trueques.some(trueque => trueque.estado !== 'cancelado');
+        console.log(tieneTruequesPendientes);
         //creado, rechazado, confirado, completado,
 
         if (tieneTruequesPendientes) {
             return res.json({ puedeEditar: false });
         }
 
-        res.json({ puedeEditar: true });
+        return res.json({ puedeEditar: true });
 
     } catch (error) {
         console.error('Error al verificar los trueques del producto:', error);
@@ -1280,7 +1280,8 @@ app.post('/eliminar-empleado', async (req, res) => {
         res.status(500).json({ error: 'Error al eliminar el empleado.' });
     }
 });
-                  
+
+// eliminar producto
 app.post('/eliminar-producto', async (req, res) => {
     //me mandan el id del producto
     const { id } = req.body;
@@ -1290,7 +1291,7 @@ app.post('/eliminar-producto', async (req, res) => {
         }
 
         const producto = await Producto.where({ id: id}).fetch();
-        await producto.destroy();
+        producto.set('estado', true).save();
         res.status(200).json({ message: 'Producto eliminado.' });
 
     } catch (error) {

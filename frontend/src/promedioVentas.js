@@ -1,7 +1,12 @@
 import React, { useState, Fragment } from "react";
 import axios from "axios";
 import Navbar from "./Navbar"; // Ajusta la ruta de importación según sea necesario
+import Footer from "./Footer";
 import { useNavigate } from 'react-router-dom';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const backendUrl = process.env.REACT_APP_BACK_URL; // URL del backend obtenida de las variables de entorno
 
@@ -57,6 +62,57 @@ const PromedioVentas = () => {
         navigate(`/detalleTrueque/${id}`);
     };
 
+    const calcularTotalVentas = () => {
+        return trueques.reduce((total, trueque) => total + trueque.total_valor_ventas, 0);
+    };
+
+    const obtenerVentasPorSucursal = () => {
+        const ventasPorSucursal = {};
+
+        trueques.forEach((trueque) => {
+            const sucursal = trueque.nombre_sucursal;
+            const ventas = trueque.total_valor_ventas;
+
+            if (!ventasPorSucursal[sucursal]) {
+                ventasPorSucursal[sucursal] = 0;
+            }
+            ventasPorSucursal[sucursal] += ventas;
+        });
+
+        return ventasPorSucursal;
+    };
+
+    const ventasPorSucursal = obtenerVentasPorSucursal();
+    const data = {
+        labels: Object.keys(ventasPorSucursal),
+        datasets: [
+            {
+                label: 'Total Ventas por Sucursal',
+                data: Object.values(ventasPorSucursal),
+                backgroundColor: [
+                    '#0A96A6',
+                    '#04BFBF',
+                    '#F2EBDF',
+                    '#2C3359',
+                    '#5A5D73',
+                ],
+                borderColor: [
+                    '#2C3359',
+                    '#5A5D73',
+                    '#0A96A6',
+                    '#04BFBF',
+                    '#F2EBDF',
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+    };
+
     return (
         <Fragment>
             <Navbar /> {/* Componente de navegación */}
@@ -103,36 +159,49 @@ const PromedioVentas = () => {
                         </form>
                         {/* Mostrar tabla si hay trueques encontrados */}
                         {trueques.length > 0 && !mostrarMensaje && (
-                            <div className="table-responsive mt-4">
-                                <table className="table table-striped">
-                                    <thead className="thead-dark">
-                                        <tr>
-                                            <th>ID Trueque</th>
-                                            <th>Sucursal</th>
-                                            <th>Fecha</th>
-                                            <th>Total Ventas</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Iterar sobre los trueques y mostrar en la tabla */}
-                                        {trueques.map((trueque, index) => (
-                                            <tr key={index}>
-                                                <td>
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-link"
-                                                        onClick={() => handleIdClick(trueque.id_trueque)}
-                                                    >
-                                                        {trueque.id_trueque}
-                                                    </button>
-                                                </td>
-                                                <td>{trueque.nombre_sucursal}</td>
-                                                <td>{formatDate(trueque.fecha_trueque)}</td>
-                                                <td>{trueque.total_valor_ventas}</td>
+                            <div>
+                                <div className="table-responsive mt-4">
+                                    <table className="table table-striped">
+                                        <thead className="thead-dark">
+                                            <tr>
+                                                <th>ID Trueque</th>
+                                                <th>Sucursal</th>
+                                                <th>Fecha</th>
+                                                <th>Total Ventas</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {/* Iterar sobre los trueques y mostrar en la tabla */}
+                                            {trueques.map((trueque, index) => (
+                                                <tr key={index}>
+                                                    <td>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-link"
+                                                            onClick={() => handleIdClick(trueque.id_trueque)}
+                                                        >
+                                                            {trueque.id_trueque}
+                                                        </button>
+                                                    </td>
+                                                    <td>{trueque.nombre_sucursal}</td>
+                                                    <td>{formatDate(trueque.fecha_trueque)}</td>
+                                                    <td>{trueque.total_valor_ventas}</td>
+                                                </tr>
+                                            ))}
+                                            {/* Fila para mostrar la suma total de las ventas */}
+                                            <tr>
+                                                <td colSpan="3" className="text-right"><strong>Total Ventas:</strong></td>
+                                                <td><strong>{calcularTotalVentas()}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {/* Gráfico de pastel */}
+                                <div className="mt-4" style={{ maxWidth: '500px', margin: '0 auto' }}>
+                                    <div style={{ position: 'relative', height: '500px' }}>
+                                        <Pie data={data} options={options} />
+                                    </div>
+                                </div>
                             </div>
                         )}
                         {/* Mostrar mensaje de alerta si no se encontraron trueques */}
@@ -144,6 +213,7 @@ const PromedioVentas = () => {
                     </div>
                 </div>
             </div>
+            <Footer/>
         </Fragment>
     );
 };
