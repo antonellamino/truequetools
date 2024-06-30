@@ -1,0 +1,78 @@
+.perfil-container {
+    max-width: 3000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Centra todo el contenido dentro del contenedor */
+}
+
+.perfil-container h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #ffffff; /* Cambia el color del título a blanco */
+}
+
+.perfil-container p {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.perfil-container button {
+    display: block; /* Hace que el botón sea un bloque para centrarlo */
+    margin: 0 auto 20px; /* Centra el botón horizontalmente y añade margen inferior */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.perfil-container button:hover {
+    background-color: #0056b3; /* Cambia el color de fondo al pasar el cursor */
+}
+
+.dato {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.valor {
+    color: #000000;
+}
+
+.header {
+    background-color: #2c3359;
+    color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+@media (max-width: 600px) {
+    .perfil-container {
+        padding: 15px;
+    }
+
+    .perfil-container h2 {
+        font-size: 2em;
+    }
+
+    .perfil-container p {
+        font-size: 1em;
+    }
+}
