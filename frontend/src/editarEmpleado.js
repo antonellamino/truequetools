@@ -16,6 +16,8 @@ const EditarEmpleado = () => {
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
     const [originalNombreUsuario, setOriginalNombreUsuario] = useState('');
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
+
 
     useEffect(() => {
         const fetchEmpleado = async () => {
@@ -125,13 +127,17 @@ const EditarEmpleado = () => {
                         'error'
                     );
                 }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
     };
 
-    const handleCancel = () => {
-        navigate('/listaEmpleados');
-    };
+  
 
     return (
         <Fragment>
@@ -196,10 +202,14 @@ const EditarEmpleado = () => {
                     </div>
                     <div className="d-flex justify-content-between">
                         <button type="submit" className="btn btn-primary">Guardar cambios</button>
-                        <button type="button" className="btn btn-secondary" onClick={handleCancel}>Cancelar</button>
                     </div>
                 </form>
             </div>
+            {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        No se registraron cambios.
+                    </div>
+                )}
         </Fragment>
     );
     

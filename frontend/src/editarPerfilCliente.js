@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import Swal from 'sweetalert2';
 import './formulario.css';
+import './EditarPerfil.css'; // Asegúrate de importar tu archivo CSS
+
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -25,6 +27,7 @@ const EditarPerfil = () => {
     const clienteId = localStorage.getItem('userId');
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
 
     // Validaciones
     const validateNombre = () => {
@@ -154,6 +157,12 @@ const EditarPerfil = () => {
                             'error'
                         );
                     }
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Mostrar mensaje de "no se registraron cambios"
+                    setShowNoChangesMessage(true);
+                    setTimeout(() => {
+                        setShowNoChangesMessage(false);
+                    }, 3000); // Mostrar el mensaje por 3 segundos
                 }
             });
         }
@@ -193,6 +202,7 @@ const EditarPerfil = () => {
             <Navbar />
             <h2 className="mb-4" style={{ backgroundColor: '#2c3359', color: '#ffffff', padding: '10px' }}>Editar Perfil</h2>
             <div className="container mt-5">
+                
                 <div>
                     <div className="mb-3">
                         <label htmlFor="nombre" className="form-label">Nombre</label>
@@ -249,6 +259,11 @@ const EditarPerfil = () => {
                     <div className="mb-3">
                         <button type="submit" className="btn btn-primary" onClick={onButtonClick}>Guardar Cambios</button>
                     </div>
+                    {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        No se registraron cambios.
+                    </div>
+                )}
                 </div>
             </div>
             <Footer />
