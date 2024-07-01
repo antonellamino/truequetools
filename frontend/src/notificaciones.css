@@ -8,18 +8,6 @@
     color: #333333 !important; /* Texto gris oscuro para indicar que está leída */
 }
 
-
-.notification-no-link-read {
-    background-color: #cccccc !important; /* Color gris claro para notificaciones leídas */
-    color: #333333 !important; /* Texto gris oscuro para indicar que está leída */
-    cursor: default; /* Mantiene el cursor predeterminado */
-}
-.notification-no-link-unread {
-    background-color: #2c3359 !important; /* Color azul para notificaciones no leídas */
-    color: #ffffff !important; /* Texto blanco para notificaciones no leídas */
-    cursor: default; /* Mantiene el cursor predeterminado */
-}
-
 .notification-button {
     border: none; /* Quita el borde */
     width: 100%; /* Ocupa todo el ancho del contenedor */
@@ -33,12 +21,11 @@
 }
 
 .list-group-item {
-    border: 1px solid #000000; /* Agrega un borde negro a cada elemento de la lista */
+    border: 1px solid #cccccc; /* Agrega un borde negro a cada elemento de la lista */
     border-radius: 0.25rem; /* Añade un pequeño radio a las esquinas del borde */
     margin-bottom: 0.5rem; /* Espaciado entre cada elemento de la lista */
 }
 
-/* Modificar estilo para notificaciones con enlace */
 .notification-link {
     color: inherit !important; /* Hereda el color del texto */
     text-decoration: none !important; /* Quita la subrayado */

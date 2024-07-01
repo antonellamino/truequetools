@@ -903,14 +903,14 @@ app.post('/enviar-notificacion', async (req, res) => {
 
 
 app.put('/notificaciones/leer', (req, res) => {
-    const { userId } = req.body;
-    Notificacion.where({ id_usuario: userId }).save({ leido: true }, { patch: true })
+    const { id } = req.body;
+    Notificacion.where({ id }).save({ leido: true }, { patch: true })
         .then(() => {
-            res.status(200).send('Notificaciones marcadas como leídas correctamente.');
+            res.status(200).send('Notificación marcada como leída correctamente.');
         })
         .catch(error => {
-            console.error('Error al marcar las notificaciones como leídas:', error);
-            res.status(500).send('Error al marcar las notificaciones como leídas.');
+            console.error('Error al marcar la notificación como leída:', error);
+            res.status(500).send('Error al marcar la notificación como leída.');
         });
 });
 
@@ -935,14 +935,14 @@ app.post('/agregar-notificacion', async (req, res) => {
 
 app.post('/guardar-trueque', async (req, res) => {
     try {
-        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id } = req.body;
+        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id_sucursal } = req.body;
 
         const nuevoTrueque = await Trueque.forge({
             id_propietario,
             id_ofertante,
             id_producto_propietario,
             id_producto_ofertante,
-            id
+            id_sucursal
         });
 
         console.log("aaasfa");

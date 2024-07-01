@@ -287,7 +287,7 @@ const Publicacion = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.post(`${backendUrl}/eliminar-publicacion`, { id: id_producto });
+                    const res = await axios.post(`${backendUrl}/eliminar-producto`, { id: id_producto });
                     console.log("el back de eliminar producto me dijo:", res.data);
     
                     navigate('/clienteDashboard');
