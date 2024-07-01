@@ -14,6 +14,8 @@
     text-align: left; /* Alinea el texto a la izquierda */
     padding: 0.5rem; /* Añade un poco de relleno */
     cursor: pointer; /* Cambia el cursor a "apuntador" */
+    background: none; /* Quita el fondo del botón */
+    color: inherit; /* Hereda el color del texto */
 }
 
 .notification-button.disabled {
@@ -21,16 +23,17 @@
 }
 
 .list-group-item {
-    border: 1px solid #cccccc; /* Agrega un borde negro a cada elemento de la lista */
+    border: 1px solid #cccccc; /* Agrega un borde a cada elemento de la lista */
     border-radius: 0.25rem; /* Añade un pequeño radio a las esquinas del borde */
     margin-bottom: 0.5rem; /* Espaciado entre cada elemento de la lista */
 }
 
 .notification-link {
     color: inherit !important; /* Hereda el color del texto */
-    text-decoration: none !important; /* Quita la subrayado */
+    text-decoration: none !important; /* Quita el subrayado */
 }
 
 .notification-link:hover {
     text-decoration: underline !important; /* Añade subrayado al pasar el mouse */
+    text-decoration-color: white !important; /* Color blanco para el subrayado */
 }
