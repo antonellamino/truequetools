@@ -1598,7 +1598,7 @@ app.post('/eliminar-sucursal', async (req, res) => {
     }
 
     try {
-        console.log('sucursal a eliminar:', id);
+        console.log('Sucursal a eliminar:', id);
 
         // Verificar si hay trueques asociados con estado "confirmado"
         const truequesConfirmados = await Trueque.where({ id_sucursal: id })
@@ -1618,13 +1618,20 @@ app.post('/eliminar-sucursal', async (req, res) => {
 
         const productos = await Producto.where({ sucursal_elegida: id }).fetchAll({ require: false });
         if (productos && productos.length > 0) {
-            await Producto.where({ sucursal_elegida: id }).save({ sucursal_elegida: 1 }, { patch: true });
+            await Producto.query().where({ sucursal_elegida: id }).update({ sucursal_elegida: 1 });
         }
 
         const usuarios = await Usuario.where({ sucursal_preferencia: id }).fetchAll({ require: false });
         if (usuarios && usuarios.length > 0) {
-            await Usuario.where({ sucursal_preferencia: id }).save({ sucursal_preferencia: 1 }, { patch: true });
+            await Usuario.query().where({ sucursal_preferencia: id }).update({ sucursal_preferencia: 1 });
         }
+
+        // Actualizar trueques cuya columna "id_sucursal" es igual al id de la sucursal eliminada y "estado" distinto de "cancelado"
+        await Trueque.query()
+            .where({ id_sucursal: id })
+            .where('estado', '!=', 'cancelado')
+            .where('estado', '!=', 'completado')
+            .update({ id_sucursal: 1 });
 
         res.status(200).json({ message: 'Sucursal eliminada exitosamente.' });
     } catch (error) {
