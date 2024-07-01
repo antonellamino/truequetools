@@ -9,7 +9,9 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 const InfoSucursal = () => {
     const [sucursales, setSucursales] = useState([]);
     const navigate = useNavigate();
-    
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
+
+
     useEffect(() => {
         const fetchSucursales = async () => {
             try {
@@ -62,6 +64,12 @@ const InfoSucursal = () => {
                         'error'
                     );
                 }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
     };
@@ -105,6 +113,11 @@ const InfoSucursal = () => {
                     </table>
                 </div>
             </div>
+            {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        Baja rechazada.
+                    </div>
+            )}
         </Fragment>
     );
 };

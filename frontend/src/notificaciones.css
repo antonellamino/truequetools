@@ -21,7 +21,7 @@
 }
 
 .list-group-item {
-    border: 1px solid #cccccc; /* Agrega un borde negro a cada elemento de la lista */
+    border: 1px solid #000000; /* Agrega un borde negro a cada elemento de la lista */
     border-radius: 0.25rem; /* Añade un pequeño radio a las esquinas del borde */
     margin-bottom: 0.5rem; /* Espaciado entre cada elemento de la lista */
 }

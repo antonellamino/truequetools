@@ -49,7 +49,7 @@ const Notificaciones = () => {
         <div>
             <Navbar />
             <div className="container mt-4">
-                <h1 style={{ color: 'white' }}>Notificaciones</h1>
+                <h1 style={{ color: 'black' }}>Notificaciones</h1>
                 {notificaciones.length === 0 ? (
                     <p style={{ color: 'white' }}>No tienes notificaciones.</p>
                 ) : (
