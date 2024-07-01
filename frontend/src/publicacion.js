@@ -10,7 +10,7 @@ import Footer from './Footer';
 import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
+import './SweetAlert2.css'
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -163,7 +163,10 @@ const Publicacion = () => {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                title: 'swal2-title'
+            }
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
