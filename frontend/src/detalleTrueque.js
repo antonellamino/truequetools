@@ -37,9 +37,8 @@ const DetalleTrueque = () => {
                         <table className="table table-striped">
                             <thead className="thead-dark">
                                 <tr>
-                                    <th>Nombre Venta</th>
+                                    <th>Articulo</th>
                                     <th>Precio</th>
-                                    <th>Email Usuario</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -47,7 +46,6 @@ const DetalleTrueque = () => {
                                     <tr key={index}>
                                         <td>{venta.articulo}</td>
                                         <td>{venta.valor}</td>
-                                        <td>{venta.email_usuario}</td>
                                     </tr>
                                 ))}
                             </tbody>

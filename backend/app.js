@@ -231,7 +231,7 @@ app.get('/sucursales', async (req, res) => {
     }
 });
 
-
+/*
 app.get('/full-sucursales', async (req, res) => {
     try {
         const sucursales = await Sucursal.fetchAll();
@@ -241,7 +241,7 @@ app.get('/full-sucursales', async (req, res) => {
         res.status(500).json({ error: 'ocurrio un error al obtener las sucursales' });
     }
 });
-
+*/
 
 
 //solo admin
@@ -936,7 +936,6 @@ app.post('/agregar-notificacion', async (req, res) => {
 app.post('/guardar-trueque', async (req, res) => {
     try {
         const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id_sucursal } = req.body;
-
         const nuevoTrueque = await Trueque.forge({
             id_propietario,
             id_ofertante,
@@ -1122,14 +1121,14 @@ app.post('/confirmar_trueque', async (req, res) => {
 app.get('/trueques_Sucursal', async (req, res) => {
     try {
         const idSucursal = req.query.idSucursal;
-
+        console.log("id sucursal",idSucursal);
         if (!idSucursal) {
             return res.status(400).json({ error: 'El idSucursal es requerido' });
         }
 
-        const trueques = await Trueque.where({ id: idSucursal, estado: 'confirmado' })
-            .fetchAll({ withRelated: ['productoPropietario', 'productoOfertante', 'propietario', 'ofertante'] });
-
+        const trueques = await Trueque.where({ id_sucursal: idSucursal, estado: 'confirmado' })
+        .fetchAll({ withRelated: ['productoPropietario', 'productoOfertante', 'propietario', 'ofertante'] });
+        console.log(trueques);
         res.json({ trueques });
     } catch (error) {
         console.error('Error al obtener trueques:', error);
@@ -1266,19 +1265,18 @@ app.post('/eliminar-respuesta', async (req, res) => {
 });
 
 
-
-
 app.get('/cantidad-trueques', async (req, res) => {
     try {
         const { fechaInicio, fechaFin } = req.query;
 
         const cantidadTrueques = await Trueque.query()
-            .where('estado', 'completado')
-            .whereBetween('fecha', [fechaInicio, fechaFin])
-            .join('Sucursales', 'Trueque.id', 'Sucursales.id')
-            .groupBy('id', 'Sucursales.nombre')
-            .select('id', 'Sucursales.nombre as nombre_sucursal')
-            .count('Trueque.id as cantidad');
+        .where('estado', 'completado')
+        .whereBetween('fecha', [fechaInicio, fechaFin])
+        .join('sucursales', 'trueque.id_sucursal', 'sucursales.id')
+        .groupBy('trueque.id_sucursal', 'sucursales.nombre')
+        .select('trueque.id_sucursal as id_sucursal', 'sucursales.nombre as nombre_sucursal')
+        .count('trueque.id as cantidad');   
+
         res.json(cantidadTrueques);
     } catch (error) {
         console.error('Error al obtener la cantidad de trueques:', error);
@@ -1551,6 +1549,8 @@ app.get('/producto_especifico/:idProducto', async (req, res) => {
 app.get('/promedio-ventas', async (req, res) => {
     try {
         const { fechaInicio, fechaFin } = req.query;
+        console.log('fecha inicio',fechaInicio);
+        console.log('fecha fin',fechaFin);
         const truequesConVentas = await Trueque.query()
             .select(
                 'trueque.id as id_trueque',
@@ -1559,7 +1559,7 @@ app.get('/promedio-ventas', async (req, res) => {
             )
             .sum('ventas.valor as total_valor_ventas')
             .innerJoin('ventas', 'trueque.id', 'ventas.id_trueque')
-            .innerJoin('sucursales', 'trueque.id', 'sucursales.id')
+            .innerJoin('sucursales', 'trueque.id_sucursal', 'sucursales.id')
             .where('trueque.estado', 'completado')
             .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
             .groupBy('trueque.id', 'trueque.fecha', 'sucursales.nombre');
