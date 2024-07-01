@@ -1,6 +1,10 @@
 import React, { useState, Fragment } from "react";
 import axios from "axios";
 import Navbar from "./Navbar"; // Ajusta la ruta de importación según sea necesario
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const backendUrl = process.env.REACT_APP_BACK_URL; // URL del backend obtenida de las variables de entorno
 
@@ -36,7 +40,7 @@ const TruequesExitosos = () => {
             const response = await axios.get(`${backendUrl}/cantidad-trueques`, {
                 params: {
                     fechaInicio: fechaInicio,
-                    fechaFin: fechaFin // Usar fechaFinActual en lugar de fechaFin
+                    fechaFin: fechaFin
                 }
             });
             setTrueques(response.data); // Actualizar el estado de trueques con los datos recibidos
@@ -45,6 +49,45 @@ const TruequesExitosos = () => {
         } catch (error) {
             console.error("Error al obtener trueques:", error); // Manejar errores de la petición
         }
+    };
+
+    const calcularTotalTrueques = () => {
+        return trueques.reduce((total, trueque) => total + trueque.cantidad, 0);
+    };
+
+    const ventasPorSucursal = trueques.reduce((acc, trueque) => {
+        acc[trueque.nombre_sucursal] = (acc[trueque.nombre_sucursal] || 0) + trueque.cantidad;
+        return acc;
+    }, {});
+
+    const data = {
+        labels: Object.keys(ventasPorSucursal),
+        datasets: [
+            {
+                label: 'Total Ventas por Sucursal',
+                data: Object.values(ventasPorSucursal),
+                backgroundColor: [
+                    '#0A96A6',
+                    '#04BFBF',
+                    '#F2EBDF',
+                    '#2C3359',
+                    '#5A5D73',
+                ],
+                borderColor: [
+                    '#2C3359',
+                    '#5A5D73',
+                    '#0A96A6',
+                    '#04BFBF',
+                    '#F2EBDF',
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
     };
 
     return (
@@ -93,25 +136,36 @@ const TruequesExitosos = () => {
                         </form>
                         {/* Mostrar tabla si hay trueques encontrados */}
                         {trueques.length > 0 && !mostrarMensaje && (
-                            <div className="table-responsive mt-4">
-                                <table className="table table-striped">
-                                    <thead className="thead-dark">
-                                        <tr>
-                                            <th>Sucursal</th>
-                                            <th>Cantidad</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {/* Iterar sobre los trueques y mostrar en la tabla */}
-                                        {trueques.map((trueque, index) => (
-                                            <tr key={index}>
-                                                <td>{trueque.nombre_sucursal}</td>
-                                                <td>{trueque.cantidad}</td>
+                            <>
+                                <div className="table-responsive mt-4">
+                                    <table className="table table-striped">
+                                        <thead className="thead-dark">
+                                            <tr>
+                                                <th>Sucursal</th>
+                                                <th>Cantidad</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody>
+                                            {/* Iterar sobre los trueques y mostrar en la tabla */}
+                                            {trueques.map((trueque, index) => (
+                                                <tr key={index}>
+                                                    <td>{trueque.nombre_sucursal}</td>
+                                                    <td>{trueque.cantidad}</td>
+                                                </tr>
+                                            ))}
+                                            <tr>
+                                                <td colSpan="1" className="text-right"><strong>Total Trueques:</strong></td>
+                                                <td><strong>{calcularTotalTrueques()}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="mt-4" style={{ maxWidth: '500px', margin: '0 auto' }}>
+                                    <div style={{ position: 'relative', height: '500px' }}>
+                                        <Pie data={data} options={options} />
+                                    </div>
+                                </div>
+                            </>
                         )}
                         {/* Mostrar mensaje de alerta si no se encontraron trueques */}
                         {mostrarMensaje && (
