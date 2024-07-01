@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
+import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -10,6 +11,7 @@ const AltaSucursal = () => {
     const [telefono, setTelefono] = useState('');
     const [mensaje, setMensaje] = useState('');
     const [mensajeError, setMensajeError] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -36,6 +38,10 @@ const AltaSucursal = () => {
             }
             setMensaje('');
         }
+    };
+
+    const handleCancel = () => {
+        navigate('/adminDashboard');
     };
 
 
@@ -82,7 +88,18 @@ return (
                             required
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary">Crear sucursal</button>
+                    <div className="mb-3">
+                        <div className="row">
+                            <div className="col">
+                                <button type="submit" className="btn btn-primary w-100" >Crear sucursal</button>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col">
+                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
                     {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
                 </form>
             </div>

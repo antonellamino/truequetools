@@ -12,7 +12,7 @@ const ListaSucursales = () => {
     useEffect(() => {
         const fetchSucursales = async () => {
             try {
-                const response = await axios.get(`${backendUrl}/sucursales`);
+                const response = await axios.get(`${backendUrl}/full-sucursales`);
                 setSucursales(response.data.sucursales);
             } catch (error) {
                 console.error('Error al obtener sucursales:', error);
@@ -30,7 +30,7 @@ const ListaSucursales = () => {
         <Fragment>
             <Navbar />
             <div className="container mt-5">
-                <h2 className="text-white">Sucursales</h2>
+                <h2 className="text-white">Trueques pendientes por sucursal</h2>
                 <div className="table-responsive">
                     <table className="table table-striped">
                         <thead className="thead-dark">

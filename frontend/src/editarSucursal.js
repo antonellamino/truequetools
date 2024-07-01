@@ -86,8 +86,11 @@ const EditarSucursal = () => {
                 }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
-    };;
+    };
 
+    const handleCancel = () => {
+        navigate('/infoSucursal');
+    };
 
     return (
         <Fragment>

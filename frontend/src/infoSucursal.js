@@ -14,7 +14,9 @@ const InfoSucursal = () => {
         const fetchSucursales = async () => {
             try {
                 const response = await axios.get(`${backendUrl}/sucursales`);
-                setSucursales(response.data.sucursales);
+                // filtra sucursales activas
+                const sucursalesActivas = response.data.sucursales.filter(sucursal => sucursal.esta_activa);
+                setSucursales(sucursalesActivas);
             } catch (error) {
                 console.error('Error al obtener sucursales:', error);
             }
@@ -42,8 +44,8 @@ const InfoSucursal = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    console.log('falta implementacion'); //falta implementar, despues lo sigo
-                    const response = await axios.post(`${backendUrl}/eliminar-sucursal`, { id : id });
+                    console.log(id);
+                    const response = await axios.post(`${backendUrl}/eliminar-sucursal`, { id });
                     console.log(response.data);
 
                     setSucursales(sucursales.filter(sucursal => sucursal.id !== id));

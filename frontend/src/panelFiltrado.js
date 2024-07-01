@@ -13,22 +13,30 @@ const PanelFiltrado = ({ actualizarProductosFiltrados }) => {
     });
 
     useEffect(() => {
-        axios.get(`${backendUrl}/sucursales`)
-            .then(response => {
-                setSucursales(response.data.sucursales);
-            })
-            .catch(error => {
+        const fetchSucursales = async () => {
+            try {
+                const response = await axios.get(`${backendUrl}/sucursales`);
+                const sucursalesActivas = response.data.sucursales.filter(sucursal => sucursal.esta_activa);
+                setSucursales(sucursalesActivas);
+            } catch (error) {
                 console.error('Error al obtener las sucursales:', error);
-            });
+            }
+        };
 
-        axios.get(`${backendUrl}/categorias`)
-            .then(response => {
+        const fetchCategorias = async () => {
+            try {
+                const response = await axios.get(`${backendUrl}/categorias`);
                 setCategorias(response.data.categorias);
-            })
-            .catch(error => {
-                console.error('Error al obtener las categorias:', error);
-            });
+            } catch (error) {
+                console.error('Error al obtener las categorías:', error);
+            }
+        };
+
+        fetchSucursales();
+        fetchCategorias();
     }, []);
+
+
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;

@@ -382,6 +382,10 @@ const TruequesPendientes = () => {
                     <p>No tienes trueques pendientes.</p>
                 )}
             </div>
+
+            {/* <div className="mt-3">
+                <Link to="/listaSucursales" className="btn btn-secondary w-100">Volver</Link>
+            </div> */}
             <Footer />
         </Fragment>
     );
