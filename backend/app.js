@@ -1597,10 +1597,6 @@ app.post('/eliminar-sucursal', async (req, res) => {
         return res.status(400).json({ error: 'El id es requerido.' });
     }
 
-    if (id === 1) {
-        return res.status(400).json({ error: 'No se puede eliminar la sucursal con id 1.' });
-    }
-
     try {
         console.log('sucursal a eliminar:', id);
 
