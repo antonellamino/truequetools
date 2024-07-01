@@ -935,14 +935,14 @@ app.post('/agregar-notificacion', async (req, res) => {
 
 app.post('/guardar-trueque', async (req, res) => {
     try {
-        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id } = req.body;
+        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id_sucursal } = req.body;
 
         const nuevoTrueque = await Trueque.forge({
             id_propietario,
             id_ofertante,
             id_producto_propietario,
             id_producto_ofertante,
-            id
+            id_sucursal
         });
 
         console.log("aaasfa");
@@ -1597,16 +1597,21 @@ app.post('/eliminar-sucursal', async (req, res) => {
         return res.status(400).json({ error: 'El id es requerido.' });
     }
 
+    if (id === 1) {
+        return res.status(400).json({ error: 'No se puede eliminar la sucursal con id 1.' });
+    }
+
     try {
         console.log('sucursal a eliminar:', id);
 
-        const truequesPendientesOCreados = await Trueque.where({ id_sucursal: id })
-            .where('estado', 'in', ['espera', 'creado'])
+        // Verificar si hay trueques asociados con estado "confirmado"
+        const truequesConfirmados = await Trueque.where({ id_sucursal: id })
+            .where('estado', 'confirmado')
             .fetch({ require: false });
-        console.log(truequesPendientesOCreados);
+        console.log(truequesConfirmados);
 
-        if (truequesPendientesOCreados) {
-            return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques pendientes.' });
+        if (truequesConfirmados) {
+            return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques confirmados.' });
         }
 
         const sucursal = await Sucursal.where({ id }).fetch({ require: false });
@@ -1625,12 +1630,13 @@ app.post('/eliminar-sucursal', async (req, res) => {
             await Usuario.where({ sucursal_preferencia: id }).save({ sucursal_preferencia: 1 }, { patch: true });
         }
 
-        res.status(200).json({ message: 'sucursal eliminada exitosamente.' });
+        res.status(200).json({ message: 'Sucursal eliminada exitosamente.' });
     } catch (error) {
-        console.error('error al eliminar la sucursal:', error);
-        res.status(500).json({ error: 'error interno del servidor.' });
+        console.error('Error al eliminar la sucursal:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
     }
 });
+
 
 
 

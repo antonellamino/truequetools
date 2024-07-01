@@ -41,7 +41,7 @@ const Opciones = () => {
             id_producto_ofertante: producto.id,
             id_sucursal: sucursalId
         };
-    
+
         try {
             // Guardar el trueque
             await axios.post(`${backendUrl}/guardar-trueque`, datosTrueque);
