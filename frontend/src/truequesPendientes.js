@@ -212,6 +212,13 @@ const TruequesPendientes = () => {
                 actualizarTrueque(trueque.id, response.data.estado);
                 obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de cancelar
     
+                Swal.fire({
+                    title: 'Cancelado',
+                    text: 'El trueque ha sido cancelado.',
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
                 // Limpiar el mensaje de error si la cancelación es exitosa
                 setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: '' }));
     
@@ -249,6 +256,14 @@ const TruequesPendientes = () => {
                     setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: 'Error desconocido al cancelar el trueque' }));
                 }
             }
+        }else {
+            // Mostrar mensaje de que el trueque no ha sido cancelado
+            Swal.fire({
+                title: 'El trueque no ha sido cancelado.',
+                icon: 'info',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
         }
     };
 

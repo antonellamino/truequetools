@@ -44,8 +44,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/iniciarSesion" element={<LoginCliente />} />
             <Route path="/registro" element={<FormularioRegistroCliente />} />
-            <Route path="/publicarProducto" element={<ProtectedRoute requiredRole={3}><PublicarProductoForm /></ProtectedRoute>} />
-            <Route path="/clienteDashboard" element={<ProtectedRoute requiredRole={3}><ClienteDashboard /></ProtectedRoute>} />
+            <Route path="/publicarProducto" element={<PublicarProductoForm/>} />
+            <Route path="/clienteDashboard" element={<ClienteDashboard />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/cardProducto" element={<CardProducto />} />
             <Route path="/iniciarSesionEmpleado" element={<LoginEmpleado />} />
