@@ -27,8 +27,9 @@ const Publicacion = () => {
     const userId = localStorage.getItem('userId');
     const [mensajeErrorEdicion, setMensajeErrorEdicion] = useState(''); // Estado para el mensaje de error de edición
     const [mensajeErrorEliminacion, setMensajeErrorEliminacion] = useState('');
-    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false);
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
 
+    
     useEffect(() => {
         obtenerProducto(id);
         obtenerComentarios(id);
@@ -286,7 +287,7 @@ const Publicacion = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const res = await axios.post(`${backendUrl}/eliminar-producto`, { id: id_producto });
+                    const res = await axios.post(`${backendUrl}/eliminar-publicacion`, { id: id_producto });
                     console.log("el back de eliminar producto me dijo:", res.data);
     
                     navigate('/clienteDashboard');
@@ -304,6 +305,12 @@ const Publicacion = () => {
                         'error'
                     );
                 }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
     };
@@ -426,6 +433,12 @@ const Publicacion = () => {
                     <button type="submit" className="boton_trueque" onClick={() => enviarDatos(producto)}>
                         Truequear
                     </button>
+                )}
+
+                {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        Baja rechazada.
+                    </div>
                 )}
             </div>
             <Footer />
