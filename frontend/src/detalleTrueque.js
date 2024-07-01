@@ -26,6 +26,7 @@ const DetalleTrueque = () => {
             fetchDetalleTrueque();
         }
     }, [id]);
+    
 
     return (
         <Fragment>

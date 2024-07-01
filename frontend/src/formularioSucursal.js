@@ -94,11 +94,7 @@ return (
                                 <button type="submit" className="btn btn-primary w-100" >Crear sucursal</button>
                             </div>
                         </div>
-                        <div className="row mt-3">
-                            <div className="col">
-                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
-                            </div>
-                        </div>
+                        
                     </div>
                     {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
                 </form>
