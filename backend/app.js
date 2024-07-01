@@ -1240,6 +1240,21 @@ app.post('/eliminar-comentario', async (req, res) => {
     }
 });
 
+app.post('/eliminar-respuesta', async (req, res) => {
+    try {
+        const { id_comentario } = req.body; // Asegúrate de usar el mismo nombre que en el frontend
+        const comentario = await Comentario.where({ id: id_comentario }).fetch();
+        comentario.set('respuesta', null).save();
+        res.status(200).json({ message: 'Respuesta eliminada con éxito' });
+    } catch (error) {
+        console.error('Error al eliminar el comentario:', error);
+        res.status(500).json({ error: 'Error al eliminar la respuesta' });
+    }
+});
+
+
+
+
 app.get('/cantidad-trueques', async (req, res) => {
     try {
         const { fechaInicio, fechaFin } = req.query;
