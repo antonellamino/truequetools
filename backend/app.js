@@ -197,11 +197,27 @@ app.get('/usuarios', async (req, res) => {
         res.json({ usuarios });
     } catch (error) {
         console.error('error al obtener los usuarios:', error);
-        res.status(500).json({ error: 'ocurrio un error al obtener las sucursales' });
+        res.status(500).json({ error: 'ocurrio un error al obtener los usuarios' });
     }
 });
 
+app.get('/usuarioActual/:id', async (req, res) => {
+    try{
+        const id = req.params.id;
 
+        const usuario = await Usuario.where({id : id}).fetch();
+        
+        if (!usuario) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        res.json({ usuario });
+    } catch (error) {
+        
+        console.error('error al obtener el usuario:', error);
+        res.status(500).json({ error: 'ocurrio un error al obtener el usuario :) ' });
+    }
+});
 
 //solo admin
 app.get('/sucursales', async (req, res) => {
@@ -327,6 +343,33 @@ app.get('/productos-filtrados', async (req, res) => {
     }
 });
 
+//me trae los datos de un producto con x id
+app.get('/obtener-producto/:productoId', async (req, res) => {
+    try {
+        const { productoId } = req.params;
+        console.log("PRODUCTO ID:::", productoId);
+
+        const producto = await Producto.where('id', productoId).fetch();
+
+        if (!producto) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        // Construir la respuesta en el formato esperado por el frontend
+        const productoData = {
+            nombre: producto.get('nombre'),
+            descripcion: producto.get('descripcion'),
+            categoria_id: producto.get('categoria_id')
+        };
+
+        
+        res.json({ producto: productoData });
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).json({ error: 'Error fetching product' });
+    }
+});
+
 
 
 
@@ -429,13 +472,14 @@ app.get('/ventas', async (req, res) => {
 
 app.post('/agregar-venta', async (req, res) => {
     try {
-        const { articulo, fecha_venta, valor, email_usuario } = req.body;
+        const { articulo, fecha_venta, valor, email_usuario, id_trueque } = req.body;
 
         const nuevaVenta = await Venta.forge({
             articulo,
             fecha_venta,
             valor,
-            email_usuario
+            email_usuario,
+            id_trueque
         }).save();
 
         res.status(201).json({ nuevaVenta, message: 'Venta registrada exitosamente' });
@@ -477,7 +521,86 @@ app.get('/datos-producto', async (req, res) => {
     }
 });
 
+app.get('/obtener-producto', async (req, res) => {
+    const productoId = req.query.id_producto;
+    try {
+        // Consulta a la base de datos filtrando la tabla productos por el id_producto recibido
+        const producto = await Producto.query(qb => {
+            qb.where('productos.id', productoId)
+                .join('sucursales', 'productos.sucursal_elegida', 'sucursales.id')
+                .join('categorias', 'productos.categoria_id', 'categorias.id')
+                .join('usuarios', 'productos.usuario_id', 'usuarios.id')
+                .select(
+                    'productos.id',
+                    'productos.nombre',
+                    'productos.descripcion',
+                    'productos.sucursal_elegida',
+                    'productos.usuario_id',
+                    'productos.categoria_id',
+                    'productos.imagen_1',
+                    'productos.imagen_2',
+                    'productos.imagen_3',
+                    'productos.imagen_4',
+                    'productos.estado',
+                    'sucursales.nombre as nombre_sucursal',
+                    'categorias.nombre as nombre_categoria',
+                    'usuarios.nombre as nombre_usuario'
+                );
+        }).fetch();
 
+        console.log("PRUEBA EDITAR PUBLICACION, ME DIO EL BACK EL PRODUCTO:");
+        console.log(producto);
+
+        if (producto) {
+            res.json({ producto });
+        } else {
+            res.status(404).json({ message: 'Producto no encontrado' });
+        }
+    } catch (error) {
+        console.error('Error al obtener datos del producto:', error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+});
+
+//para el editar publicacion
+// En tu archivo de rutas del servidor, por ejemplo, routes.js o app.js
+app.get('/verificar-trueques-producto/:productoId', async (req, res) => {
+    const { productoId } = req.params;
+
+    try {
+        //me agarro los trueques en los que participa ese producto (tanto como propietario o ofertante)
+        const truequesPropietario = await Trueque.query(qb => {
+            qb.where('id_producto_propietario', productoId);
+        }).fetchAll();
+
+        const truequesOfertante = await Trueque.query(qb => {
+            qb.where('id_producto_ofertante', productoId);
+        }).fetchAll();
+        
+        //uno los trueques en un sola constante
+        const trueques = truequesPropietario.toJSON().concat(truequesOfertante.toJSON());
+        
+        if (trueques.length === 0) {
+            return res.json({ puedeEditar: true });
+        }
+
+        //verificar si hay trueques con estados diferentes a cancelado
+
+        const tieneTruequesPendientes = trueques.some(trueque => trueque.estado !== 'cancelado');
+        console.log(tieneTruequesPendientes);
+        //creado, rechazado, confirado, completado,
+
+        if (tieneTruequesPendientes) {
+            return res.json({ puedeEditar: false });
+        }
+
+        return res.json({ puedeEditar: true });
+
+    } catch (error) {
+        console.error('Error al verificar los trueques del producto:', error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+});
 
 
 app.get('/comentarios', async (req, res) => { //ok
@@ -683,17 +806,19 @@ app.get('/productos_truequear', async (req, res) => {
 
         const productos = await Producto.query(p => {
             p.where('usuario_id', usuarioId)
-             .andWhere('categoria_id', categoriaId) // Agrega la condición para la categoría
+             .andWhere('categoria_id', categoriaId)
              .andWhere('estado', false) // Excluye productos con estado = true
              .join('categorias', 'productos.categoria_id', 'categorias.id')
              .whereNotIn('productos.id', function() {
                  this.select('id_producto_propietario')
                      .from('trueque')
                      .where('id_producto_ofertante', productoId)
+                     .andWhere('estado', '<>', 'cancelado') // Nueva condición para estado del trueque
                      .union(function() {
                          this.select('id_producto_ofertante')
                              .from('trueque')
-                             .where('id_producto_propietario', productoId);
+                             .where('id_producto_propietario', productoId)
+                             .andWhere('estado', '<>', 'cancelado'); // Nueva condición para estado del trueque
                      });
              })
              .select('productos.*', 'categorias.nombre as nombre_categoria');
@@ -705,6 +830,8 @@ app.get('/productos_truequear', async (req, res) => {
         res.status(500).json({ error: 'Ocurrió un error al obtener los productos' });
     }
 });
+
+
 
 
 
@@ -823,12 +950,14 @@ app.get('/mis_trueques', async (req, res) => {
             return res.status(400).json({ error: 'Usuario ID es requerido' });
         }
 
+        
         const trueques = await Trueque.query(qb => {
             qb.where('id_propietario', usuario_id)
                 .orWhere('id_ofertante', usuario_id)
                 .leftJoin('productos as propietario_productos', 'trueque.id_producto_propietario', 'propietario_productos.id')
                 .leftJoin('productos as ofertante_productos', 'trueque.id_producto_ofertante', 'ofertante_productos.id')
-                .select('trueque.*', 'propietario_productos.imagen_1 as imagenPropietario', 'ofertante_productos.imagen_1 as imagenOfertante');
+                .select('trueque.*', 'propietario_productos.imagen_1 as imagenPropietario', 'ofertante_productos.imagen_1 as imagenOfertante')
+                .orderBy('trueque.id', 'desc'); // Ordenar por id en orden descendente
         }).fetchAll({
             withRelated: ['propietario', 'ofertante', 'productoPropietario', 'productoOfertante']
         });
@@ -880,19 +1009,33 @@ app.post('/rechazar_trueque', async (req, res) => {
         const { idTrueque } = req.body;
 
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
-        const estado = "cancelado";
-        trueque.set({ estado });
+        const estadoTrueque = "cancelado";
+        trueque.set({ estado: estadoTrueque });
 
         await trueque.save();
 
-        res.status(200).json({ message: 'Trueque rechazado con exito' });
+        const propietarioID = trueque.get('id_producto_propietario');
+        const ofertanteID = trueque.get('id_producto_ofertante');
 
+        const productoPropietario = await Producto.where({ id: propietarioID }).fetch();
+        const productoOfertante = await Producto.where({ id: ofertanteID }).fetch();
+
+        const estadoProductos = false;
+
+        productoPropietario.set({ estado: estadoProductos });
+        productoOfertante.set({ estado: estadoProductos });
+
+        await productoPropietario.save();
+        await productoOfertante.save();
+
+        res.status(200).json({ message: 'Trueque rechazado exitosamente' });
 
     } catch (error) {
-        console.error('Error al rechazar el trueque:', error); // Imprime en consola si hay un error.
-        res.status(500).json({ message: 'Error del servidor' }); // Envía un mensaje de error con un código de estado 500 (Error Interno del Servidor).
+        console.error('Error al rechazar el trueque:', error);
+        res.status(500).json({ error: 'Error al rechazar el trueque' });
     }
 });
+
 
 app.post('/aceptar_trueque', async (req, res) => {
     try {
@@ -910,11 +1053,12 @@ app.post('/aceptar_trueque', async (req, res) => {
     }
 });
 
+const axios = require('axios');
+
 app.post('/confirmar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
-        const trueque = await Trueque.where({ id: idTrueque }).fetch();
-        console.log(trueque);
+        const trueque = await Trueque.where({ id: idTrueque }).fetch(); //obtengo el trueque
 
         if (!trueque) {
             return res.status(404).json({ error: 'Trueque no encontrado' });
@@ -923,20 +1067,37 @@ app.post('/confirmar_trueque', async (req, res) => {
         const propietarioID = trueque.get('id_producto_propietario');
         const ofertanteID = trueque.get('id_producto_ofertante');
 
-        const productoPropietario = await Producto.where({ id: propietarioID }).fetch();
-        const productoOfertante = await Producto.where({ id: ofertanteID }).fetch();
+        const producto1 = await Producto.where({ id: propietarioID }).fetch(); //obtengo los productos
+        const producto2 = await Producto.where({ id: ofertanteID }).fetch();
+        
 
-        estado = "completado";
+        estado = "completado";  //confirmo el trueque
         trueque.set({ estado });
         await trueque.save();
 
         estado = true;
 
-        productoPropietario.set({ estado });
-        productoOfertante.set({ estado });
+        producto1.set({ estado });  //cambio el estado de los productos
+        producto2.set({ estado });
 
-        await productoPropietario.save();
-        await productoOfertante.save();
+        await producto1.save();
+        await producto2.save();
+
+       
+        // Llamada al endpoint cancelar_otros_trueques
+        try {
+            await axios.post('http://localhost:5000/cancelar_otros_trueques', {
+                idProducto1: propietarioID,
+                idProducto2: ofertanteID,
+                idTruequeConfirmado: idTrueque
+            });
+
+           
+
+        } catch (cancelError) {
+            console.error('Error al cancelar otros trueques:', cancelError);
+            return res.status(500).json({ error: 'Error al cancelar otros trueques' });
+        }
 
         res.status(200).json({ message: 'Trueque confirmado exitosamente', trueque });
     } catch (error) {
@@ -970,7 +1131,6 @@ const { differenceInHours } = require('date-fns');
 app.post('/cancelar_trueque', async (req, res) => {
     try {
         const { idTrueque } = req.body;
-
         const trueque = await Trueque.where({ id: idTrueque }).fetch();
 
         if (!trueque) {
@@ -1001,6 +1161,73 @@ app.post('/cancelar_trueque', async (req, res) => {
     }
 });
 
+app.post('/empleado_cancelar_trueque', async (req, res) => {
+    try {
+        const { idTrueque } = req.body;
+        const trueque = await Trueque.where({ id: idTrueque }).fetch();
+
+        if (!trueque) {
+            return res.status(404).json({ error: 'Trueque no encontrado' });
+        }
+
+        trueque.set('estado', 'cancelado');
+        await trueque.save();
+
+        res.status(200).json({ message: 'Trueque cancelado con éxito', estado: 'cancelado' });
+
+    } catch (error) {
+        console.error('Error al cancelar trueque:', error);
+        res.status(500).json({ error: 'Error al cancelar trueque' });
+    }
+
+});
+
+app.post('/cancelar_otros_trueques', async (req, res) => {
+    const { idProducto1, idProducto2, idTruequeConfirmado } = req.body;
+    
+    try {
+        const trueques = await Trueque.query(qb => {  //obtengo todos los trueques a cancelar
+            qb.where(function() {
+                this.where('id_producto_propietario', idProducto1)
+                    .orWhere('id_producto_ofertante', idProducto1)
+                    .orWhere('id_producto_propietario', idProducto2)
+                    .orWhere('id_producto_ofertante', idProducto2);
+            })
+            .andWhere('estado', '!=', 'completado')
+            .andWhere('id', '!=', idTruequeConfirmado);
+        }).fetchAll();
+
+        for (const trueque of trueques.models) {
+            trueque.set({ estado: 'cancelado' });
+            await trueque.save();
+            // Obtener los nombres de los productos usando el endpoint existente
+            const nomproducto1 = await axios.get(`http://localhost:5000/producto_especifico/${trueque.get('id_producto_propietario')}`);
+            const nomproducto2 = await axios.get(`http://localhost:5000/producto_especifico/${trueque.get('id_producto_ofertante')}`);
+            // Obtener IDs de propietario y ofertante
+            const propietarioID = trueque.get('id_propietario');
+            const ofertanteID = trueque.get('id_ofertante');
+            // Crear notificaciones para el propietario y el ofertante
+            await Promise.all([
+                axios.post(`http://localhost:5000/agregar-notificacion`, {
+                    idUser: propietarioID,
+                    comentario: `Se ha cancelado el trueque con el producto ${nomproducto1.data.nombre} por producto no disponible`,
+                    link: `/truequesPendientes/${propietarioID}`
+                }),
+                axios.post(`http://localhost:5000/agregar-notificacion`, {
+                    idUser: ofertanteID,
+                    comentario: `Se ha cancelado el trueque con el producto ${nomproducto2.data.nombre} por producto no disponible`,
+                    link: `/truequesPendientes/${ofertanteID}`
+                })
+            ]);
+        }
+
+        res.status(200).json({ message: 'Otros trueques cancelados exitosamente' });
+    } catch (error) {
+        console.error('Error al cancelar otros trueques:', error);
+        res.status(500).json({ error: 'Error al cancelar otros trueques' });
+    }
+});
+
 app.post('/eliminar-comentario', async (req, res) => {
     try {
         const { id_comentario } = req.body; // Asegúrate de usar el mismo nombre que en el frontend
@@ -1012,6 +1239,21 @@ app.post('/eliminar-comentario', async (req, res) => {
         res.status(500).json({ error: 'Error al eliminar el comentario' });
     }
 });
+
+app.post('/eliminar-respuesta', async (req, res) => {
+    try {
+        const { id_comentario } = req.body; // Asegúrate de usar el mismo nombre que en el frontend
+        const comentario = await Comentario.where({ id: id_comentario }).fetch();
+        comentario.set('respuesta', null).save();
+        res.status(200).json({ message: 'Respuesta eliminada con éxito' });
+    } catch (error) {
+        console.error('Error al eliminar el comentario:', error);
+        res.status(500).json({ error: 'Error al eliminar la respuesta' });
+    }
+});
+
+
+
 
 app.get('/cantidad-trueques', async (req, res) => {
     try {
@@ -1054,6 +1296,24 @@ app.post('/eliminar-empleado', async (req, res) => {
     }
 });
 
+// eliminar producto
+app.post('/eliminar-producto', async (req, res) => {
+    //me mandan el id del producto
+    const { id } = req.body;
+    try{
+        if(!id){
+         return res.status(400).json({ error: 'el id del empleado es requerido' });
+        }
+
+        const producto = await Producto.where({ id: id}).fetch();
+        producto.set('estado', true).save();
+        res.status(200).json({ message: 'Producto eliminado.' });
+
+    } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+        res.status(500).json({ error: 'Error al eliminar el producto.' });
+    }
+});
 
 app.get('/obtener-empleado/:id', async (req, res) => {
     try {
@@ -1073,6 +1333,23 @@ app.get('/obtener-empleado/:id', async (req, res) => {
     } catch (error) {
         console.error('Error al obtener el empleado:', error);
         res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+app.put('/editar-producto', async (req, res) => {
+    try {
+        const { productoId, datosFormulario } = req.body;
+    
+        if (!productoId || !datosFormulario) {
+            return res.status(400).json({ error: 'El id del producto y los datos a actualizar son requeridos' });
+        }
+
+        await Producto.where({ id: productoId }).save(datosFormulario, { method: 'update', patch: true });
+
+        res.status(200).json({ message: 'Producto actualizado exitosamente.' });
+    } catch (error) {
+        console.error('Error al actualizar el producto:', error);
+        res.status(500).json({ error: 'Error interno del servidor al actualizar el producto.' });
     }
 });
 
@@ -1236,19 +1513,64 @@ app.post('/eliminar-venta', async (req, res) => {
         console.error('Error al eliminar la venta:', error);
         res.status(500).json({ error: 'Error al eliminar la venta.' });
     }
+
 })
 
+app.get('/producto_especifico/:idProducto', async (req, res) => {
+    try {
+        const { idProducto } = req.params;
+
+        // Realiza la consulta para obtener el producto por su ID
+        const producto = await Producto.where({ id: idProducto }).fetch({ columns: ['nombre'] });
+
+        if (!producto) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+        res.json({ nombre: producto.get('nombre') });
+    } catch (error) {
+        console.error('Error al obtener el producto:', error);
+        res.status(500).json({ error: 'Error al obtener el producto' });
+    }
+});
 
 
+app.get('/promedio-ventas', async (req, res) => {
+    try {
+        const { fechaInicio, fechaFin } = req.query;
+        const truequesConVentas = await Trueque.query()
+            .select(
+                'trueque.id as id_trueque',
+                'trueque.fecha as fecha_trueque',
+                'sucursales.nombre as nombre_sucursal'
+            )
+            .sum('ventas.valor as total_valor_ventas')
+            .innerJoin('ventas', 'trueque.id', 'ventas.id_trueque')
+            .innerJoin('sucursales', 'trueque.id_sucursal', 'sucursales.id')
+            .where('trueque.estado', 'completado')
+            .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
+            .groupBy('trueque.id', 'trueque.fecha', 'sucursales.nombre');
+        console.log(truequesConVentas);
+        res.json(truequesConVentas);
+    } catch (error) {
+        console.error('Error al traer las ventas y los trueques:', error);
+        res.status(500).json({ error: 'Error al traer las ventas y los trueques' });
+    }
+});
 
+app.get('/detalle_trueque', async (req, res) => {
+    try {
+        console.log('Entra a detalle trueque');
+        const { id } = req.query;
+        console.log(id);
+        const ventasTrueque = await Venta.where({ id_trueque: id }).fetchAll();
 
-
-
-
-
-
-
-
+        console.log(ventasTrueque);
+        res.json(ventasTrueque);
+    } catch (error) {
+        console.error('Error al traer las ventas del trueque:', error);
+        res.status(500).json({ error: 'Error al traer las ventas del trueque' });
+    }
+});
 
 // iniciar servidor
 app.listen(PORT, () => {

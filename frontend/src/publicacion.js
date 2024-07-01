@@ -6,9 +6,10 @@ import { AuthContext } from './AuthContext';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import Footer from './footer';
-import Navbar from './navbar';
+import Footer from './Footer';
+import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -24,6 +25,9 @@ const Publicacion = () => {
     const [errorMensaje, setErrorMensaje] = useState(''); // Nuevo estado para mensaje de error
     const navigate = useNavigate();
     const userId = localStorage.getItem('userId');
+    const [mensajeErrorEdicion, setMensajeErrorEdicion] = useState(''); // Estado para el mensaje de error de edición
+    const [mensajeErrorEliminacion, setMensajeErrorEliminacion] = useState('');
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false);
 
     useEffect(() => {
         obtenerProducto(id);
@@ -151,15 +155,82 @@ const Publicacion = () => {
     };
 
     const eliminarComentario = (comentarioId) => {
-        axios.post(`${backendUrl}/eliminar-comentario`, { id_comentario: comentarioId })
-            .then(response => {
-                obtenerComentarios(id);
-            })
-            .catch(error => {
-                console.error('Error al eliminar el comentario:', error);
-            });
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'No podrás revertir esta acción',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axios.post(`${backendUrl}/eliminar-comentario`, { id_comentario: comentarioId });
+                    console.log("el back de eliminar producto me dijo:", res.data);
+                    obtenerComentarios(id);
+                    Swal.fire(
+                        'Eliminado!',
+                        'El comentario ha sido eliminado.',
+                        'success'
+                    );
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire(
+                        'Error!',
+                        'Error al intentar eliminar la publicación, por favor inténtalo nuevamente.',
+                        'error'
+                    );
+                }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
+            }
+        });
     };
 
+    const eliminarRespuesta = (comentarioId) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'No podrás revertir esta acción',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axios.post(`${backendUrl}/eliminar-respuesta`, { id_comentario: comentarioId });
+                    console.log("el back de eliminar producto me dijo:", res.data);
+                    obtenerComentarios(id);
+                    Swal.fire(
+                        'Eliminado!',
+                        'La respuesta ha sido eliminado.',
+                        'success'
+                    );
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire(
+                        'Error!',
+                        'Error al intentar eliminar la publicación, por favor inténtalo nuevamente.',
+                        'error'
+                    );
+                }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
+            }
+        });
+    };
 
     useEffect(() => {
         if (errorMensaje) {
@@ -169,6 +240,70 @@ const Publicacion = () => {
             return () => clearTimeout(timer);
         }
     }, [errorMensaje]);
+
+          
+    const verificarTruequesPendientes = async (productoId) => {
+        try {
+            const response = await axios.get(`${backendUrl}/verificar-trueques-producto/${productoId}`);
+            return response.data.puedeEditar;
+        } catch (error) {
+            console.error('Error al verificar los trueques del producto:', error);
+            return false;
+        }
+    };
+
+    const handleEditarPublicacion = async () => {
+        const puedeEditar = await verificarTruequesPendientes(id);
+        if (puedeEditar) {
+            navigate(`/editarPublicacion/${producto.id}`);
+        } else {
+            setMensajeErrorEdicion('No puedes editar la publicación. Tiene trueques pendientes.');
+        }
+    };
+
+    const handleEliminarPublicacion = async () => {
+        const puedeEliminar = await verificarTruequesPendientes(id);
+        if( puedeEliminar ){
+            eliminarPublicacion(id);
+        }else{
+            setMensajeErrorEliminacion('No puedes eliminar esta publicación. Tiene trueques pendientes');
+        }
+    }
+
+    const eliminarPublicacion = async (id_producto) => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'No podrás revertir esta acción',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axios.post(`${backendUrl}/eliminar-producto`, { id: id_producto });
+                    console.log("el back de eliminar producto me dijo:", res.data);
+    
+                    navigate('/clienteDashboard');
+                
+                    Swal.fire(
+                        'Eliminado!',
+                        'La publicación ha sido eliminada.',
+                        'success'
+                    );
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire(
+                        'Error!',
+                        'Error al intentar eliminar la publicación, por favor inténtalo nuevamente.',
+                        'error'
+                    );
+                }
+            }
+        });
+    };
 
     return (
         <Fragment>
@@ -203,7 +338,13 @@ const Publicacion = () => {
                     <p>Cargando...</p>
                 )}
                 <div className="comentarios-container">
-                    <h2>Comentarios</h2>
+                    <h2 style={{ backgroundColor: '#2c3359', color: '#ffffff',  padding: '10px' }}>Comentarios</h2>
+                    {showNoChangesMessage && (
+                        <div className="alert alert-danger" role="alert">
+                            No se registraron cambios.
+                        </div>
+                    )}
+
                     {comentarios.length > 0 ? (
                         comentarios.map((comentario) => (
                             <div key={comentario.id} className="comentario">
@@ -211,11 +352,12 @@ const Publicacion = () => {
                                 {comentario.respuesta != null ? (
                                     <div>
                                         <p>{comentario.respuesta}</p>
+                                        {esCreador && userId == producto.usuario_id && (<button className="boton_trueque" onClick={() => eliminarRespuesta(comentario.id)}>Eliminar Respuesta</button>)}
                                     </div>
                                 ) : (
                                     <div>
                                         <p>No hay respuesta.</p>
-                                        {!esCreador && userId == comentario.id_usuario && (<button onClick={() => eliminarComentario(comentario.id)}>Eliminar Comentario</button>)}
+                                        {!esCreador && userId == comentario.id_usuario && (<button className="boton_trueque" onClick={() => eliminarComentario(comentario.id)}>Eliminar Comentario</button>)}
                                     </div>
                                 )}
                                 {(esCreador) && (comentario.respuesta == null) && (
@@ -264,6 +406,19 @@ const Publicacion = () => {
                         <p>Debes iniciar sesión para comentar.</p>
                     )}
                 </div>
+                {esCreador && (
+                   <>
+                   <button className="btn btn-primary mt-3" onClick={handleEditarPublicacion}>Editar Publicación</button>
+                   {mensajeErrorEdicion && <p style={{ color: 'red' }}>{mensajeErrorEdicion}</p>} 
+               </>)}
+
+               {esCreador && (
+                   <>
+                  <button style={{ backgroundColor: 'red', borderColor: 'red', color: 'white' }} className="btn btn-primary mt-3" onClick={handleEliminarPublicacion}>Eliminar Publicación</button>
+                     {mensajeErrorEliminacion && <p style={{ color: 'red' }}>{mensajeErrorEliminacion}</p>} 
+               </>)}
+
+
                 {!esCreador && isAuthenticated && rol !== 1 && (
                     <button type="submit" className="boton_trueque" onClick={() => enviarDatos(producto)}>
                         Truequear

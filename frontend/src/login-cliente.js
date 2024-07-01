@@ -1,9 +1,9 @@
 import React, { Fragment, useState} from 'react';
 import axios from 'axios';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import Footer from './footer';
+import Footer from './Footer';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -62,7 +62,7 @@ const LoginCliente = () => {
                     const rol = response.data.rol_id;
 
                     login(token,userId, rol)
-                    navigate('/home');
+                    navigate('/');
                 }
             } catch (error) {
                 console.error('entra x el catch:', error.message);

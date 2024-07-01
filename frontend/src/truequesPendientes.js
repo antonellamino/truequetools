@@ -4,17 +4,19 @@ import DatePicker from 'react-datepicker';
 import es from 'date-fns/locale/es';
 import 'react-datepicker/dist/react-datepicker.css';
 import { setHours, setMinutes } from 'date-fns';
-import Footer from './footer';
-import Navbar from './navbar';
+import Footer from './Footer';
+import Navbar from './Navbar';
 import './truequesPendientes.css';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.css';
+
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const TruequesPendientes = () => {
     const [trueques, setTrueques] = useState([]);
-    const [setMensaje, mensaje] = useState(null);
+    const [mensaje, setMensaje] = useState(null);
     const [selectedDates, setSelectedDates] = useState({});
     const [horarioConfirmado, setHorarioConfirmado] = useState({});
     const [truequeMensajes, setTruequeMensajes] = useState({});
@@ -47,9 +49,9 @@ const TruequesPendientes = () => {
         }));
     };
 
-    const confirmarFecha = (trueque) => {
+    const confirmarFecha = async (trueque) => {
         const selectedDate = selectedDates[trueque.id];
-
+    
         if (!selectedDate) {
             setErrorMensaje(prevState => ({
                 ...prevState,
@@ -57,31 +59,44 @@ const TruequesPendientes = () => {
             }));
             return;
         }
-
+    
         const formattedDate = selectedDate.toISOString().slice(0, 19).replace('T', ' ');
-        window.location.reload();
-
-        axios.post(`${backendUrl}/elegir_horario`, { fechaHora: formattedDate, idTrueque: trueque.id })
-            .then(response => {
-                // Manejar la respuesta del backend según sea necesario
-                const nuevosHorarios = {
-                    ...horarioConfirmado,
-                    [trueque.id]: true
-                };
-
-                console.log("nuevo horario ");
-                console.log(nuevosHorarios);
-
-                setHorarioConfirmado(nuevosHorarios);
-                setMensaje(formattedDate);
-
-                // Recargar la página después de confirmar la fecha y hora
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Error al enviar la fecha y hora seleccionadas:', error);
-            });
+    
+        try {
+            const response = await axios.post(`${backendUrl}/elegir_horario`, { fechaHora: formattedDate, idTrueque: trueque.id });
+            // Manejar la respuesta del backend según sea necesario
+            const nuevosHorarios = {
+                ...horarioConfirmado,
+                [trueque.id]: true
+            };
+    
+            console.log("nuevo horario ");
+            console.log(nuevosHorarios);
+    
+            setHorarioConfirmado(nuevosHorarios);
+            setMensaje(formattedDate);
+    
+            // Obtener el nombre del producto ofertante
+            const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${trueque.id_producto_ofertante}`);
+            const nombreProducto = productoResponse.data.nombre; // Suponiendo que el backend devuelve el nombre del producto
+            let notificacion = {
+                id_usuario: trueque.id_ofertante, // Notificar al ofertante
+                mensaje: `Han propuesto un horario para el trueque con el producto ${nombreProducto}`, // Nombre del producto propietario
+                leido: false,
+                link: `/truequesPendientes/${trueque.id_ofertante}`
+            };
+    
+            // Esperar a que se envíe la notificación antes de recargar la página
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+    
+            // Recargar la página después de confirmar la fecha y hora
+            window.location.reload();
+        } catch (error) {
+            console.error('Error al enviar la fecha y hora seleccionadas:', error);
+        }
     };
+    
+    
 
     const actualizarTrueque = (truequeId, estado) => {
         setTrueques(prevState =>
@@ -91,42 +106,104 @@ const TruequesPendientes = () => {
         );
     };
 
-    const aceptarTrueque = (trueque) => {
-        axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id })
-            .then(response => {
-                console.log("se acepto el trueque");
-                const nuevosMensajes = {
-                    ...truequeMensajes,
-                    [trueque.id]: 'Trueque aceptado'
-                };
-                setTruequeMensajes(nuevosMensajes);
-                actualizarTrueque(trueque.id, response.data.estado);
-                obtenerTrueques(idUsuario);
-            })
-            .catch(error => {
-                console.error('Error al aceptar el trueque:', error);
-            });
+    const aceptarTrueque = async (trueque) => {
+        try {
+            const response = await axios.post(`${backendUrl}/aceptar_trueque`, { idTrueque: trueque.id });
+            console.log("Se aceptó el trueque");
+    
+            const nuevosMensajes = {
+                ...truequeMensajes,
+                [trueque.id]: 'Trueque aceptado'
+            };
+            setTruequeMensajes(nuevosMensajes);
+            actualizarTrueque(trueque.id, response.data.estado);
+            obtenerTrueques(idUsuario);
+    
+            // Obtener el nombre del producto ofertante
+            const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${trueque.id_producto_propietario}`);
+            const nombreProducto = productoResponse.data.nombre; // Suponiendo que el backend devuelve el nombre del producto
+    
+            let notificacion = {
+                id_usuario: trueque.id_propietario, // Notificar al propietario
+                mensaje: `Han aceptado tu propuesta de horario ${nombreProducto}`, // Nombre del producto ofertante
+                leido: false,
+                link: `/truequesPendientes/${trueque.id_propietario}`
+            };
+    
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+        } catch (error) {
+            console.error('Error al aceptar el trueque:', error);
+    
+            // Mostrar un mensaje de error genérico al usuario
+            setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: 'Error al aceptar el trueque' }));
+        }
     };
+    
+    
 
-    const rechazarTrueque = (trueque) => {
-        axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id })
-            .then(response => {
-                const nuevosMensajes = {
-                    ...truequeMensajes,
-                    [trueque.id]: 'Trueque cancelado'
+    const rechazarTrueque = async (trueque) => {
+        try {
+            const response = await axios.post(`${backendUrl}/rechazar_trueque`, { idTrueque: trueque.id });
+            
+            const nuevosMensajes = {
+                ...truequeMensajes,
+                [trueque.id]: 'Trueque cancelado'
+            };
+            setTruequeMensajes(nuevosMensajes);
+            actualizarTrueque(trueque.id, response.data.estado);
+            obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de rechazar
+    
+            // Determinar la notificación según el idUsuario
+            let notificacion;
+            if (idUsuario === trueque.id_ofertante) {  // Si soy el ofertante
+                const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${trueque.id_producto_propietario}`);
+                const nombreProducto = productoResponse.data.nombre;
+    
+                notificacion = {
+                    id_usuario: trueque.id_propietario, // Notificar al propietario
+                    mensaje: `Han rechazado tu propuesta de horario para truequear ${nombreProducto}`, // Nombre del producto ofertante
+                    leido: false,
+                    link: `/truequesPendientes/${trueque.id_propietario}`
                 };
-                setTruequeMensajes(nuevosMensajes);
-                actualizarTrueque(trueque.id, response.data.estado);
-                obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de rechazar
-            })
-            .catch(error => {
-                console.error('Error al rechazar el trueque:', error);
-            });
-    };
+            } else {
+                const productoResponse = await axios.get(`${backendUrl}/producto_especifico/${trueque.id_producto_ofertante}`);
+                const nombreProducto = productoResponse.data.nombre; // Suponiendo que el backend devuelve el nombre del producto
+    
+                notificacion = {
+                    id_usuario: trueque.id_ofertante, // Notificar al ofertante
+                    mensaje: `Han rechazado tu propuesta de trueque: ${nombreProducto}`, // Nombre del producto propietario
+                    leido: false,
+                    link: `/truequesPendientes/${trueque.id_ofertante}`
+                };
+            }
+    
+            await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+        } catch (error) {
+            console.error('Error al rechazar el trueque:', error);
+    
+            // Mostrar un mensaje de error genérico al usuario
+            setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: 'Error al rechazar el trueque' }));
+        }
+    };    
 
-    const cancelarTrueque = (trueque) => {
-        axios.post(`${backendUrl}/cancelar_trueque`, { idTrueque: trueque.id })
-            .then(response => {
+    const cancelarTrueque = async (trueque) => {
+        // Mostrar alerta de confirmación
+        const confirmacion = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción cancelará el trueque. ¿Estás seguro de continuar?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, cancelar trueque',
+            cancelButtonText: 'Cancelar'
+        });
+    
+        // Si el usuario confirma la acción
+        if (confirmacion.isConfirmed) {
+            try {
+                const response = await axios.post(`${backendUrl}/cancelar_trueque`, { idTrueque: trueque.id });
+    
                 const nuevosMensajes = {
                     ...truequeMensajes,
                     [trueque.id]: 'trueque cancelado'
@@ -134,12 +211,46 @@ const TruequesPendientes = () => {
                 setTruequeMensajes(nuevosMensajes);
                 actualizarTrueque(trueque.id, response.data.estado);
                 obtenerTrueques(idUsuario); // Actualiza la lista de trueques después de cancelar
-            })
-            .catch(error => {
-                console.error('Error al cancelar el trueque:', error.response.data);
-            });
+    
+                // Limpiar el mensaje de error si la cancelación es exitosa
+                setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: '' }));
+    
+                // Enviar notificación
+                let notificacion;
+                if (idUsuario === trueque.id_ofertante) {  // Si soy el ofertante
+                    notificacion = {
+                        id_usuario: trueque.id_propietario, // Notificar al propietario
+                        mensaje: `Han cancelado un trueque`,
+                        leido: false,
+                        link: `/truequesPendientes/${trueque.id_propietario}`
+                    };
+                } else {
+                    notificacion = {
+                        id_usuario: trueque.id_ofertante, // Notificar al ofertante
+                        mensaje: `Han cancelado un trueque`,
+                        leido: false,
+                        link: `/truequesPendientes/${trueque.id_ofertante}`
+                    };
+                }
+    
+                await axios.post(`${backendUrl}/enviar-notificacion`, notificacion);
+    
+            } catch (error) {
+                if (error.response && error.response.data && error.response.data.error) {
+                    const errorMessage = error.response.data.error;
+                    console.error('Error al cancelar el trueque:', errorMessage);
+    
+                    // Mostrar el mensaje de error al usuario
+                    setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: errorMessage }));
+                } else {
+                    console.error('Error desconocido al cancelar el trueque:', error);
+    
+                    // Mostrar un mensaje de error genérico al usuario
+                    setErrorMensaje(prevState => ({ ...prevState, [trueque.id]: 'Error desconocido al cancelar el trueque' }));
+                }
+            }
+        }
     };
-
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import './ConfirmarTrueque.css'; // Importa el archivo de estilos
 import { useNavigate } from 'react-router-dom';
 
@@ -45,12 +45,24 @@ const ConfirmarTrueque = () => {
     };
 
     const rechazar = async (idTrueque) => {
-        console.log("trueque rechazado");
+        try {
+            const response = await axios.post(`${backendUrl}/empleado_cancelar_trueque`, { idTrueque });
+            console.log("trueque rechazado");
+            setTrueques(prevTrueques =>
+                prevTrueques.map(trueque =>
+                    trueque.id === idTrueque ? { ...trueque, rechazado: true } : trueque
+                )
+            );
+        } catch (error) {
+            console.error('Error al confirmar el trueque:', error);
+            setError('Error al confirmar el trueque');
+        }
     };
 
-    const registrarVenta = async () => {
-        navigate('/altaVenta');
+    const registrarVenta = async (id) => {
+        navigate(`/altaVenta/${id}`);
     };
+
 
     return (
         <div>
@@ -81,14 +93,15 @@ const ConfirmarTrueque = () => {
                                     />
                                 </div>
                                 <div className="trueque-actions">
-                                    {!trueque.confirmado && (
+                                    {!trueque.confirmado && !trueque.rechazado && (
                                         <div>
                                             <button className="confirm-button" onClick={() => confirmar(trueque.id)}>Aceptar</button>
                                             <button className="decline-button" onClick={() => rechazar(trueque.id)}>Rechazar</button>
                                         </div>
                                     )}
                                     {trueque.confirmado && <p className="confirmation-message">Se ha aceptado el trueque correctamente</p>}
-                                    {trueque.confirmado && <button onClick={() => registrarVenta()}>Registrar Venta</button>}
+                                    {trueque.rechazado && <p className="confirmation-message">Se ha rechazado el trueque correctamente</p>}
+                                    {trueque.confirmado && <button onClick={() => registrarVenta(trueque.id)}>Registrar Venta</button>}
                                 </div>
                             </li>
                         ))}

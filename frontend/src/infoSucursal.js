@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,7 +28,6 @@ const InfoSucursal = () => {
     const handleEditar = (id) => {
         navigate(`/editarSucursal/${id}`);
     };
-
 
     const handleEliminar = async (id) => {
         Swal.fire({
@@ -65,8 +64,6 @@ const InfoSucursal = () => {
         });
     };
 
-    
-    // falta caso en que no haya sucursales al listado mensaje de error: No hay sucursales registradas
     return (
         <Fragment>
             <Navbar />
@@ -78,24 +75,30 @@ const InfoSucursal = () => {
                             <tr>
                                 <th>Nombre</th>
                                 <th>Dirección</th>
-                                <th>Telefono</th>
+                                <th>Teléfono</th>
                                 {isAdmin && <th>Acciones</th>}
                             </tr>
                         </thead>
                         <tbody>
-                            {sucursales.map(sucursal => (
-                                <tr key={sucursal.id}>
-                                    <td>{sucursal.nombre}</td>
-                                    <td>{sucursal.direccion}</td>
-                                    <td>{sucursal.telefono}</td>
-                                    {isAdmin && (
-                                        <td>
-                                            <button className="btn btn-info mr-2" onClick={() => handleEditar(sucursal.id)}>Editar</button>
-                                            <button className="btn btn-danger" onClick={() => handleEliminar(sucursal.id)}>Eliminar</button>
-                                        </td>
-                                    )}
+                            {sucursales.length > 0 ? (
+                                sucursales.map(sucursal => (
+                                    <tr key={sucursal.id}>
+                                        <td>{sucursal.nombre}</td>
+                                        <td>{sucursal.direccion}</td>
+                                        <td>{sucursal.telefono}</td>
+                                        {isAdmin && (
+                                            <td>
+                                                <button className="btn btn-info mr-2" onClick={() => handleEditar(sucursal.id)}>Editar</button>
+                                                <button className="btn btn-danger" onClick={() => handleEliminar(sucursal.id)}>Eliminar</button>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={isAdmin ? "4" : "3"} className="text-center">No hay sucursales registradas</td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>

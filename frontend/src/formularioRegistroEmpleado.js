@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 //import NavAdmin from './navAdmin';
 import axios from 'axios';
-import Navbar from './navbar';
+import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;

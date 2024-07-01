@@ -81,9 +81,16 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                             <li className="nav-item">
                                 <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/" style={homeButtonStyle}>Inicio</NavLink>
                             </li>
+                            {isAuthenticated && rol === 3 &&(
+                            <li className="nav-item">
+                                <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/miPerfil" style={homeButtonStyle}>Mi perfil</NavLink>
+                            </li>
+                            )}
+                            {isAuthenticated && rol === 1 && (
                             <li className="nav-item">
                                 <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/infoSucursal" style={homeButtonStyle}>Lista de sucursales</NavLink>
                             </li>
+                            )}
                             {isAuthenticated && rol === 1 && (
                                 <li className="nav-item">
                                     <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/adminDashboard">Panel de control</NavLink>
@@ -105,14 +112,12 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                         <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/publicarProducto">Publicar producto</NavLink>
                                     </li>
                                     <li className="nav-item">
-                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/productosCliente">Ver mis productos</NavLink>
+                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/clienteDashboard">Ver mis productos</NavLink>
                                     </li>
                                     <li className="nav-item">
                                         <button className="nav-link btn" onClick={handleTruequeClick}>Mis trueques</button>
                                     </li>
-                                    <li className="nav-item">
-                                        <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to={`/editarPerfil`}>Editar perfil</NavLink>
-                                    </li>
+                                   
                                 </>
                             )}
                             {isAuthenticated ? (
@@ -127,7 +132,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                         </ul>
                         
                         <div className="d-flex align-items-center">
-                            {/*}
+                            
                             {isAuthenticated && (
                                 <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
                                     <i className="fas fa-bell bell-icon"></i>
@@ -136,8 +141,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     )}
                                 </button>
                             )}
-                                */}
-                            
+                                               
                             {isHomePage && (
                                 <form className="d-flex search-form" onSubmit={handleSearch}>
                                     <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
