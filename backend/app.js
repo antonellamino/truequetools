@@ -219,8 +219,20 @@ app.get('/usuarioActual/:id', async (req, res) => {
     }
 });
 
-//solo admin
+
+
 app.get('/sucursales', async (req, res) => {
+    try {
+        const sucursales = await Sucursal.where({ esta_activa: true }).fetchAll();
+        res.status(200).json({ sucursales });
+    } catch (error) {
+        console.error('Error al obtener sucursales:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
+app.get('/full-sucursales', async (req, res) => {
     try {
         const sucursales = await Sucursal.fetchAll();
         res.json({ sucursales });
@@ -229,6 +241,7 @@ app.get('/sucursales', async (req, res) => {
         res.status(500).json({ error: 'ocurrio un error al obtener las sucursales' });
     }
 });
+
 
 
 //solo admin
@@ -922,14 +935,14 @@ app.post('/agregar-notificacion', async (req, res) => {
 
 app.post('/guardar-trueque', async (req, res) => {
     try {
-        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id_sucursal } = req.body;
+        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id } = req.body;
 
         const nuevoTrueque = await Trueque.forge({
             id_propietario,
             id_ofertante,
             id_producto_propietario,
             id_producto_ofertante,
-            id_sucursal
+            id
         });
 
         console.log("aaasfa");
@@ -1114,7 +1127,7 @@ app.get('/trueques_Sucursal', async (req, res) => {
             return res.status(400).json({ error: 'El idSucursal es requerido' });
         }
 
-        const trueques = await Trueque.where({ id_sucursal: idSucursal, estado: 'confirmado' })
+        const trueques = await Trueque.where({ id: idSucursal, estado: 'confirmado' })
             .fetchAll({ withRelated: ['productoPropietario', 'productoOfertante', 'propietario', 'ofertante'] });
 
         res.json({ trueques });
@@ -1262,9 +1275,9 @@ app.get('/cantidad-trueques', async (req, res) => {
         const cantidadTrueques = await Trueque.query()
             .where('estado', 'completado')
             .whereBetween('fecha', [fechaInicio, fechaFin])
-            .join('Sucursales', 'Trueque.id_sucursal', 'Sucursales.id')
-            .groupBy('id_sucursal', 'Sucursales.nombre')
-            .select('id_sucursal', 'Sucursales.nombre as nombre_sucursal')
+            .join('Sucursales', 'Trueque.id', 'Sucursales.id')
+            .groupBy('id', 'Sucursales.nombre')
+            .select('id', 'Sucursales.nombre as nombre_sucursal')
             .count('Trueque.id as cantidad');
         res.json(cantidadTrueques);
     } catch (error) {
@@ -1437,25 +1450,26 @@ app.put('/editar-sucursal', async (req, res) => {
 
 
 // app.post('/eliminar-sucursal', async (req, res) => {
-//     const { id_sucursal } = req.body;
+//     const { id } = req.body;
 
 //     try {
 //         //se fija si la sucursal tiene trueques creados o en espera, implementar estado para trueque 'exitoso' o 'rechazado', los cuales no serian
 //         //trueques pendientes, por lo tanto se podria eliminar la sucursal
-//         const truequesPendientesOCreados = await Trueque.where({ id_sucursal: id_sucursal })
+//         const truequesPendientesOCreados = await Trueque.where({ id: id })
 //             .where('estado', 'in', ['espera', 'creado'])
 //             .fetch({ require: false });
 
 //         if (truequesPendientesOCreados) {
 //             return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques pendientes o creados.' });
 //         }
-//         await Sucursal.where({ id : id_sucursal })//aca iria la linea que define que se hace con la sucursal, a resolver luego
+//         await Sucursal.where({ id : id })//aca iria la linea que define que se hace con la sucursal, a resolver luego
 //         res.status(200).json({ message: 'sucursal eliminada exitosamente.' });
 //     } catch (error) {
 //         console.error('Error al eliminar la sucursal:', error);
 //         res.status(500).json({ error: 'Error interno del servidor.' });
 //     }
 // });
+
 
 app.get('/obtener-cliente/:clienteId', async (req, res) => {
     try {
@@ -1545,7 +1559,7 @@ app.get('/promedio-ventas', async (req, res) => {
             )
             .sum('ventas.valor as total_valor_ventas')
             .innerJoin('ventas', 'trueque.id', 'ventas.id_trueque')
-            .innerJoin('sucursales', 'trueque.id_sucursal', 'sucursales.id')
+            .innerJoin('sucursales', 'trueque.id', 'sucursales.id')
             .where('trueque.estado', 'completado')
             .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
             .groupBy('trueque.id', 'trueque.fecha', 'sucursales.nombre');
@@ -1571,6 +1585,56 @@ app.get('/detalle_trueque', async (req, res) => {
         res.status(500).json({ error: 'Error al traer las ventas del trueque' });
     }
 });
+
+
+
+
+// ---------------------------------------------------------------------------- elim suc ---------------------------------------------------\
+app.post('/eliminar-sucursal', async (req, res) => {
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ error: 'El id es requerido.' });
+    }
+
+    try {
+        console.log('sucursal a eliminar:', id);
+
+        const truequesPendientesOCreados = await Trueque.where({ id_sucursal: id })
+            .where('estado', 'in', ['espera', 'creado'])
+            .fetch({ require: false });
+        console.log(truequesPendientesOCreados);
+
+        if (truequesPendientesOCreados) {
+            return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques pendientes.' });
+        }
+
+        const sucursal = await Sucursal.where({ id }).fetch({ require: false });
+        if (!sucursal) {
+            return res.status(404).json({ error: 'Sucursal no encontrada.' });
+        }
+        await sucursal.save({ esta_activa: false }, { patch: true });
+
+        const productos = await Producto.where({ sucursal_elegida: id }).fetchAll({ require: false });
+        if (productos && productos.length > 0) {
+            await Producto.where({ sucursal_elegida: id }).save({ sucursal_elegida: 1 }, { patch: true });
+        }
+
+        const usuarios = await Usuario.where({ sucursal_preferencia: id }).fetchAll({ require: false });
+        if (usuarios && usuarios.length > 0) {
+            await Usuario.where({ sucursal_preferencia: id }).save({ sucursal_preferencia: 1 }, { patch: true });
+        }
+
+        res.status(200).json({ message: 'sucursal eliminada exitosamente.' });
+    } catch (error) {
+        console.error('error al eliminar la sucursal:', error);
+        res.status(500).json({ error: 'error interno del servidor.' });
+    }
+});
+
+
+
+
 
 // iniciar servidor
 app.listen(PORT, () => {
