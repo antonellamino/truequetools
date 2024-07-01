@@ -99,7 +99,11 @@ const InfoSucursal = () => {
                                         {isAdmin && (
                                             <td>
                                                 <button className="btn btn-info mr-2" onClick={() => handleEditar(sucursal.id)}>Editar</button>
-                                                <button className="btn btn-danger" onClick={() => handleEliminar(sucursal.id)}>Eliminar</button>
+                                                {sucursal.id !== 1 && (
+                                                    <button className="btn btn-danger" onClick={() => handleEliminar(sucursal.id)}>
+                                                        Eliminar
+                                                    </button>
+                                                )}
                                             </td>
                                         )}
                                     </tr>

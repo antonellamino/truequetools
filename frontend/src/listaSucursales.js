@@ -12,7 +12,7 @@ const ListaSucursales = () => {
     useEffect(() => {
         const fetchSucursales = async () => {
             try {
-                const response = await axios.get(`${backendUrl}/full-sucursales`);
+                const response = await axios.get(`${backendUrl}/sucursales`);
                 setSucursales(response.data.sucursales);
             } catch (error) {
                 console.error('Error al obtener sucursales:', error);

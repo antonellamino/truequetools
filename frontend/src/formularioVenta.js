@@ -75,7 +75,7 @@ const FormularioVenta = () => {
             articulo: articulo,
             fecha_venta: fechaVenta,
             valor: valor,
-            email_usuario: email,
+            email_usuario: "",
             id_trueque: id
         };
 
@@ -127,19 +127,6 @@ const FormularioVenta = () => {
                             
                         />
                         {valorError && <div className="alert alert-danger mt-2">{valorError}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="email">Email del usuario al que se le realizó la venta</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            id="email_usuario"
-                            placeholder="Ingresa el email"
-                            value={email}
-                            onChange={(e) => setEmailUsuario(e.target.value)}
-                            
-                        />
-                        {emailError && <div className="alert alert-danger mt-2">{emailError}</div>}
                     </div>
                     {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
                     {mensajeError && <div className="alert alert-danger mt-2">{mensajeError}</div>}
