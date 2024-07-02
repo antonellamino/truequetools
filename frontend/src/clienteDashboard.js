@@ -4,6 +4,7 @@ import axios from 'axios';
 import CardProducto from './cardProducto';
 import { useAuth } from './AuthContext';
 import Footer from './Footer';
+import  { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -11,6 +12,8 @@ const ClienteDashboard = () => {
     const { isAuthenticated, userId } = useAuth();
     const [productos, setProductos] = useState([]);
     const [usuarios, setUsuarios] = useState([]);
+    const navigate = useNavigate();
+    const rol = localStorage.getItem('rol');
 
 
     const obtenerUsuarios = (userIds) => {
@@ -29,6 +32,11 @@ const ClienteDashboard = () => {
     };
 
     useEffect(() => {
+        console.log(!isAuthenticated, rol);
+        if(!isAuthenticated || rol !== '3'){
+            navigate('/403');
+        }
+        
         if (isAuthenticated && userId) {
             axios.get(`${backendUrl}/productos-usuario`, {
                 params: { usuarioId: userId }

@@ -5,6 +5,7 @@ import Navbar from './Navbar';
 import './ConfirmarTrueque.css'; // Importa el archivo de estilos
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { useAuth } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -13,8 +14,16 @@ const ConfirmarTrueque = () => {
     const [trueques, setTrueques] = useState([]);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+    const rol = localStorage.getItem('rol');
 
     useEffect(() => {
+
+        console.log(isAuthenticated, rol);
+        if (!isAuthenticated || (rol !== '2')) {
+            navigate('/403');
+        }
+
         const fetchTrueques = async () => {
             try {
                 const response = await axios.get(`${backendUrl}/trueques_Sucursal`, { params: { idSucursal: id } });
@@ -108,6 +117,9 @@ const ConfirmarTrueque = () => {
         navigate(`/altaVenta/${id}`);
     };
 
+    const volver = () => {
+        navigate('/listaSucursales');
+    };
 
     return (
         <div>
@@ -116,6 +128,8 @@ const ConfirmarTrueque = () => {
                 <div className="header">
                     <h2>Trueques Pendientes</h2>
                 </div>
+
+                <button className="btn btn-primary mb-3" onClick={volver}>Volver</button>
                 {error && <p className="error">{error}</p>}
                 {trueques.length > 0 ? (
                     <ul className="trueques-list">
@@ -146,7 +160,7 @@ const ConfirmarTrueque = () => {
                                     )}
                                     {trueque.confirmado && <p className="confirmation-message">Se ha aceptado el trueque correctamente</p>}
                                     {trueque.rechazado && <p className="confirmation-message">Se ha rechazado el trueque correctamente</p>}
-                                    {trueque.confirmado && <button onClick={() => registrarVenta(trueque.id)}>Registrar Venta</button>}
+                                    {trueque.confirmado && <button className="btn btn-primary" onClick={() => registrarVenta(trueque.id)}>Registrar Venta</button>}
                                 </div>
                             </li>
                         ))}

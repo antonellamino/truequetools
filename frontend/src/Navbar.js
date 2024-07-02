@@ -1,4 +1,4 @@
-import React, { Fragment,useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import Header from './header';
 import { useAuth } from './AuthContext';
@@ -54,9 +54,9 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                 .then(response => {
                     console.log("Productos encontrados:", response.data.productos); // Verifica los productos devueltos por el servidor
                     const productosValidos = response.data.productos.filter(producto => !producto.estado);
-                    
+
                     console.log("Productos válidos:", productosValidos); // Verifica los productos válidos después del filtrado
-                    
+
                     actualizarProductosFiltrados(productosValidos); // Actualiza el estado local de los productos filtrados
                 })
                 .catch(error => {
@@ -81,15 +81,15 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                             <li className="nav-item">
                                 <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/" style={homeButtonStyle}>Inicio</NavLink>
                             </li>
-                            {isAuthenticated && rol === 3 &&(
-                            <li className="nav-item">
-                                <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/miPerfil" style={homeButtonStyle}>Mi perfil</NavLink>
-                            </li>
+                            {isAuthenticated && rol === 3 && (
+                                <li className="nav-item">
+                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/miPerfil" style={homeButtonStyle}>Mi perfil</NavLink>
+                                </li>
                             )}
                             {isAuthenticated && rol === 1 && (
-                            <li className="nav-item">
-                                <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/infoSucursal" style={homeButtonStyle}>Lista de sucursales</NavLink>
-                            </li>
+                                <li className="nav-item">
+                                    <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/infoSucursal" style={homeButtonStyle}>Lista de sucursales</NavLink>
+                                </li>
                             )}
                             {isAuthenticated && rol === 1 && (
                                 <li className="nav-item">
@@ -117,7 +117,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     <li className="nav-item">
                                         <button className="nav-link btn" onClick={handleTruequeClick}>Mis trueques</button>
                                     </li>
-                                   
+
                                 </>
                             )}
                             {isAuthenticated ? (
@@ -130,10 +130,10 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                 </li>
                             )}
                         </ul>
-                        
+
                         <div className="d-flex align-items-center">
-                            
-                            {isAuthenticated && (
+
+                            {isAuthenticated && rol === 3 &&(
                                 <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
                                     <i className="fas fa-bell bell-icon"></i>
                                     {unreadNotifications > 0 && (
@@ -141,14 +141,14 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     )}
                                 </button>
                             )}
-                                               
+
                             {isHomePage && (
                                 <form className="d-flex search-form" onSubmit={handleSearch}>
                                     <input className="form-control me-2" type="search" placeholder="Buscar" aria-label="Buscar" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                                     <button className="btn btn-outline-light" type="submit">Buscar</button>
                                 </form>
                             )}
-                            
+
                         </div>
                     </div>
                 </div>

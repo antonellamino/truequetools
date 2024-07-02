@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import es from 'date-fns/locale/es';
@@ -10,6 +10,8 @@ import './truequesPendientes.css';
 import { format } from 'date-fns';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.css';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -21,10 +23,18 @@ const TruequesPendientes = () => {
     const [horarioConfirmado, setHorarioConfirmado] = useState({});
     const [truequeMensajes, setTruequeMensajes] = useState({});
     const [errorMensaje, setErrorMensaje] = useState({});
+    const navigate = useNavigate();
+    const rol = localStorage.getItem('rol');
+    const { isAuthenticated } = useAuth();
 
     const idUsuario = localStorage.getItem('userId');
 
     useEffect(() => {
+        // console.log(!isAuthenticated, rol);
+        // if (!isAuthenticated) {
+        //     navigate('/403');
+        // }
+
         obtenerTrueques(idUsuario);
     }, [idUsuario]);
 

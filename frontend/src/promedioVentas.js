@@ -1,10 +1,11 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import axios from "axios";
 import Navbar from "./Navbar"; // Ajusta la ruta de importación según sea necesario
 import Footer from "./Footer";
 import { useNavigate } from 'react-router-dom';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useAuth } from './AuthContext';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -17,6 +18,16 @@ const PromedioVentas = () => {
     const [mostrarMensaje, setMostrarMensaje] = useState(false); // Estado para mostrar el mensaje de falta de trueques
     const [botonHabilitado, setBotonHabilitado] = useState(false); // Estado para habilitar el botón de búsqueda
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+    const rol = localStorage.getItem('rol');
+
+    useEffect(() => {
+        console.log(!isAuthenticated, rol);
+        if (!isAuthenticated || rol !== '1') {
+            navigate('/403');
+        }
+    },[isAuthenticated, rol, navigate]);
+
 
     // Manejador para cambios en la fecha de inicio
     const handleFechaInicioChange = (event) => {

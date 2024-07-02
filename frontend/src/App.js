@@ -18,7 +18,7 @@ import FormularioRegistroEmpleado from './formularioRegistroEmpleado';
 import Publicacion from './publicacion';
 import ListaSucursales from './listaSucursales';
 import Ventas from './ventas';
-import Notificaciones from './notificaciones'; 
+import Notificaciones from './notificaciones';
 import Opciones from './opciones';
 import FormularioVenta from './formularioVenta';
 import TruequesPendientes from './truequesPendientes';
@@ -34,6 +34,7 @@ import DetalleTrueque from './detalleTrueque';
 import MiPerfil from './miPerfil'; // Asegúrate de importar correctamente el componente MiPerfil
 import EditarPublicacion from './editarPublicacion';
 import Navbar from './Navbar';
+import Forbidden from './Forbidden';
 
 function App() {
   return (
@@ -76,7 +77,8 @@ function App() {
             <Route path="/formularioVenta" element={<FormularioVenta/>} />
             <Route path="/promedioVentas" element={<PromedioVentas/>} />
             <Route path="/detalleTrueque/:id" element={<DetalleTrueque/>} />
-            </Routes>
+            <Route path="/403" element={<Forbidden/>} />
+          </Routes>
         </AuthProvider>
       </BrowserRouter>
     </div>

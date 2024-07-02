@@ -4,12 +4,13 @@ import axios from 'axios';
 import { useAuth } from './AuthContext';
 import Footer from './Footer';
 import './formulario.css';  // Make sure to import the CSS file here
+import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 const imgPorDefecto = process.env.PUBLIC_URL + '/logo_por_defecto.svg';
 
 const PublicarProductoForm = () => {
-    const { userId } = useAuth();
+    const { userId, isAuthenticated } = useAuth();
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [categoriaData, setCategoriaData] = useState({ categorias: [], categoriaSeleccionada: '' });
@@ -18,6 +19,8 @@ const PublicarProductoForm = () => {
     const [sucursalPreferencia, setSucursalPreferencia] = useState('');
     const [errores, setErrores] = useState({ nombre: '', descripcion: '', categoria: '', sucursal: '', imagen: '' });
     const [enviado, setEnviado] = useState('');
+    const rol = localStorage.getItem('rol');
+    const navigate = useNavigate();
 
     const resetearForm = () => {
         setNombre('');
@@ -28,6 +31,11 @@ const PublicarProductoForm = () => {
     };
 
     useEffect(() => {
+
+        console.log(!isAuthenticated, rol);
+        if (!isAuthenticated || rol !== '3') {
+            navigate('/403');
+        }
         axios.get(`${backendUrl}/sucursales`)
             .then(response => {
                 setSucursales(response.data.sucursales);
@@ -35,7 +43,7 @@ const PublicarProductoForm = () => {
             .catch(error => {
                 console.error('Error fetching sucursales:', error);
             });
-    }, []);
+    },[isAuthenticated, userId]);
 
     useEffect(() => {
         axios.get(`${backendUrl}/categorias`)

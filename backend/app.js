@@ -1575,6 +1575,10 @@ app.post('/eliminar-sucursal', async (req, res) => {
         return res.status(400).json({ error: 'El id es requerido.' });
     }
 
+    if (id === 1) {
+        return res.status(400).json({ error: 'No se puede eliminar la sucursal principal.' });
+    }
+
     try {
         console.log('Sucursal a eliminar:', id);
 
@@ -1657,6 +1661,30 @@ app.post('/informar-sucursal-eliminada', async (req, res) => {
         res.status(500).send('Error al procesar la solicitud.');
     }
 });
+
+app.post('/verificar-trueques-pendientes', async (req, res) => {
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ error: 'El id es requerido.' });
+    }
+
+    try {
+        const truequesPendientes = await Trueque.where({ id_sucursal: id })
+            .where('estado', 'confirmado')
+            .fetch({ require: false });
+
+        if (truequesPendientes) {
+            return res.status(200).json({ tieneTrueques: true });
+        } else {
+            return res.status(200).json({ tieneTrueques: false });
+        }
+    } catch (error) {
+        console.error('Error al verificar trueques pendientes:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
 
 
 // iniciar servidor

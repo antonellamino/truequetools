@@ -1,7 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -16,6 +17,20 @@ const FormularioVenta = () => {
     const [fechaError, setFechaError] = useState('');
     const [valorError, setValorError] = useState('');
     const [emailError, setEmailError] = useState('');
+    const navigate = useNavigate();
+    const rol = localStorage.getItem('rol');
+    const { isAuthenticated } = useAuth();
+
+
+
+    // useEffect(() => {
+
+    //     console.log(!isAuthenticated, rol); //chequear si se consolea
+    //     if (!isAuthenticated || rol !== '2') { //probar o ver si se deja solo a rol = 2 que es empleado.
+    //         navigate('/403');
+    //     }
+
+    // });
 
     const validateArticulo = () => {
         if (!articulo) {
@@ -98,42 +113,41 @@ const FormularioVenta = () => {
 
     return (
         <Fragment>
-            <Navbar />
-            <div className="container mt-5">
-                <h2 className="mb-4" style={{ color: 'white' }}>Registrar venta</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="articulo">Artículo</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="articulo"
-                            placeholder="Ingresa el artículo"
-                            value={articulo}
-                            onChange={(e) => setArticulo(e.target.value)}
-                            
-                        />
-                        {articuloError && <div className="alert alert-danger mt-2">{articuloError}</div>}
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="valor">Precio</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="valor"
-                            placeholder="Ingresa el precio"
-                            value={valor}
-                            onChange={(e) => setValor(e.target.value)}
-                            
-                        />
-                        {valorError && <div className="alert alert-danger mt-2">{valorError}</div>}
-                    </div>
-                    {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
-                    {mensajeError && <div className="alert alert-danger mt-2">{mensajeError}</div>}
-                    <button type="submit" className="btn btn-primary">Crear venta</button>
-                </form>
+    <Navbar />
+
+    <h2 className="mb-4" style={{ color: 'white' }}>Registrar venta</h2>
+    <div className="container-fluid" style={{ minHeight: '100vh', paddingTop: 0 }}>
+        <form onSubmit={handleSubmit} className="m-4">
+            <div className="form-group">
+                <label htmlFor="articulo">Artículo</label>
+                <input
+                    type="text"
+                    className="form-control"
+                    id="articulo"
+                    placeholder="Ingresa el artículo"
+                    value={articulo}
+                    onChange={(e) => setArticulo(e.target.value)}
+                />
+                {articuloError && <div className="alert alert-danger mt-2">{articuloError}</div>}
             </div>
-        </Fragment>
+            <div className="form-group">
+                <label htmlFor="valor">Precio</label>
+                <input
+                    type="text"
+                    className="form-control"
+                    id="valor"
+                    placeholder="Ingresa el precio"
+                    value={valor}
+                    onChange={(e) => setValor(e.target.value)}
+                />
+                {valorError && <div className="alert alert-danger mt-2">{valorError}</div>}
+            </div>
+            {mensaje && <div className="alert alert-success mt-2">{mensaje}</div>}
+            {mensajeError && <div className="alert alert-danger mt-2">{mensajeError}</div>}
+            <button type="submit" className="btn btn-primary">Crear venta</button>
+        </form>
+    </div>
+</Fragment>
     );
 }
 
