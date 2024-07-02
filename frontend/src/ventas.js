@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from './AuthContext';
 import Navbar from './Navbar';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -11,8 +12,15 @@ const Ventas = () => {
     const [ventas, setVentas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const rol = localStorage.getItem('rol');
 
     useEffect(() => {
+        console.log(isAuthenticated, rol);
+        if (!isAuthenticated || (rol !== '1' && rol !== '2')) {
+            navigate('/403');
+        }
+
         if (isAuthenticated) {
             axios.get(`${backendUrl}/ventas`)
                 .then(response => {
@@ -29,7 +37,8 @@ const Ventas = () => {
                     setLoading(false);
                 });
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, rol, navigate]);
+
 
     const handleDelete = (id) => {
         Swal.fire({
@@ -77,7 +86,7 @@ const Ventas = () => {
     return (
         <Fragment>
             <Navbar />
-            <div className="container">
+            <div className="container-fluid" style={{ minHeight: '100vh', paddingTop: 0 }}>
                 {loading ? (
                     <p>Cargando ventas...</p>
                 ) : error ? (
@@ -86,7 +95,7 @@ const Ventas = () => {
                     <div>
                         <h2 className="text-white">Ventas</h2>
                         {ventas.length > 0 ? (
-                            <table className="table table-striped">
+                            <table className="table table-striped w-100">
                                 <thead className="thead-dark">
                                     <tr>
                                         <th>Articulo</th>
@@ -121,6 +130,7 @@ const Ventas = () => {
             </div>
         </Fragment>
     );
+    
 };
 
 export default Ventas;

@@ -1662,6 +1662,30 @@ app.post('/informar-sucursal-eliminada', async (req, res) => {
     }
 });
 
+app.post('/verificar-trueques-pendientes', async (req, res) => {
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ error: 'El id es requerido.' });
+    }
+
+    try {
+        const truequesPendientes = await Trueque.where({ id_sucursal: id })
+            .where('estado', 'confirmado')
+            .fetch({ require: false });
+
+        if (truequesPendientes) {
+            return res.status(200).json({ tieneTrueques: true });
+        } else {
+            return res.status(200).json({ tieneTrueques: false });
+        }
+    } catch (error) {
+        console.error('Error al verificar trueques pendientes:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
 
 // iniciar servidor
 app.listen(PORT, () => {

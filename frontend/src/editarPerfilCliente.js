@@ -6,6 +6,8 @@ import Footer from './Footer';
 import Swal from 'sweetalert2';
 import './formulario.css';
 import './EditarPerfil.css'; // Asegúrate de importar tu archivo CSS
+import { useAuth } from './AuthContext';
+
 
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
@@ -28,6 +30,11 @@ const EditarPerfil = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
+    const rol = localStorage.getItem('rol');
+    const { isAuthenticated } = useAuth();
+
+
+
 
     // Validaciones
     const validateNombre = () => {
@@ -169,6 +176,12 @@ const EditarPerfil = () => {
     };
 
     useEffect(() => {
+
+        console.log(!isAuthenticated, rol);
+        if (!isAuthenticated || rol !== '3') {
+            navigate('/403');
+        }
+
         const fetchDatosCliente = async () => {
             try {
                 const response = await axios.get(`${backendUrl}/obtener-cliente/${clienteId}`);

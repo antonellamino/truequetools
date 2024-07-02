@@ -33,6 +33,13 @@ const AdminDashboard = () => {
         navigate('/promedioVentas');
     };
 
+    useEffect(() => {
+        console.log(!isAuthenticated, rol);
+        if (!isAuthenticated || rol !== 1) {
+            navigate('/403');
+        }
+    },[isAuthenticated, rol, navigate]);
+
 
 
     return (

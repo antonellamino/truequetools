@@ -133,7 +133,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
 
                         <div className="d-flex align-items-center">
 
-                            {isAuthenticated && (
+                            {isAuthenticated && rol === 3 &&(
                                 <button className="nav-link btn btn-link notification-button" onClick={handleNotificationClick} style={{ color: 'white' }}>
                                     <i className="fas fa-bell bell-icon"></i>
                                     {unreadNotifications > 0 && (

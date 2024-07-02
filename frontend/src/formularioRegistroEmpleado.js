@@ -1,7 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -13,6 +14,17 @@ const AltaEmpleado = () => {
     const [nombre_usuario, setNombreUsuario] = useState('');
     const [mensajeError, setMensajeError] = useState('');
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+    const rol = localStorage.getItem('rol')
+
+
+    useEffect(() => {
+        console.log(!isAuthenticated, rol);
+        if (!isAuthenticated || rol !== '1') {
+            navigate('/403');
+        }
+    },[isAuthenticated, rol, navigate]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();

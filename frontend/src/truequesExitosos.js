@@ -1,12 +1,15 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import axios from "axios";
 import Navbar from "./Navbar"; // Ajusta la ruta de importación según sea necesario
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useAuth } from './AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const backendUrl = process.env.REACT_APP_BACK_URL; // URL del backend obtenida de las variables de entorno
+
 
 const TruequesExitosos = () => {
     const [trueques, setTrueques] = useState([]); // Estado para almacenar los trueques obtenidos
@@ -14,7 +17,19 @@ const TruequesExitosos = () => {
     const [fechaFin, setFechaFin] = useState("");       // Estado para la fecha de fin
     const [mostrarMensaje, setMostrarMensaje] = useState(false); // Estado para mostrar el mensaje de falta de trueques
     const [botonHabilitado, setBotonHabilitado] = useState(false); // Estado para habilitar el botón de búsqueda
+    const { isAuthenticated } = useAuth();
+    const rol = localStorage.getItem('rol');
+    const navigate = useNavigate();
 
+
+    useEffect(() => {
+        console.log(!isAuthenticated, rol);
+        if (!isAuthenticated || rol !== '1') {
+            navigate('/403');
+        }
+    }, [isAuthenticated, rol, navigate]);
+
+    
     // Manejador para cambios en la fecha de inicio
     const handleFechaInicioChange = (event) => {
         setFechaInicio(event.target.value);
@@ -101,12 +116,12 @@ const TruequesExitosos = () => {
                             <div className="form-group">
                                 <label htmlFor="fechaInicio">Fecha de Inicio:</label>
                                 {/* Input para seleccionar la fecha de inicio */}
-                                <input 
-                                    type="date" 
-                                    className="form-control" 
-                                    id="fechaInicio" 
-                                    value={fechaInicio} 
-                                    onChange={handleFechaInicioChange} 
+                                <input
+                                    type="date"
+                                    className="form-control"
+                                    id="fechaInicio"
+                                    value={fechaInicio}
+                                    onChange={handleFechaInicioChange}
                                 />
                             </div>
                             {/* Mostrar el input de fecha fin solo si fechaInicio está definido */}
@@ -114,20 +129,20 @@ const TruequesExitosos = () => {
                                 <div className="form-group">
                                     <label htmlFor="fechaFin">Fecha de Fin:</label>
                                     {/* Input para seleccionar la fecha de fin */}
-                                    <input 
-                                        type="date" 
-                                        className="form-control" 
-                                        id="fechaFin" 
-                                        value={fechaFin} 
-                                        onChange={handleFechaFinChange} 
+                                    <input
+                                        type="date"
+                                        className="form-control"
+                                        id="fechaFin"
+                                        value={fechaFin}
+                                        onChange={handleFechaFinChange}
                                         min={fechaInicio} // Establecer fecha mínima como fechaInicio
                                     />
                                 </div>
                             )}
                             {/* Botón para ejecutar la búsqueda de trueques */}
-                            <button 
-                                type="button" 
-                                className="btn btn-primary" 
+                            <button
+                                type="button"
+                                className="btn btn-primary"
                                 onClick={fetchTrueques} // Llamar a fetchTrueques al hacer clic
                                 disabled={!botonHabilitado} // Deshabilitar el botón si no están definidas ambas fechas
                             >

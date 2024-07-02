@@ -3,6 +3,7 @@ import axios from 'axios';
 import Navbar from './Navbar';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -10,8 +11,16 @@ const ListaEmpleados = () => {
     const [empleados, setEmpleados] = useState([]);
     const navigate = useNavigate();
     const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
+    const { isAuthenticated } = useAuth();
+    const rol = localStorage.getItem('rol');
 
     useEffect(() => {
+
+        console.log(!isAuthenticated, rol);
+        if (!isAuthenticated || rol !== '1') {
+            navigate('/403');
+        }
+
         const fetchEmpleados = async () => {
             try {
                 const response = await axios.get(`${backendUrl}/empleados`);
@@ -26,7 +35,7 @@ const ListaEmpleados = () => {
         };
 
         fetchEmpleados();
-    }, []);
+    }, [isAuthenticated, rol, navigate]);
 
     const eliminarEmpleado = async (empleadoId) => {
         Swal.fire({

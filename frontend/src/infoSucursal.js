@@ -12,12 +12,11 @@ const InfoSucursal = () => {
     const navigate = useNavigate();
     const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
 
-
     useEffect(() => {
         const fetchSucursales = async () => {
             try {
                 const response = await axios.get(`${backendUrl}/sucursales`);
-                // filtra sucursales activas
+                // Filtrar sucursales activas
                 const sucursalesActivas = response.data.sucursales.filter(sucursal => sucursal.esta_activa);
                 setSucursales(sucursalesActivas);
             } catch (error) {
@@ -30,8 +29,37 @@ const InfoSucursal = () => {
 
     const isAdmin = localStorage.getItem('rol') === '1';
 
-    const handleEditar = (id) => {
-        navigate(`/editarSucursal/${id}`);
+    const handleEditar = async (id) => {
+        try {
+            const response = await axios.post(`${backendUrl}/verificar-trueques-pendientes`, { id });
+            const tieneTrueques = response.data.tieneTrueques;
+
+            if (tieneTrueques) {
+                Swal.fire({
+                    title: 'Trueques pendientes',
+                    text: 'La sucursal tiene trueques pendientes. ¿Desea continuar con la edición?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, continuar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigate(`/editarSucursal/${id}`);
+                    }
+                });
+            } else {
+                navigate(`/editarSucursal/${id}`);
+            }
+        } catch (error) {
+            console.error('Error al verificar trueques pendientes:', error);
+            Swal.fire(
+                'Error!',
+                'Hubo un error al verificar trueques pendientes.',
+                'error'
+            );
+        }
     };
 
     const handleEliminar = async (id) => {

@@ -4,18 +4,23 @@ import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import { useAuth } from './AuthContext';
-
-// Importa el archivo CSS
 import './miPerfil.css';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const MiPerfil = () => {
-    const [usuario, setUsuario] = useState(null); 
+    const [usuario, setUsuario] = useState(null);
     const navigate = useNavigate();
-    const { userId } = useAuth(); // Obtén el ID del usuario desde el contexto de autenticación
+    const { userId, isAuthenticated } = useAuth(); // Obtén el ID del usuario desde el contexto de autenticación
+    const rol = localStorage.getItem('rol');
 
     useEffect(() => {
+
+        console.log(!isAuthenticated, rol);
+        if (!isAuthenticated || rol !== '3') {
+            navigate('/403');
+        }
+
         if (userId) {
             cargarDatosUsuario();
         }
@@ -25,7 +30,7 @@ const MiPerfil = () => {
     const cargarDatosUsuario = async () => {
         try {
             const response = await axios.get(`${backendUrl}/usuarioActual/${userId}`); // Endpoint para obtener perfil de usuario
-          
+
             if (response.status === 200) {
                 setUsuario(response.data.usuario); // Actualiza el estado con los datos del usuario
             } else {
@@ -79,7 +84,7 @@ const MiPerfil = () => {
             <Footer />
         </Fragment>
     );
-    
+
 };
 
 export default MiPerfil;
