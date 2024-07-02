@@ -46,7 +46,7 @@ const AdminDashboard = () => {
                                     <button className="btn btn-primary mb-3" onClick={handleAltaSucursal}>Dar de alta sucursal</button>
                                     <button className="btn btn-primary mb-3" onClick={handleListaEmpleados}>Lista empleados</button>
                                     <button className="btn btn-primary mb-3" onClick={handleVentas}>Ventas registradas</button>
-                                    <button className="btn btn-primary mb-3" onClick={handlePromedio}>Promedio de ventas por sucursal</button>
+                                    <button className="btn btn-primary mb-3" onClick={handlePromedio}>Estadísticas de ventas</button>
                                     <button className="btn btn-primary mb-3" onClick={handleTruequesExitosos}>Trueques exitosos por sucursal</button>
                                 </div>
                             </div>

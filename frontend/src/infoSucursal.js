@@ -47,9 +47,9 @@ const InfoSucursal = () => {
             if (result.isConfirmed) {
                 try {
                     console.log(id);
+                    await axios.post(`${backendUrl}/informar-sucursal-eliminada`, { id })
                     const response = await axios.post(`${backendUrl}/eliminar-sucursal`, { id });
                     console.log(response.data);
-
                     setSucursales(sucursales.filter(sucursal => sucursal.id !== id));
                     Swal.fire(
                         'Eliminado!',

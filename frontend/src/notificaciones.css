@@ -14,6 +14,8 @@
     text-align: left; /* Alinea el texto a la izquierda */
     padding: 0.5rem; /* Añade un poco de relleno */
     cursor: pointer; /* Cambia el cursor a "apuntador" */
+    background: none; /* Quita el fondo del botón */
+    color: inherit; /* Hereda el color del texto */
 }
 
 .notification-button.disabled {
@@ -28,9 +30,10 @@
 
 .notification-link {
     color: inherit !important; /* Hereda el color del texto */
-    text-decoration: none !important; /* Quita la subrayado */
+    text-decoration: none !important; /* Quita el subrayado */
 }
 
 .notification-link:hover {
     text-decoration: underline !important; /* Añade subrayado al pasar el mouse */
+    text-decoration-color: white !important; /* Color blanco para el subrayado */
 }

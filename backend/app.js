@@ -1447,28 +1447,6 @@ app.put('/editar-sucursal', async (req, res) => {
 });
 
 
-// app.post('/eliminar-sucursal', async (req, res) => {
-//     const { id } = req.body;
-
-//     try {
-//         //se fija si la sucursal tiene trueques creados o en espera, implementar estado para trueque 'exitoso' o 'rechazado', los cuales no serian
-//         //trueques pendientes, por lo tanto se podria eliminar la sucursal
-//         const truequesPendientesOCreados = await Trueque.where({ id: id })
-//             .where('estado', 'in', ['espera', 'creado'])
-//             .fetch({ require: false });
-
-//         if (truequesPendientesOCreados) {
-//             return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques pendientes o creados.' });
-//         }
-//         await Sucursal.where({ id : id })//aca iria la linea que define que se hace con la sucursal, a resolver luego
-//         res.status(200).json({ message: 'sucursal eliminada exitosamente.' });
-//     } catch (error) {
-//         console.error('Error al eliminar la sucursal:', error);
-//         res.status(500).json({ error: 'Error interno del servidor.' });
-//     }
-// });
-
-
 app.get('/obtener-cliente/:clienteId', async (req, res) => {
     try {
         const clienteId = req.params.clienteId;
@@ -1641,7 +1619,44 @@ app.post('/eliminar-sucursal', async (req, res) => {
 });
 
 
+app.post('/informar-sucursal-eliminada', async (req, res) => {
+    const { id } = req.body;
+    try {
+        // Obtener el nombre de la sucursal que se quiere eliminar
+        const sucursal = await Sucursal.where({ id }).fetch();
+        if (!sucursal) {
+            return res.status(404).send('Sucursal no encontrada.');
+        }
+        const nombreSucursal = sucursal.get('nombre');
 
+        const truequesCreados = await Trueque.where({ id_sucursal: id })
+            .where('estado', '!=', 'cancelado')
+            .where('estado', '!=', 'completado')
+            .where('estado', '!=', 'confirmado')
+            .fetchAll();
+
+        // Extraer los IDs de "id_ofertante" y "id_propietario"
+        const idsOfertantes = truequesCreados.map(t => t.get('id_ofertante'));
+        const idsPropietarios = truequesCreados.map(t => t.get('id_propietario'));
+
+        // Combinar los IDs y asegurarse de que no se repitan
+        const uniqueIds = new Set([...idsOfertantes, ...idsPropietarios]);
+
+        // Iterar sobre los IDs únicos y enviar notificaciones
+        await Promise.all([...uniqueIds].map(async (userId) => {
+            await axios.post(`http://localhost:5000/agregar-notificacion`, {
+                idUser: userId,
+                comentario: `Se deshabilitó la sucursal ${nombreSucursal}. Tienes productos y trueques que se han movido a la sucursal principal.`,
+                link: `/truequesPendientes/${userId}`
+            });
+        }));
+
+        res.status(200).send('Usuarios procesados correctamente.');
+    } catch (error) {
+        console.error('Error al procesar la solicitud:', error);
+        res.status(500).send('Error al procesar la solicitud.');
+    }
+});
 
 
 // iniciar servidor

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './notificaciones.css';
 import Navbar from './Navbar';
 import axios from 'axios';
@@ -51,7 +51,7 @@ const Notificaciones = () => {
             <div className="container mt-4">
                 <h1 style={{ color: 'black' }}>Notificaciones</h1>
                 {notificaciones.length === 0 ? (
-                    <p style={{ color: 'white' }}>No tienes notificaciones.</p>
+                    <p style={{ color: 'black' }}>No tienes notificaciones.</p>
                 ) : (
                     <ul className="list-group">
                         {notificaciones.map(notificacion => (
@@ -61,8 +61,7 @@ const Notificaciones = () => {
                                 style={{ color: notificacion.leido ? 'gray' : 'white' }}
                             >
                                 <button
-                                    className={`notification-button ${notificacion.leido ? 'btn-read' : 'btn-unread'}`}
-                                    style={{ color: notificacion.leido ? 'gray' : 'white' }}
+                                    className={`notification-button notification-link ${notificacion.leido ? 'btn-read' : 'btn-unread'}`}
                                     onClick={() => handleNotificationClick(notificacion)}
                                 >
                                     {notificacion.mensaje}

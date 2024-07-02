@@ -41,7 +41,7 @@ const Opciones = () => {
             id_producto_ofertante: producto.id,
             id_sucursal: sucursalId
         };
-    
+
         try {
             // Guardar el trueque
             await axios.post(`${backendUrl}/guardar-trueque`, datosTrueque);
@@ -64,7 +64,7 @@ const Opciones = () => {
             // Enviar notificación
             const notificacion = {
                 id_usuario: propietarioId,
-                mensaje: `Nueva solicitud de trueque para tu producto: ${nombreProducto}`,
+                mensaje: `Nueva solicitud de trueque para tu producto ${nombreProducto}`,
                 leido: false,
                 link: `/truequesPendientes/${propietarioId}`
             };
