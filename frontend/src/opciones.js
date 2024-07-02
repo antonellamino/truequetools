@@ -64,7 +64,7 @@ const Opciones = () => {
             // Enviar notificación
             const notificacion = {
                 id_usuario: propietarioId,
-                mensaje: `Nueva solicitud de trueque para tu producto: ${nombreProducto}`,
+                mensaje: `Nueva solicitud de trueque para tu producto ${nombreProducto}`,
                 leido: false,
                 link: `/truequesPendientes/${propietarioId}`
             };

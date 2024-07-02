@@ -51,7 +51,7 @@ const Notificaciones = () => {
             <div className="container mt-4">
                 <h1 style={{ color: 'black' }}>Notificaciones</h1>
                 {notificaciones.length === 0 ? (
-                    <p style={{ color: 'white' }}>No tienes notificaciones.</p>
+                    <p style={{ color: 'black' }}>No tienes notificaciones.</p>
                 ) : (
                     <ul className="list-group">
                         {notificaciones.map(notificacion => (

@@ -59,6 +59,13 @@ const Ventas = () => {
                         'error'
                     );
                 }
+            } else{
+                Swal.fire({
+                    title: 'Baja rechazada.',
+                    icon: 'info',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
             }
         });
     };
