@@ -31,7 +31,7 @@ const Opciones = () => {
     
 
     const seleccionar = async (producto) => {
-        setMensaje('Trueque solicitado, esperando confirmación de horario');
+        setMensaje('Trueque solicitado, esperando confirmación de horario.');
         console.log('aaaaaaaaaaaaaaaaaaaaaaaaaa');
         console.log('id de sucursal que se va a guardar en trueque', sucursalId);
         const datosTrueque = {

@@ -59,6 +59,15 @@ const TruequesPendientes = () => {
             }));
             return;
         }
+
+        const now = new Date();
+        if (selectedDate < now) {
+            setErrorMensaje(prevState => ({
+                ...prevState,
+            [trueque.id]: 'La fecha y hora seleccionadas no pueden ser anteriores a la actual.'
+        }));
+        return;
+    }
     
         const formattedDate = selectedDate.toISOString().slice(0, 19).replace('T', ' ');
     
@@ -379,7 +388,7 @@ const TruequesPendientes = () => {
                         ))}
                     </ul>
                 ) : (
-                    <p>No tienes trueques pendientes.</p>
+                    <p>No tienes trueques</p>
                 )}
             </div>
 
