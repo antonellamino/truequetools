@@ -14,6 +14,7 @@ const EditarSucursal = () => {
     const [telefono, setTelefono] = useState('');
     const { sucursalId } = useParams();
     const navigate = useNavigate();
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
 
     useEffect(() => {
         const fetchSucursal = async () => {
@@ -77,6 +78,12 @@ const EditarSucursal = () => {
                         'error'
                     );
                 }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
     };
@@ -127,18 +134,12 @@ const EditarSucursal = () => {
                             required
                         />
                     </div>
-                    <div className="mb-3">
-                        <div className="row">
-                            <div className="col">
-                                <button type="submit" className="btn btn-primary w-100" >Crear sucursal</button>
-                            </div>
-                        </div>
-                        <div className="row mt-3">
-                            <div className="col">
-                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
-                            </div>
-                        </div>
+                    <button type="submit" className="btn btn-primary">Guardar cambios</button>
+                    {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        No se registraron cambios.
                     </div>
+                    )}
                 </form>
             </div>
         </Fragment>

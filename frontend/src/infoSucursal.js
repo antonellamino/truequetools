@@ -33,6 +33,15 @@ const InfoSucursal = () => {
     };
 
     const handleEliminar = async (id) => {
+        if (id === 1) {
+            Swal.fire(
+                'Error',
+                'No se puede eliminar la sucursal principal.',
+                'error'
+            );
+            return;
+        }
+
         Swal.fire({
             title: '¿Estás seguro?',
             text: 'No podrás revertir esto.',
@@ -95,7 +104,11 @@ const InfoSucursal = () => {
                                                     <button className="btn btn-info mr-2" onClick={() => handleEditar(sucursal.id)}>
                                                         Editar
                                                     </button>
-                                                    <button className="btn btn-danger" onClick={() => handleEliminar(sucursal.id)}>
+                                                    <button
+                                                        className="btn btn-danger"
+                                                        onClick={() => handleEliminar(sucursal.id)}
+                                                        disabled={sucursal.id === 1}
+                                                    >
                                                         Eliminar
                                                     </button>
                                                 </td>

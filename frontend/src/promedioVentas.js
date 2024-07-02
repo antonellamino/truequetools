@@ -167,7 +167,7 @@ const PromedioVentas = () => {
                                                 <th>ID Trueque</th>
                                                 <th>Sucursal</th>
                                                 <th>Fecha</th>
-                                                <th>Total Ventas</th>
+                                                <th>Total Venta</th>
                                             </tr>
                                         </thead>
                                         <tbody>

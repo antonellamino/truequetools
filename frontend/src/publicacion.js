@@ -10,7 +10,7 @@ import Footer from './Footer';
 import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
+import './SweetAlert2.css'
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -27,8 +27,9 @@ const Publicacion = () => {
     const userId = localStorage.getItem('userId');
     const [mensajeErrorEdicion, setMensajeErrorEdicion] = useState(''); // Estado para el mensaje de error de edición
     const [mensajeErrorEliminacion, setMensajeErrorEliminacion] = useState('');
-    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false);
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
 
+    
     useEffect(() => {
         obtenerProducto(id);
         obtenerComentarios(id);
@@ -301,6 +302,12 @@ const Publicacion = () => {
                         'error'
                     );
                 }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
     };
@@ -423,6 +430,12 @@ const Publicacion = () => {
                     <button type="submit" className="boton_trueque" onClick={() => enviarDatos(producto)}>
                         Truequear
                     </button>
+                )}
+
+                {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        Baja rechazada.
+                    </div>
                 )}
             </div>
             <Footer />

@@ -59,6 +59,13 @@ const Ventas = () => {
                         'error'
                     );
                 }
+            } else{
+                Swal.fire({
+                    title: 'Baja rechazada.',
+                    icon: 'info',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
             }
         });
     };
@@ -85,7 +92,6 @@ const Ventas = () => {
                                         <th>Articulo</th>
                                         <th>Fecha de venta</th>
                                         <th>Precio</th>
-                                        <th>Email usuario comprador</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -95,7 +101,6 @@ const Ventas = () => {
                                             <td>{venta.articulo}</td>
                                             <td>{venta.fecha_venta}</td>
                                             <td>{venta.valor}</td>
-                                            <td>{venta.email_usuario}</td>
                                             <td>
                                                 <button
                                                     className="btn btn-danger"

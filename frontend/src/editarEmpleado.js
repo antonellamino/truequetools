@@ -16,6 +16,8 @@ const EditarEmpleado = () => {
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
     const [originalNombreUsuario, setOriginalNombreUsuario] = useState('');
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
+
 
     useEffect(() => {
         const fetchEmpleado = async () => {
@@ -125,13 +127,17 @@ const EditarEmpleado = () => {
                         'error'
                     );
                 }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
     };
 
-    const handleCancel = () => {
-        navigate('/listaEmpleados');
-    };
+  
 
     return (
         <Fragment>
@@ -194,20 +200,16 @@ const EditarEmpleado = () => {
                         </div>
                         {errors.contrasena && <small className="text-danger">{errors.contrasena}</small>}
                     </div>
-                    <div className="mb-3">
-                        <div className="row">
-                            <div className="col">
-                                <button type="submit" className="btn btn-primary w-100" >Guardar Cambios</button>
-                            </div>
-                        </div>
-                        <div className="row mt-3">
-                            <div className="col">
-                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
-                            </div>
-                        </div>
+                    <div className="d-flex justify-content-between">
+                        <button type="submit" className="btn btn-primary">Guardar cambios</button>
                     </div>
                 </form>
             </div>
+            {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        No se registraron cambios.
+                    </div>
+                )}
         </Fragment>
     );
     

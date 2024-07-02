@@ -9,6 +9,7 @@ const backendUrl = process.env.REACT_APP_BACK_URL;
 const ListaEmpleados = () => {
     const [empleados, setEmpleados] = useState([]);
     const navigate = useNavigate();
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
 
     useEffect(() => {
         const fetchEmpleados = async () => {
@@ -57,6 +58,12 @@ const ListaEmpleados = () => {
                         'error'
                     );
                 }
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
     };
@@ -110,6 +117,11 @@ const ListaEmpleados = () => {
                     </div>
                 )}
             </div>
+            {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        Baja rechazada.
+                    </div>
+            )}
         </Fragment>
     );
 }

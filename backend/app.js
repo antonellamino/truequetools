@@ -231,7 +231,7 @@ app.get('/sucursales', async (req, res) => {
     }
 });
 
-
+/*
 app.get('/full-sucursales', async (req, res) => {
     try {
         const sucursales = await Sucursal.fetchAll();
@@ -241,7 +241,7 @@ app.get('/full-sucursales', async (req, res) => {
         res.status(500).json({ error: 'ocurrio un error al obtener las sucursales' });
     }
 });
-
+*/
 
 
 //solo admin
@@ -903,14 +903,14 @@ app.post('/enviar-notificacion', async (req, res) => {
 
 
 app.put('/notificaciones/leer', (req, res) => {
-    const { userId } = req.body;
-    Notificacion.where({ id_usuario: userId }).save({ leido: true }, { patch: true })
+    const { id } = req.body;
+    Notificacion.where({ id }).save({ leido: true }, { patch: true })
         .then(() => {
-            res.status(200).send('Notificaciones marcadas como leídas correctamente.');
+            res.status(200).send('Notificación marcada como leída correctamente.');
         })
         .catch(error => {
-            console.error('Error al marcar las notificaciones como leídas:', error);
-            res.status(500).send('Error al marcar las notificaciones como leídas.');
+            console.error('Error al marcar la notificación como leída:', error);
+            res.status(500).send('Error al marcar la notificación como leída.');
         });
 });
 
@@ -935,14 +935,13 @@ app.post('/agregar-notificacion', async (req, res) => {
 
 app.post('/guardar-trueque', async (req, res) => {
     try {
-        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id } = req.body;
-
+        const { id_propietario, id_ofertante, id_producto_propietario, id_producto_ofertante, id_sucursal } = req.body;
         const nuevoTrueque = await Trueque.forge({
             id_propietario,
             id_ofertante,
             id_producto_propietario,
             id_producto_ofertante,
-            id
+            id_sucursal
         });
 
         console.log("aaasfa");
@@ -1122,14 +1121,14 @@ app.post('/confirmar_trueque', async (req, res) => {
 app.get('/trueques_Sucursal', async (req, res) => {
     try {
         const idSucursal = req.query.idSucursal;
-
+        console.log("id sucursal",idSucursal);
         if (!idSucursal) {
             return res.status(400).json({ error: 'El idSucursal es requerido' });
         }
 
-        const trueques = await Trueque.where({ id: idSucursal, estado: 'confirmado' })
-            .fetchAll({ withRelated: ['productoPropietario', 'productoOfertante', 'propietario', 'ofertante'] });
-
+        const trueques = await Trueque.where({ id_sucursal: idSucursal, estado: 'confirmado' })
+        .fetchAll({ withRelated: ['productoPropietario', 'productoOfertante', 'propietario', 'ofertante'] });
+        console.log(trueques);
         res.json({ trueques });
     } catch (error) {
         console.error('Error al obtener trueques:', error);
@@ -1266,19 +1265,18 @@ app.post('/eliminar-respuesta', async (req, res) => {
 });
 
 
-
-
 app.get('/cantidad-trueques', async (req, res) => {
     try {
         const { fechaInicio, fechaFin } = req.query;
 
         const cantidadTrueques = await Trueque.query()
-            .where('estado', 'completado')
-            .whereBetween('fecha', [fechaInicio, fechaFin])
-            .join('Sucursales', 'Trueque.id', 'Sucursales.id')
-            .groupBy('id', 'Sucursales.nombre')
-            .select('id', 'Sucursales.nombre as nombre_sucursal')
-            .count('Trueque.id as cantidad');
+        .where('estado', 'completado')
+        .whereBetween('fecha', [fechaInicio, fechaFin])
+        .join('sucursales', 'trueque.id_sucursal', 'sucursales.id')
+        .groupBy('trueque.id_sucursal', 'sucursales.nombre')
+        .select('trueque.id_sucursal as id_sucursal', 'sucursales.nombre as nombre_sucursal')
+        .count('trueque.id as cantidad');   
+
         res.json(cantidadTrueques);
     } catch (error) {
         console.error('Error al obtener la cantidad de trueques:', error);
@@ -1551,6 +1549,8 @@ app.get('/producto_especifico/:idProducto', async (req, res) => {
 app.get('/promedio-ventas', async (req, res) => {
     try {
         const { fechaInicio, fechaFin } = req.query;
+        console.log('fecha inicio',fechaInicio);
+        console.log('fecha fin',fechaFin);
         const truequesConVentas = await Trueque.query()
             .select(
                 'trueque.id as id_trueque',
@@ -1559,7 +1559,7 @@ app.get('/promedio-ventas', async (req, res) => {
             )
             .sum('ventas.valor as total_valor_ventas')
             .innerJoin('ventas', 'trueque.id', 'ventas.id_trueque')
-            .innerJoin('sucursales', 'trueque.id', 'sucursales.id')
+            .innerJoin('sucursales', 'trueque.id_sucursal', 'sucursales.id')
             .where('trueque.estado', 'completado')
             .whereBetween('trueque.fecha', [fechaInicio, fechaFin])
             .groupBy('trueque.id', 'trueque.fecha', 'sucursales.nombre');
@@ -1602,15 +1602,16 @@ app.post('/eliminar-sucursal', async (req, res) => {
     }
 
     try {
-        console.log('sucursal a eliminar:', id);
+        console.log('Sucursal a eliminar:', id);
 
-        const truequesPendientesOCreados = await Trueque.where({ id_sucursal: id })
-            .where('estado', 'in', ['espera', 'creado'])
+        // Verificar si hay trueques asociados con estado "confirmado"
+        const truequesConfirmados = await Trueque.where({ id_sucursal: id })
+            .where('estado', 'confirmado')
             .fetch({ require: false });
-        console.log(truequesPendientesOCreados);
+        console.log(truequesConfirmados);
 
-        if (truequesPendientesOCreados) {
-            return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques pendientes.' });
+        if (truequesConfirmados) {
+            return res.status(400).json({ error: 'No se puede eliminar la sucursal porque tiene trueques confirmados.' });
         }
 
         const sucursal = await Sucursal.where({ id }).fetch({ require: false });
@@ -1621,20 +1622,28 @@ app.post('/eliminar-sucursal', async (req, res) => {
 
         const productos = await Producto.where({ sucursal_elegida: id }).fetchAll({ require: false });
         if (productos && productos.length > 0) {
-            await Producto.where({ sucursal_elegida: id }).save({ sucursal_elegida: 1 }, { patch: true });
+            await Producto.query().where({ sucursal_elegida: id }).update({ sucursal_elegida: 1 });
         }
 
         const usuarios = await Usuario.where({ sucursal_preferencia: id }).fetchAll({ require: false });
         if (usuarios && usuarios.length > 0) {
-            await Usuario.where({ sucursal_preferencia: id }).save({ sucursal_preferencia: 1 }, { patch: true });
+            await Usuario.query().where({ sucursal_preferencia: id }).update({ sucursal_preferencia: 1 });
         }
 
-        res.status(200).json({ message: 'sucursal eliminada exitosamente.' });
+        // Actualizar trueques cuya columna "id_sucursal" es igual al id de la sucursal eliminada y "estado" distinto de "cancelado"
+        await Trueque.query()
+            .where({ id_sucursal: id })
+            .where('estado', '!=', 'cancelado')
+            .where('estado', '!=', 'completado')
+            .update({ id_sucursal: 1 });
+
+        res.status(200).json({ message: 'Sucursal eliminada exitosamente.' });
     } catch (error) {
-        console.error('error al eliminar la sucursal:', error);
-        res.status(500).json({ error: 'error interno del servidor.' });
+        console.error('Error al eliminar la sucursal:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
     }
 });
+
 
 
 

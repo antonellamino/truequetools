@@ -4,6 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import './editarPublicacion.css'; // Asegúrate de importar tu archivo CSS
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -15,6 +16,7 @@ const EditarPublicacion = () => {
     const [categorias, setCategorias] = useState([]);
     const [nombreError, setNombreError] = useState('');
     const [descripcionError, setDescripcionError] = useState('');
+    const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -80,6 +82,12 @@ const EditarPublicacion = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 guardarCambios();
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // Mostrar mensaje de "no se registraron cambios"
+                setShowNoChangesMessage(true);
+                setTimeout(() => {
+                    setShowNoChangesMessage(false);
+                }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
     };
@@ -122,27 +130,34 @@ const EditarPublicacion = () => {
         <Fragment>
             <Navbar />
             <h2 className="mb-4" style={{ backgroundColor: '#2c3359', color: '#ffffff', padding: '10px' }}>Editar Publicación</h2>
-            <div className="form-group">
-                <label htmlFor="nombre">Nombre</label>
-                <input type="text" id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} className="form-control" />
-                {nombreError && <span className="text-danger">{nombreError}</span>}
+            <div className="container mt-5">
+                <div className="form-group">
+                    <label htmlFor="nombre">Nombre</label>
+                    <input type="text" id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} className="form-control" />
+                    {nombreError && <span className="text-danger">{nombreError}</span>}
+                </div>
+                <div className="form-group">
+                    <label htmlFor="descripcion">Descripción</label>
+                    <textarea id="descripcion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="form-control" />
+                    {descripcionError && <span className="text-danger">{descripcionError}</span>}
+                </div>
+                <div className="form-group">
+                    <label htmlFor="categoria">Categoría</label>
+                    <select id="categoria" value={categoria_id} onChange={(e) => setCategoriaId(e.target.value)} className="form-control">
+                        {categorias.map((categoria) => (
+                            <option key={categoria.id} value={categoria.id}>
+                                {categoria.nombre}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <button onClick={mostrarConfirmacion} className="btn btn-primary">Guardar Cambios</button>
+                {showNoChangesMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        No se registraron cambios.
+                    </div>
+                )}
             </div>
-            <div className="form-group">
-                <label htmlFor="descripcion">Descripción</label>
-                <textarea id="descripcion" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} className="form-control" />
-                {descripcionError && <span className="text-danger">{descripcionError}</span>}
-            </div>
-            <div className="form-group">
-                <label htmlFor="categoria">Categoría</label>
-                <select id="categoria" value={categoria_id} onChange={(e) => setCategoriaId(e.target.value)} className="form-control">
-                    {categorias.map((categoria) => (
-                        <option key={categoria.id} value={categoria.id}>
-                            {categoria.nombre}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <button onClick={mostrarConfirmacion} className="btn btn-primary">Guardar Cambios</button>
             <Footer />
         </Fragment>
     );

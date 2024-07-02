@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import './ConfirmarTrueque.css'; // Importa el archivo de estilos
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -45,19 +46,63 @@ const ConfirmarTrueque = () => {
     };
 
     const rechazar = async (idTrueque) => {
-        try {
-            const response = await axios.post(`${backendUrl}/empleado_cancelar_trueque`, { idTrueque });
-            console.log("trueque rechazado");
-            setTrueques(prevTrueques =>
-                prevTrueques.map(trueque =>
-                    trueque.id === idTrueque ? { ...trueque, rechazado: true } : trueque
-                )
-            );
-        } catch (error) {
-            console.error('Error al confirmar el trueque:', error);
-            setError('Error al confirmar el trueque');
+        // Mostrar alerta de confirmación
+        const confirmacion = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción rechazará el trueque. ¿Estás seguro de continuar?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirmar',
+            cancelButtonText: 'Cancelar'
+        });
+    
+        // Si el usuario confirma la acción
+        if (confirmacion.isConfirmed) {
+            try {
+                const response = await axios.post(`${backendUrl}/empleado_cancelar_trueque`, { idTrueque });
+                console.log("trueque rechazado");
+    
+                setTrueques(prevTrueques =>
+                    prevTrueques.map(trueque =>
+                        trueque.id === idTrueque ? { ...trueque, rechazado: true } : trueque
+                    )
+                );
+    
+                // Mostrar alerta de éxito
+                await Swal.fire({
+                    title: 'Rechazado',
+                    text: 'El trueque ha sido rechazado exitosamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+    
+            } catch (error) {
+                console.error('Error al rechazar el trueque:', error);
+                setError('Error al rechazar el trueque');
+    
+                // Mostrar alerta de error
+                await Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un error al rechazar el trueque. Por favor, inténtalo nuevamente.',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+        } else {
+            // Mostrar mensaje de que el trueque no ha sido rechazado
+            await Swal.fire({
+                title: 'Cancelado',
+                text: 'El trueque no ha sido rechazado.',
+                icon: 'info',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
         }
-    };
+    };    
 
     const registrarVenta = async (id) => {
         navigate(`/altaVenta/${id}`);

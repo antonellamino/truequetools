@@ -12,7 +12,7 @@ const Opciones = () => {
     const [productos, setProductos] = useState([]);
     const [mensaje, setMensaje] = useState('');
 
-    console.log(sucursalId);
+    console.log('id sucursal', sucursalId);
 
     useEffect(() => {
         
@@ -32,8 +32,8 @@ const Opciones = () => {
 
     const seleccionar = async (producto) => {
         setMensaje('Trueque solicitado, esperando confirmación de horario');
-    
-        console.log(sucursalId);
+        console.log('aaaaaaaaaaaaaaaaaaaaaaaaaa');
+        console.log('id de sucursal que se va a guardar en trueque', sucursalId);
         const datosTrueque = {
             id_propietario: propietarioId,
             id_ofertante: usuarioId,
@@ -41,7 +41,7 @@ const Opciones = () => {
             id_producto_ofertante: producto.id,
             id_sucursal: sucursalId
         };
-    
+
         try {
             // Guardar el trueque
             await axios.post(`${backendUrl}/guardar-trueque`, datosTrueque);
@@ -64,7 +64,7 @@ const Opciones = () => {
             // Enviar notificación
             const notificacion = {
                 id_usuario: propietarioId,
-                mensaje: `Nueva solicitud de trueque para tu producto: ${nombreProducto}`,
+                mensaje: `Nueva solicitud de trueque para tu producto ${nombreProducto}`,
                 leido: false,
                 link: `/truequesPendientes/${propietarioId}`
             };
@@ -107,3 +107,4 @@ const Opciones = () => {
 };
 
 export default Opciones;
+
