@@ -3,13 +3,14 @@ import axios from 'axios';
 import Navbar from './Navbar';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import Footer from './Footer';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
 const InfoSucursal = () => {
     const [sucursales, setSucursales] = useState([]);
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         const fetchSucursales = async () => {
             try {
@@ -68,42 +69,51 @@ const InfoSucursal = () => {
 
     return (
         <Fragment>
-            <Navbar />
-            <div className="container mt-5">
-                <h2 className="text-white">Sucursales</h2>
-                <div className="table-responsive">
-                    <table className="table table-striped">
-                        <thead className="thead-dark">
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Dirección</th>
-                                <th>Teléfono</th>
-                                {isAdmin && <th>Acciones</th>}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sucursales.length > 0 ? (
-                                sucursales.map(sucursal => (
-                                    <tr key={sucursal.id}>
-                                        <td>{sucursal.nombre}</td>
-                                        <td>{sucursal.direccion}</td>
-                                        <td>{sucursal.telefono}</td>
-                                        {isAdmin && (
-                                            <td>
-                                                <button className="btn btn-info mr-2" onClick={() => handleEditar(sucursal.id)}>Editar</button>
-                                                <button className="btn btn-danger" onClick={() => handleEliminar(sucursal.id)}>Eliminar</button>
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))
-                            ) : (
+            <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
+                <Navbar />
+                <div className="container-fluid flex-grow-1">
+                    <h2 className="text-white">Sucursales</h2>
+                    <div className="table-responsive">
+                        <table className="table table-striped">
+                            <thead className="thead-dark">
                                 <tr>
-                                    <td colSpan={isAdmin ? "4" : "3"} className="text-center">No hay sucursales registradas</td>
+                                    <th className="text-center">Nombre</th>
+                                    <th className="text-center">Dirección</th>
+                                    <th className="text-center">Teléfono</th>
+                                    {isAdmin && <th className="text-center">Acciones</th>}
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {sucursales.length > 0 ? (
+                                    sucursales.map((sucursal) => (
+                                        <tr key={sucursal.id}>
+                                            <td className="text-center">{sucursal.nombre}</td>
+                                            <td className="text-center">{sucursal.direccion}</td>
+                                            <td className="text-center">{sucursal.telefono}</td>
+                                            {isAdmin && (
+                                                <td className="text-center">
+                                                    <button className="btn btn-info mr-2" onClick={() => handleEditar(sucursal.id)}>
+                                                        Editar
+                                                    </button>
+                                                    <button className="btn btn-danger" onClick={() => handleEliminar(sucursal.id)}>
+                                                        Eliminar
+                                                    </button>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={isAdmin ? '4' : '3'} className="text-center">
+                                            No hay sucursales registradas
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                <Footer />
             </div>
         </Fragment>
     );

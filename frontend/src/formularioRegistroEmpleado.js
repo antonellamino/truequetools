@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react';
-//import NavAdmin from './navAdmin';
 import axios from 'axios';
 import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +13,6 @@ const AltaEmpleado = () => {
     const [nombre_usuario, setNombreUsuario] = useState('');
     const [mensajeError, setMensajeError] = useState('');
     const navigate = useNavigate();
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,11 +50,12 @@ const AltaEmpleado = () => {
     return (
         <Fragment>
             <Navbar />
-            <div className="container mt-5">
-                <h2 className="mb-4" style={{ color: 'white' }}>Alta Empleado</h2>
-                <form onSubmit={handleSubmit}>
+
+            <h2 className="mb-4 mt-0" style={{ color: 'white' }}>Alta Empleado</h2>
+            <div className="w-100" style={{ padding: '0 15px' }}>
+                <form onSubmit={handleSubmit} className="mx-auto" style={{ width: '80%' }}>
                     <div className="form-group">
-                        <label htmlFor="nombre">Nombre</label>
+                        <label htmlFor="nombre" style={{ fontWeight: 'bold' }}>Nombre</label>
                         <input
                             type="text"
                             className="form-control"
@@ -68,7 +67,7 @@ const AltaEmpleado = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="apellido">Apellido</label>
+                        <label htmlFor="apellido" style={{ fontWeight: 'bold' }}>Apellido</label>
                         <input
                             type="text"
                             className="form-control"
@@ -80,7 +79,7 @@ const AltaEmpleado = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="nombre_usuario">nombre de usuario</label>
+                        <label htmlFor="nombre_usuario" style={{ fontWeight: 'bold' }}>Nombre de usuario</label>
                         <input
                             type="text"
                             className="form-control"
@@ -92,7 +91,7 @@ const AltaEmpleado = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="contrasena">Contraseña</label>
+                        <label htmlFor="contrasena" style={{ fontWeight: 'bold' }}>Contraseña</label>
                         <input
                             type="password"
                             className="form-control"
@@ -108,16 +107,17 @@ const AltaEmpleado = () => {
                     <div className="mb-3">
                         <div className="row">
                             <div className="col">
-                                <button type="submit" className="btn btn-primary w-100" >Guardar Cambios</button>
+                                <button type="submit" className="btn btn-primary mx-auto d-block" style={{ width: '100%' }}>Guardar Cambios</button>
                             </div>
                         </div>
                         <div className="row mt-3">
                             <div className="col">
-                                <button type="button" className="btn btn-secondary w-100" onClick={handleCancel}>Cancelar</button>
+                                <button type="button" className="btn btn-secondary mx-auto d-block" style={{ width: '100%' }} onClick={handleCancel}>Cancelar</button>
                             </div>
                         </div>
                     </div>
                 </form>
+
             </div>
         </Fragment>
     );
