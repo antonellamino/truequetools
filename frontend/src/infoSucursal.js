@@ -47,6 +47,13 @@ const InfoSucursal = () => {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         navigate(`/editarSucursal/${id}`);
+                    }else{
+                        Swal.fire({
+                            title: 'No se registraron cambios.',
+                            icon: 'info',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 });
             } else {
@@ -114,10 +121,10 @@ const InfoSucursal = () => {
 
     return (
         <Fragment>
+            <Navbar />
             <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
-                <Navbar />
                 <div className="container-fluid flex-grow-1">
-                    <h2 className="text-white">Sucursales</h2>
+                    <h2 className="text-white mt-3">Sucursales</h2>
                     <div className="table-responsive">
                         <table className="table table-striped">
                             <thead className="thead-dark">

@@ -122,11 +122,6 @@ const AltaEmpleado = () => {
                                 <button type="submit" className="btn btn-primary mx-auto d-block" style={{ width: '100%' }}>Guardar Cambios</button>
                             </div>
                         </div>
-                        <div className="row mt-3">
-                            <div className="col">
-                                <button type="button" className="btn btn-secondary mx-auto d-block" style={{ width: '100%' }} onClick={handleCancel}>Cancelar</button>
-                            </div>
-                        </div>
                     </div>
                 </form>
 

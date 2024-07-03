@@ -6,6 +6,8 @@ import './ConfirmarTrueque.css'; // Importa el archivo de estilos
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useAuth } from './AuthContext';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const backendUrl = process.env.REACT_APP_BACK_URL;
 
@@ -112,6 +114,11 @@ const ConfirmarTrueque = () => {
             });
         }
     };    
+    
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return format(date, 'dd MMMM yyyy HH:mm', { locale: es });
+    };
 
     const registrarVenta = async (id) => {
         navigate(`/altaVenta/${id}`);
@@ -128,8 +135,6 @@ const ConfirmarTrueque = () => {
                 <div className="header">
                     <h2>Trueques Pendientes</h2>
                 </div>
-
-                <button className="btn btn-primary mb-3" onClick={volver}>Volver</button>
                 {error && <p className="error">{error}</p>}
                 {trueques.length > 0 ? (
                     <ul className="trueques-list">
@@ -152,6 +157,7 @@ const ConfirmarTrueque = () => {
                                     />
                                 </div>
                                 <div className="trueque-actions">
+                                    <p>Horario y fecha de trueque: {formatDate(trueque.fecha)}</p>
                                     {!trueque.confirmado && !trueque.rechazado && (
                                         <div>
                                             <button className="confirm-button" onClick={() => confirmar(trueque.id)}>Aceptar</button>

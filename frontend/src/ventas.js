@@ -86,7 +86,7 @@ const Ventas = () => {
     return (
         <Fragment>
             <Navbar />
-            <div className="container-fluid" style={{ minHeight: '100vh', paddingTop: 0 }}>
+            <div className="container-fluid" style={{ minHeight: '50vh', paddingTop: 10 }}>
                 {loading ? (
                     <p>Cargando ventas...</p>
                 ) : error ? (

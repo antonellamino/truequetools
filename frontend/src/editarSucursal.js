@@ -98,18 +98,19 @@ const EditarSucursal = () => {
             <div className="container mt-5">
                 <h2 className="mb-4" style={{ color: 'white' }}>Editar sucursal</h2>
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="nombre" className="font-weight-bold">Nombre</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="nombre"
-                            placeholder="Ingresa el nombre"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            required
-                        />
-                    </div>
+                <div className="form-group">
+                    <label htmlFor="nombre" className="font-weight-bold">Nombre</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="nombre"
+                        placeholder="Ingresa el nombre"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        disabled
+                    />
+                    <small className="text-muted">El nombre de la sucursal no puede cambiarse.</small>
+                </div>
                     <div className="form-group">
                         <label htmlFor="apellido" className="font-weight-bold">Direccion</label>
                         <input
