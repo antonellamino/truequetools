@@ -55,11 +55,13 @@ const Ventas = () => {
                 try {
                     await axios.post(`${backendUrl}/eliminar-venta`, { id: id });
                     setVentas(ventas.filter(venta => venta.id !== id));
-                    Swal.fire(
-                        'Eliminado!',
-                        'La venta ha sido eliminada.',
-                        'success'
-                    );
+                    Swal.fire({
+                        title: 'Eliminado!',
+                        text: 'La venta ha sido eliminada.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 } catch (error) {
                     console.error('Error al eliminar la venta:', error);
                     Swal.fire(
@@ -72,8 +74,8 @@ const Ventas = () => {
                 Swal.fire({
                     title: 'Baja rechazada.',
                     icon: 'info',
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'OK'
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             }
         });

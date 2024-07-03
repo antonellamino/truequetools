@@ -96,11 +96,13 @@ const InfoSucursal = () => {
                     const response = await axios.post(`${backendUrl}/eliminar-sucursal`, { id });
                     console.log(response.data);
                     setSucursales(sucursales.filter(sucursal => sucursal.id !== id));
-                    Swal.fire(
-                        'Eliminado!',
-                        'La sucursal ha sido eliminada.',
-                        'success'
-                    );
+                    Swal.fire({
+                        title: 'Eliminado!',
+                        text:'La sucursal ha sido eliminada.',
+                        icon:'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 } catch (error) {
                     console.error('Error al eliminar la sucursal:', error);
                     Swal.fire(
