@@ -149,11 +149,13 @@ const EditarPerfil = () => {
                             datosFormulario: datosFormulario
                         });
                         console.log('Datos actualizados exitosamente:', response.data);
-                        Swal.fire(
-                            'Actualizado!',
-                            'Tu perfil ha sido actualizado exitosamente.',
-                            'success'
-                        ).then(() => {
+                        Swal.fire({
+                            title: 'Actualizado!',
+                            text: 'Tu perfil ha sido actualizado exitosamente.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton : false
+                        }).then(() => {
                             navigate('/miPerfil');
                         });
                     } catch (error) {

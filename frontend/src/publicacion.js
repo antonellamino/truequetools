@@ -28,7 +28,7 @@ const Publicacion = () => {
     const [mensajeErrorEdicion, setMensajeErrorEdicion] = useState(''); // Estado para el mensaje de error de edición
     const [mensajeErrorEliminacion, setMensajeErrorEliminacion] = useState('');
     const [showNoChangesMessage, setShowNoChangesMessage] = useState(false); // Estado para el mensaje
-
+    const [showNoChangesMessageBaja, setShowNoChangesMessageBaja] = useState(false);
     
     useEffect(() => {
         obtenerProducto(id);
@@ -171,11 +171,15 @@ const Publicacion = () => {
                     const res = await axios.post(`${backendUrl}/eliminar-comentario`, { id_comentario: comentarioId });
                     console.log("el back de eliminar producto me dijo:", res.data);
                     obtenerComentarios(id);
-                    Swal.fire(
-                        'Eliminado!',
-                        'El comentario ha sido eliminado.',
-                        'success'
-                    );
+                    Swal.fire({
+                        title: 'Eliminado!',
+                        text: 'El comentario ha sido eliminado.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+
+
+                    });
                 } catch (err) {
                     console.error(err);
                     Swal.fire(
@@ -210,11 +214,13 @@ const Publicacion = () => {
                     const res = await axios.post(`${backendUrl}/eliminar-respuesta`, { id_comentario: comentarioId });
                     console.log("el back de eliminar producto me dijo:", res.data);
                     obtenerComentarios(id);
-                    Swal.fire(
-                        'Eliminado!',
-                        'La respuesta ha sido eliminada.',
-                        'success'
-                    );
+                    Swal.fire({
+                        title: 'Eliminado!',
+                        text: 'La respuesta ha sido eliminada.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 } catch (err) {
                     console.error(err);
                     Swal.fire(
@@ -289,11 +295,13 @@ const Publicacion = () => {
     
                     navigate('/clienteDashboard');
                 
-                    Swal.fire(
-                        'Eliminado!',
-                        'La publicación ha sido eliminada.',
-                        'success'
-                    );
+                    Swal.fire({
+                        title: 'Eliminado!',
+                        text:'La publicación ha sido eliminada.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 } catch (err) {
                     console.error(err);
                     Swal.fire(
@@ -304,9 +312,9 @@ const Publicacion = () => {
                 }
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 // Mostrar mensaje de "no se registraron cambios"
-                setShowNoChangesMessage(true);
+                setShowNoChangesMessageBaja(true);
                 setTimeout(() => {
-                    setShowNoChangesMessage(false);
+                    setShowNoChangesMessageBaja(false);
                 }, 3000); // Mostrar el mensaje por 3 segundos
             }
         });
@@ -432,7 +440,7 @@ const Publicacion = () => {
                     </button>
                 )}
 
-                {showNoChangesMessage && (
+                {showNoChangesMessageBaja && (
                     <div className="alert alert-danger" role="alert">
                         Baja rechazada.
                     </div>

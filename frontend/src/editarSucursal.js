@@ -59,11 +59,13 @@ const EditarSucursal = () => {
                         datosFormulario: datosFormulario
                     });
     
-                    Swal.fire(
-                        'Guardado!',
-                        'Los cambios han sido guardados exitosamente.',
-                        'success'
-                    ).then(() => {
+                    Swal.fire({
+                        title:'Guardado!',
+                        text:'Los cambios han sido guardados exitosamente.',
+                        icon:'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
                         navigate('/infoSucursal');
                     });
 

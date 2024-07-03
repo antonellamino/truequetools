@@ -51,8 +51,8 @@ const InfoSucursal = () => {
                         Swal.fire({
                             title: 'No se registraron cambios.',
                             icon: 'info',
-                            confirmButtonColor: '#3085d6',
-                            confirmButtonText: 'OK'
+                            timer:2000,
+                            showConfirmButton: false
                         });
                     }
                 });
@@ -171,13 +171,14 @@ const InfoSucursal = () => {
                         </table>
                     </div>
                 </div>
-                <Footer />
-            </div>
-            {showNoChangesMessage && (
+                {showNoChangesMessage && (
                     <div className="alert alert-danger" role="alert">
                         Baja rechazada.
                     </div>
             )}
+                <Footer />
+            </div>
+           
         </Fragment>
     );
 };

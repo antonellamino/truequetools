@@ -54,11 +54,13 @@ const ListaEmpleados = () => {
                     console.log(res.data);
 
                     setEmpleados(empleados.filter(empleado => empleado.id !== empleadoId));
-                    Swal.fire(
-                        'Eliminado!',
-                        'El empleado ha sido eliminado.',
-                        'success'
-                    );
+                    Swal.fire({
+                        title: 'Eliminado!',
+                        text: 'El empleado ha sido eliminado.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 } catch (err) {
                     console.error(err);
                     Swal.fire(

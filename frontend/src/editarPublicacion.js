@@ -107,11 +107,13 @@ const EditarPublicacion = () => {
                 });
 
                 if (response.status === 200) {
-                    Swal.fire(
-                        'Actualizado!',
-                        'La publicación ha sido actualizada exitosamente.',
-                        'success'
-                    ).then(() => {
+                    Swal.fire({
+                        title:'Actualizado!',
+                        text:'La publicación ha sido actualizada exitosamente.',
+                        icon:'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
                         navigate(`/publicacion/${productoId}`);
                     });
                 }
