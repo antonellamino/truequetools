@@ -224,7 +224,6 @@ const PromedioVentas = () => {
                     </div>
                 </div>
             </div>
-            <Footer/>
         </Fragment>
     );
 };

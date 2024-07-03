@@ -3,7 +3,7 @@ const knex = require('knex')({
     connection: {
         host: 'localhost',
         user: 'root',
-        password: 'pass123',
+        password: 'basedatos1234',
         database: 'truequetools',
         charset: 'utf8'
     }

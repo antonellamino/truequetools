@@ -212,7 +212,7 @@ const Publicacion = () => {
                     obtenerComentarios(id);
                     Swal.fire(
                         'Eliminado!',
-                        'La respuesta ha sido eliminado.',
+                        'La respuesta ha sido eliminada.',
                         'success'
                     );
                 } catch (err) {

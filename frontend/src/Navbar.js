@@ -86,7 +86,7 @@ const Navbar = ({ actualizarProductosFiltrados }) => {
                                     <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/miPerfil" style={homeButtonStyle}>Mi perfil</NavLink>
                                 </li>
                             )}
-                            {isAuthenticated && rol === 1 && (
+                            {isAuthenticated && (
                                 <li className="nav-item">
                                     <NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/infoSucursal" style={homeButtonStyle}>Lista de sucursales</NavLink>
                                 </li>
